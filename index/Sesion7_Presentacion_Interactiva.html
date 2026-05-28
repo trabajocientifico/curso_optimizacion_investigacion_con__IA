@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 7 · Redacción del artículo de revisión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117; --bg2:#121a26; --ink:#eef2f7; --muted:#8b97a8;
+  --accent:#ff7e5f; --accent2:#3dd6c4; --gold:#e8b04b;
+  --line:rgba(255,255,255,.1); --card:rgba(255,255,255,.04);
+  --danger:#ff5a5f; --ok:#3ddc97;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Sora',sans-serif; overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* fondo: malla + grano */
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60vw 60vw at 78% 12%, rgba(255,107,61,.16), transparent 60%),
+    radial-gradient(50vw 50vw at 12% 88%, rgba(61,214,196,.13), transparent 60%),
+    radial-gradient(40vw 40vw at 50% 50%, rgba(232,176,75,.06), transparent 70%);
+  animation:meshfloat 18s ease-in-out infinite alternate;}
+@keyframes meshfloat{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-2%,2%,0) scale(1.08)}}
+.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%);}
+
+/* deck */
+.deck{position:relative;z-index:2;height:100vh;width:100vw}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;
+  padding:5.5vh 6vw 8vh;opacity:0;transition:opacity .5s ease}
+.slide.active{display:flex;opacity:1}
+.slide.active .reveal{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+.reveal:nth-child(1){animation-delay:.05s}.reveal:nth-child(2){animation-delay:.15s}
+.reveal:nth-child(3){animation-delay:.25s}.reveal:nth-child(4){animation-delay:.35s}
+.reveal:nth-child(5){animation-delay:.45s}.reveal:nth-child(6){animation-delay:.55s}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+/* tipografía */
+.kicker{font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--accent2);margin-bottom:1.2rem;display:flex;gap:.8rem;align-items:center}
+.kicker::before{content:"";width:34px;height:1px;background:var(--accent2)}
+h1{font-family:'Fraunces',serif;font-weight:900;line-height:.98;letter-spacing:-.02em;
+  font-size:clamp(2.6rem,6.2vw,5.6rem)}
+h2{font-family:'Fraunces',serif;font-weight:600;line-height:1.04;
+  font-size:clamp(1.9rem,4vw,3.3rem);letter-spacing:-.01em}
+h3{font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.1rem,1.7vw,1.5rem)}
+.lead{font-size:clamp(1.05rem,1.5vw,1.35rem);color:var(--muted);max-width:54ch;line-height:1.6;font-weight:300}
+.em{color:var(--accent)}.em2{color:var(--accent2)}.emg{color:var(--gold)}
+mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:inherit;padding:0 .1em}
+
+/* layout helpers */
+.spread{flex:1;display:flex;flex-direction:column;justify-content:center}
+.cols{display:grid;gap:2rem;align-items:start}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:1.6rem 1.7rem;backdrop-filter:blur(6px);position:relative;overflow:hidden}
+.card .num{font-family:'Space Mono',monospace;color:var(--accent);font-size:.85rem;letter-spacing:.2em}
+.card h3{margin:.5rem 0 .6rem}
+.card p{color:var(--muted);font-size:.98rem;line-height:1.55;font-weight:300}
+.tag{display:inline-block;font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+  text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem;color:var(--muted)}
+
+/* chrome */
+.topbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:30;background:rgba(255,255,255,.06)}
+.topbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .4s}
+.hud{position:fixed;bottom:2.2vh;left:6vw;right:6vw;z-index:30;display:flex;justify-content:space-between;align-items:center;
+  font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.nav{display:flex;gap:.6rem}
+.nav button{background:var(--card);border:1px solid var(--line);color:var(--ink);width:38px;height:38px;border-radius:50%;
+  cursor:pointer;font-size:1rem;transition:.2s;display:grid;place-items:center}
+.nav button:hover{background:var(--accent);border-color:var(--accent);transform:translateY(-2px)}
+.brand{font-family:'Fraunces',serif;font-style:italic;font-weight:600;color:var(--ink)}
+
+/* dot nav */
+.dots{position:fixed;right:2vw;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:.7rem}
+.dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:.25s;display:block}
+.dots i.on{background:var(--accent);height:22px;border-radius:6px}
+
+/* botones */
+.btn{font-family:'Sora';font-weight:600;font-size:.92rem;border:none;cursor:pointer;border-radius:12px;
+  padding:.8rem 1.3rem;transition:.2s;display:inline-flex;gap:.5rem;align-items:center}
+.btn-primary{background:var(--accent);color:#1a0d08}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn-ghost:hover{border-color:var(--accent)}
+
+/* mono code */
+.mono{font-family:'Space Mono',monospace}
+.promptbox{background:#0a0e14;border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:12px;padding:1.1rem 1.2rem;font-family:'Space Mono',monospace;font-size:.92rem;line-height:1.65;color:#cdd6e3}
+.promptbox .ph{color:var(--gold)}
+
+/* title slide bits */
+.hero-num{position:absolute;right:5vw;top:8vh;font-family:'Fraunces',serif;font-weight:900;
+  font-size:26vw;line-height:.8;color:rgba(255,255,255,.03);z-index:-1;pointer-events:none}
+.meta-row{display:flex;gap:2.4rem;flex-wrap:wrap;margin-top:2.4rem}
+.meta-row div .mono{color:var(--accent2);font-size:.75rem;letter-spacing:.2em}
+.meta-row div p{font-size:1.05rem;margin-top:.2rem}
+
+@media(max-width:820px){
+  .c2,.c3{grid-template-columns:1fr}
+  .slide{padding:5vh 7vw 9vh}
+  .dots{display:none}
+}
+
+/* ---- estilos propios Sesión 7 ---- */
+.voicetoggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:1rem}
+.voicetoggle button{background:transparent;border:none;color:var(--muted);font-family:'Sora';font-weight:600;font-size:.85rem;
+  padding:.6rem 1.2rem;cursor:pointer;transition:.2s}
+.voicetoggle button.on{background:var(--accent);color:#1a0d08}
+.voicepanel{margin-top:1.2rem;border:1px solid var(--line);border-radius:16px;padding:1.5rem;background:var(--card);
+  font-size:1.02rem;line-height:1.7;min-height:170px;transition:.3s}
+.voicepanel .anno{display:block;margin-top:1rem;font-family:'Space Mono',monospace;font-size:.76rem;letter-spacing:.04em}
+.flag-bad{color:var(--danger)}.flag-good{color:var(--ok)}
+.citetrack{display:flex;flex-direction:column;gap:.7rem;margin-top:1.2rem}
+.citeclaim{border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;cursor:pointer;transition:.2s;
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;background:rgba(255,255,255,.02);line-height:1.4;font-size:.92rem}
+.citeclaim:hover{border-color:var(--accent)}
+.citeclaim .status{font-family:'Space Mono',monospace;font-size:.72rem;white-space:nowrap;color:var(--muted)}
+.citeclaim.ok{border-left:3px solid var(--ok)}.citeclaim.ok .status{color:var(--ok)}
+.citeclaim.no{border-left:3px solid var(--danger)}.citeclaim.no .status{color:var(--danger)}
+.citeclaim.warn{border-left:3px solid var(--gold)}.citeclaim.warn .status{color:var(--gold)}
+.citefb{font-size:.78rem;color:var(--muted);margin-top:.6rem;font-family:'Space Mono',monospace;display:none}
+.assembler{margin-top:1.2rem}
+.fragbtns{display:flex;flex-direction:column;gap:.6rem}
+.fragbtn{border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem;cursor:pointer;transition:.2s;
+  font-size:.86rem;background:rgba(255,255,255,.02);line-height:1.4;display:flex;gap:.6rem;align-items:flex-start}
+.fragbtn:hover{border-color:var(--accent2)}
+.fragbtn .ftag{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.1em;color:var(--accent2);flex-shrink:0;margin-top:.15rem;min-width:70px}
+.fragbtn.on{border-color:var(--accent);background:rgba(255,126,95,.07)}
+.paragraphout{margin-top:1.2rem;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;
+  padding:1.3rem;background:#0a0e14;font-size:1rem;line-height:1.75;color:#cdd6e3;min-height:120px}
+.paragraphout .placeholder{color:var(--muted);font-style:italic}
+
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-home" title="Volver al mapa del curso"><span aria-hidden="true">&#x21A9;</span> Inicio</a>
+<style>.back-home{position:fixed;top:14px;left:14px;z-index:40;display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#eef2f7;text-decoration:none;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;padding:.45rem .8rem;border-radius:999px;backdrop-filter:blur(6px);transition:.2s}.back-home:hover{background:#ff6b3d;border-color:#ff6b3d;color:#1a0d08}.back-home span{font-size:1rem;line-height:1}</style>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="bg-grain"></div>
+<div class="topbar"><div class="fill" id="progress"></div></div>
+<div class="dots" id="dots"></div>
+
+<div class="deck" id="deck">
+
+<!-- 1 · PORTADA -->
+<section class="slide active">
+  <div class="hero-num">07</div>
+  <div class="spread">
+    <div class="kicker reveal">Curso · Optimización de la investigación con IA</div>
+    <h1 class="reveal">Que escriba<br><span class="em2">contigo</span>,<br>no por <span class="em">ti</span>.</h1>
+    <p class="lead reveal" style="margin-top:1.6rem">Sesión 7 — Redacción del artículo de revisión con IA como copiloto. Cierras el segundo producto manteniendo dos cosas innegociables: tu voz como autor y la verdad de cada cita.</p>
+    <div class="meta-row reveal">
+      <div><span class="mono">DURACIÓN</span><p>3 horas</p></div>
+      <div><span class="mono">MÓDULO</span><p>3 · Revisión</p></div>
+      <div><span class="mono">PRODUCTO</span><p>2 · Revisión ✓</p></div>
+      <div><span class="mono">SESIÓN</span><p>07 de 11</p></div>
+    </div>
+    <div class="reveal" style="margin-top:2.6rem"><span class="tag">← →  navegar · F pantalla completa</span></div>
+  </div>
+</section>
+
+<!-- 2 · AGENDA -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Cierre del producto 2</div>
+    <h2 class="reveal">Tienes el <span class="emg">esqueleto</span>.<br>Hoy le das <span class="em">voz</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">De la Sesión 6 traes temas, matriz y vacío. La estructura ya existe; falta escribirla bien y con honestidad.</p>
+    <div class="cols c2 reveal" style="margin-top:1.8rem">
+      <div class="card"><span class="num">0:10 — 0:45</span><h3>Copiloto, no piloto</h3><p>Cómo usar la IA en la redacción sin perder tu voz ni tu autoría.</p></div>
+      <div class="card"><span class="num">0:45 — 1:30</span><h3>Párrafo de síntesis</h3><p>Anatomía de un párrafo que teje varias fuentes. Construcción guiada.</p></div>
+      <div class="card"><span class="num">1:40 — 2:25</span><h3>Citas verificadas</h3><p>Cada afirmación con respaldo real. Taller de rastreo.</p></div>
+      <div class="card"><span class="num">2:25 — 3:00</span><h3>Pulido y declaración</h3><p>Estilo académico, coherencia y declaración de uso de IA.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · COPILOTO NO PILOTO -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 1 · La postura correcta</div>
+    <h2 class="reveal">Tú llevas el <span class="em">timón</span>.</h2>
+    <div class="cols c3 reveal" style="margin-top:2.2rem">
+      <div class="card" style="border-left:3px solid var(--accent2)"><span class="num">USA LA IA PARA</span><h3>Arrancar</h3><p>Vencer la página en blanco: un primer borrador que tú reescribes por completo.</p></div>
+      <div class="card" style="border-left:3px solid var(--accent2)"><span class="num">USA LA IA PARA</span><h3>Pulir</h3><p>Mejorar claridad, transiciones y concisión de un texto que ya es tuyo.</p></div>
+      <div class="card" style="border-left:3px solid var(--danger)"><span class="num">NUNCA</span><h3>Sustituirte</h3><p>Pegar texto generado sin leer, sin reescribir y sin verificar. Eso no es tu obra.</p></div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.8rem">Prueba de fuego: si no puedes <mark>explicar y defender cada frase</mark> de tu revisión, todavía no la has escrito.</p>
+  </div>
+</section>
+
+<!-- 4 · COMPARADOR DE VOZ (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">El problema de la voz</div>
+    <h2 class="reveal">Detecta la voz<br><span class="em">genérica</span>.</h2>
+    <p class="lead reveal" style="margin-top:.6rem">El mismo contenido, dos versiones. Alterna y observa qué hace que un texto suene a «IA» y cómo recuperar tu voz de autor.</p>
+    <div class="reveal voicetoggle" id="voiceToggle">
+      <button data-v="0" class="on">Texto de IA crudo</button>
+      <button data-v="1">Texto con voz de autor</button>
+    </div>
+    <div class="reveal voicepanel" id="voicePanel"></div>
+  </div>
+</section>
+
+<!-- 5 · ENSAMBLADOR DE PÁRRAFO (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 2 · Anatomía del párrafo</div>
+    <h2 class="reveal">Construye un párrafo<br>de <span class="em2">síntesis</span>.</h2>
+    <p class="lead reveal" style="margin-top:.6rem">Un buen párrafo de revisión tiene piezas. Actívalas en orden y míralo formarse abajo.</p>
+    <div class="reveal assembler cols" style="grid-template-columns:1fr 1fr;gap:1.4rem;align-items:start">
+      <div class="fragbtns" id="fragBtns"></div>
+      <div class="paragraphout" id="paraOut"><span class="placeholder">Activa las piezas para construir el párrafo…</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · PROMPT DE REDACCIÓN -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Herramienta del bloque</div>
+    <h2 class="reveal">Dale tu <span class="em2">síntesis</span>,<br>pídele <span class="em">forma</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">No le pidas a la IA «escribe mi revisión». Dale tu matriz y tus ideas, y pídele ayuda con la redacción, conservando tus hallazgos y tus citas reales.</p>
+    <div class="reveal promptbox" style="margin-top:1.6rem">
+      <span style="color:var(--accent2)">// redacción asistida con TUS insumos</span><br>
+      Actúa como editor académico. Con base solo en estas notas verificadas:<br>
+      <span class="ph">[notas de 3-5 artículos + citas reales]</span><br>
+      Redacta un párrafo de síntesis, no un resumen artículo por artículo.<br>
+      Incluye idea principal, comparación entre estudios, tensión o matiz y cierre conectado con mi pregunta.<br>
+      No agregues citas ni afirmaciones nuevas.
+    </div>
+    <p class="lead reveal" style="margin-top:1.4rem">«No agregues citas nuevas» es la instrucción que <span class="em">evita la alucinación</span> al redactar.</p>
+  </div>
+</section>
+
+<!-- 7 · RASTREADOR DE CITAS (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 3 · Citas verificadas</div>
+    <h2 class="reveal">¿Cada afirmación<br>tiene <span class="em">respaldo</span>?</h2>
+    <p class="lead reveal" style="margin-top:.6rem">Toca cada afirmación de un borrador para auditar su cita. No todas resisten la verificación.</p>
+    <div class="reveal citetrack" id="citeTrack"></div>
+  </div>
+</section>
+
+<!-- 8 · TALLER (breakout) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Taller · Breakout rooms · 45 min</div>
+    <h2 class="reveal">Redacta una sección.</h2>
+    <div class="cols c2 reveal" style="margin-top:1.8rem">
+      <div class="card" style="border-left:3px solid var(--accent)">
+        <h3>Consigna</h3>
+        <p style="margin-top:.8rem">1. Toma uno de tus temas de la Sesión 6.<br><br>2. Escribe tú un borrador de párrafo de síntesis con sus piezas.<br><br>3. Usa la IA solo para pulir transiciones y claridad.<br><br>4. Verifica que cada cita exista y diga lo que afirmas.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent2)">
+        <h3>Entregable de la sala</h3>
+        <p style="margin-top:.8rem">▹ Un párrafo de síntesis pulido, con voz propia.<br>▹ Lista de citas usadas, todas verificadas.<br>▹ Una frase sobre qué hizo la IA y qué hiciste tú.<br>▹ Bitácora: frase reescrita por ti, cita verificada y cambio que rechazaste.</p>
+        <p style="margin-top:1rem;color:var(--accent2);font-size:.78rem" class="mono">EL RELATOR LEE EL PÁRRAFO EN PLENARIA</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · PULIDO Y DECLARACIÓN -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 4 · Cierre del manuscrito</div>
+    <h2 class="reveal">Pule, revisa,<br><span class="em2">declara</span>.</h2>
+    <div class="cols c3 reveal" style="margin-top:2.2rem">
+      <div class="card"><span class="num">PULIDO</span><h3>Estilo académico</h3><p>Concisión, tono formal, coherencia de términos. Paperpal o un conversacional ayudan aquí.</p></div>
+      <div class="card"><span class="num">REVISIÓN</span><h3>Coherencia global</h3><p>¿Los temas fluyen? ¿La introducción y el cierre cierran? ¿El vacío queda claro?</p></div>
+      <div class="card"><span class="num">DECLARACIÓN</span><h3>Uso de IA</h3><p>Indica cómo usaste IA (redacción, estilo, traducción). Lo que aprendiste en la Sesión 2.</p></div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.8rem">Con esto, tu <span class="emg">artículo de revisión</span> queda en borrador completo: el segundo producto del curso.</p>
+  </div>
+</section>
+
+<!-- 10 · TRABAJO AUTÓNOMO -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Hacia el módulo 4</div>
+    <h2 class="reveal">Lo que llevas a casa.</h2>
+    <div class="cols c3 reveal" style="margin-top:2.2rem">
+      <div class="card"><span class="num">ENTREGABLE</span><h3>Revisión en borrador</h3><p>Todas las secciones redactadas, citas verificadas, declaración de uso de IA.</p></div>
+      <div class="card"><span class="num">TAREA 01</span><h3>Auditoría de citas</h3><p>Revisa que el 100% de tus citas exista y respalde lo que afirmas.</p></div>
+      <div class="card"><span class="num">TAREA 02</span><h3>Lee en voz alta</h3><p>Detecta dónde suena a IA y reescríbelo con tu voz. El mejor filtro es tu oído.</p></div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.8rem">En la <span class="em2">Sesión 8</span> arranca el Módulo 4: el artículo original con estructura IMRyD.</p>
+  </div>
+</section>
+
+<!-- 11 · CIERRE -->
+<section class="slide">
+  <div class="spread" style="align-items:center;text-align:center">
+    <div class="kicker reveal" style="justify-content:center">Cierre de la sesión 7</div>
+    <h1 class="reveal" style="max-width:22ch">La IA pule tus<br>palabras. Las <span class="em">ideas</span><br>siguen siendo tuyas.</h1>
+    <p class="lead reveal" style="margin:1.8rem auto 0;text-align:center">Cerraste tu revisión con voz propia y citas verificadas. Dos productos listos; falta el artículo original.</p>
+    <div class="reveal meta-row" style="justify-content:center;margin-top:2.6rem">
+      <div style="text-align:center"><span class="mono">REDACTA</span><p>Con tu voz</p></div>
+      <div style="text-align:center"><span class="mono">VERIFICA</span><p>Cada cita</p></div>
+      <div style="text-align:center"><span class="mono">SIGUE</span><p>Sesión 8 · IMRyD</p></div>
+    </div>
+    <div class="reveal brand" style="font-size:1.4rem;margin-top:3rem">Trabajo Científico</div>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<div class="hud">
+  <div class="brand">Trabajo Científico</div>
+  <div class="nav">
+    <button id="prev" aria-label="anterior">‹</button>
+    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 11</span>
+    <button id="next" aria-label="siguiente">›</button>
+  </div>
+</div>
+<script>
+const deck=document.getElementById('deck');
+let slides=[...deck.querySelectorAll('.slide')];
+let i=0;
+const progress=document.getElementById('progress');
+const counter=document.getElementById('counter');
+const dotsWrap=document.getElementById('dots');
+function buildDots(){dotsWrap.innerHTML='';slides.forEach((_,k)=>{const d=document.createElement('i');d.onclick=()=>go(k);dotsWrap.appendChild(d);});}
+function go(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  progress.style.width=((i+1)/slides.length*100)+'%';
+  counter.textContent=String(i+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  [...dotsWrap.children].forEach((d,k)=>d.classList.toggle('on',k===i));
+}
+function next(){go(i+1)} function prev(){go(i-1)}
+document.getElementById('next').onclick=next;
+document.getElementById('prev').onclick=prev;
+addEventListener('keydown',e=>{
+  const t=e.target.tagName; if(t==='INPUT'||t==='TEXTAREA')return;
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+  if(e.key==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+});
+buildDots();go(0);
+
+/* ---- COMP 1: comparador de voz ---- */
+(function(){
+  const tg=document.getElementById('voiceToggle');if(!tg)return;
+  const panel=document.getElementById('voicePanel');
+  const versions=[
+    {html:'«En conclusión, es importante destacar que el riego intermitente juega un papel crucial y multifacético en la agricultura moderna. Numerosos estudios han demostrado que esta técnica ofrece una serie de beneficios significativos para la sostenibilidad hídrica.»',
+     anno:'<span class="flag-bad">✕ Frases vacías («juega un papel crucial»), vaguedad («numerosos estudios»), cero cifras, cero tensión. Suena a relleno.</span>'},
+    {html:'«El riego intermitente reduce el consumo de agua entre 25% y 28% sin afectar el rendimiento en clima tropical (García, 2020; Lee, 2022). Sin embargo, Pérez (2021) no replica este resultado en zonas áridas, lo que sugiere que el clima modula su eficacia: un vacío aún sin resolver.»',
+     anno:'<span class="flag-good">✓ Cifras concretas, citas reales, una tensión explícita y un vacío señalado. Esto tiene argumento y voz.</span>'},
+  ];
+  function show(v){
+    panel.innerHTML=versions[v].html+'<span class="anno">'+versions[v].anno+'</span>';
+    panel.style.borderColor = v===0?'var(--danger)':'var(--ok)';
+    [...tg.children].forEach((b,k)=>b.classList.toggle('on',k===v));
+  }
+  [...tg.children].forEach(b=>b.onclick=()=>show(+b.dataset.v));
+  show(0);
+})();
+
+/* ---- COMP 2: ensamblador de párrafo ---- */
+(function(){
+  const btns=document.getElementById('fragBtns');if(!btns)return;
+  const out=document.getElementById('paraOut');
+  const frags=[
+    {tag:'AFIRMACIÓN',text:'El riego intermitente reduce el consumo de agua del arroz de forma sustancial.'},
+    {tag:'EVIDENCIA',text:' Dos ensayos independientes reportan ahorros del 25-28% (García, 2020; Lee, 2022).'},
+    {tag:'MATIZ',text:' No obstante, Pérez (2021) no observa el mismo efecto en zonas áridas.'},
+    {tag:'INTERPRETA',text:' Esto sugiere que el clima local condiciona la eficacia de la técnica,'},
+    {tag:'VACÍO',text:' un factor que ningún estudio ha aislado todavía.'},
+  ];
+  const active=new Array(frags.length).fill(false);
+  frags.forEach((f,k)=>{
+    const b=document.createElement('div');b.className='fragbtn';
+    b.innerHTML='<span class="ftag">'+f.tag+'</span><span>'+f.text.trim()+'</span>';
+    b.onclick=()=>{active[k]=!active[k];b.classList.toggle('on',active[k]);render();};
+    btns.appendChild(b);
+  });
+  function render(){
+    const txt=frags.filter((_,k)=>active[k]).map(f=>f.text).join('');
+    out.innerHTML = txt? txt : '<span class="placeholder">Activa las piezas para construir el párrafo…</span>';
+  }
+})();
+
+/* ---- COMP 3: rastreador de citas ---- */
+(function(){
+  const track=document.getElementById('citeTrack');if(!track)return;
+  const claims=[
+    {claim:'«El AWD ahorra 28% de agua (García, 2020).»',type:'ok',status:'✓ VERIFICADA',fb:'La cifra y la fuente coinciden con el artículo original.'},
+    {claim:'«Estudios recientes confirman beneficios generalizados (varios autores).»',type:'warn',status:'~ VAGA',fb:'¿Qué estudios? Una afirmación sin cita rastreable no es válida.'},
+    {claim:'«El método elimina por completo el estrés hídrico (Smith, 2023).»',type:'no',status:'✕ NO EXISTE',fb:'Esa referencia no aparece en ninguna base. Probable alucinación de la IA.'},
+    {claim:'«Pérez (2021) reporta ahorros del 50%.»',type:'no',status:'✕ TERGIVERSADA',fb:'El paper existe, pero dice algo distinto: la cita no respalda esta cifra.'},
+  ];
+  claims.forEach(c=>{
+    const d=document.createElement('div');
+    const wrap=document.createElement('div');
+    const item=document.createElement('div');item.className='citeclaim';
+    item.innerHTML='<span>'+c.claim+'</span><span class="status">tocar para auditar</span>';
+    const fb=document.createElement('div');fb.className='citefb';fb.textContent=c.fb;
+    item.onclick=()=>{
+      item.classList.add(c.type);
+      item.querySelector('.status').textContent=c.status;
+      fb.style.display='block';
+    };
+    wrap.appendChild(item);wrap.appendChild(fb);
+    track.appendChild(wrap);
+  });
+})();
+</script>
+</body>
+</html>

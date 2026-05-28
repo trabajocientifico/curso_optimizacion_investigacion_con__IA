@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 6 · Síntesis y matrices de literatura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117; --bg2:#121a26; --ink:#eef2f7; --muted:#8b97a8;
+  --accent:#3ddc97; --accent2:#36b3f0; --gold:#e8b04b;
+  --line:rgba(255,255,255,.1); --card:rgba(255,255,255,.04);
+  --danger:#ff5a5f; --ok:#3ddc97;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Sora',sans-serif; overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* fondo: malla + grano */
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60vw 60vw at 78% 12%, rgba(255,107,61,.16), transparent 60%),
+    radial-gradient(50vw 50vw at 12% 88%, rgba(61,214,196,.13), transparent 60%),
+    radial-gradient(40vw 40vw at 50% 50%, rgba(232,176,75,.06), transparent 70%);
+  animation:meshfloat 18s ease-in-out infinite alternate;}
+@keyframes meshfloat{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-2%,2%,0) scale(1.08)}}
+.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%);}
+
+/* deck */
+.deck{position:relative;z-index:2;height:100vh;width:100vw}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;
+  padding:5.5vh 6vw 8vh;opacity:0;transition:opacity .5s ease}
+.slide.active{display:flex;opacity:1}
+.slide.active .reveal{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+.reveal:nth-child(1){animation-delay:.05s}.reveal:nth-child(2){animation-delay:.15s}
+.reveal:nth-child(3){animation-delay:.25s}.reveal:nth-child(4){animation-delay:.35s}
+.reveal:nth-child(5){animation-delay:.45s}.reveal:nth-child(6){animation-delay:.55s}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+/* tipografía */
+.kicker{font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--accent2);margin-bottom:1.2rem;display:flex;gap:.8rem;align-items:center}
+.kicker::before{content:"";width:34px;height:1px;background:var(--accent2)}
+h1{font-family:'Fraunces',serif;font-weight:900;line-height:.98;letter-spacing:-.02em;
+  font-size:clamp(2.6rem,6.2vw,5.6rem)}
+h2{font-family:'Fraunces',serif;font-weight:600;line-height:1.04;
+  font-size:clamp(1.9rem,4vw,3.3rem);letter-spacing:-.01em}
+h3{font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.1rem,1.7vw,1.5rem)}
+.lead{font-size:clamp(1.05rem,1.5vw,1.35rem);color:var(--muted);max-width:54ch;line-height:1.6;font-weight:300}
+.em{color:var(--accent)}.em2{color:var(--accent2)}.emg{color:var(--gold)}
+mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:inherit;padding:0 .1em}
+
+/* layout helpers */
+.spread{flex:1;display:flex;flex-direction:column;justify-content:center}
+.cols{display:grid;gap:2rem;align-items:start}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:1.6rem 1.7rem;backdrop-filter:blur(6px);position:relative;overflow:hidden}
+.card .num{font-family:'Space Mono',monospace;color:var(--accent);font-size:.85rem;letter-spacing:.2em}
+.card h3{margin:.5rem 0 .6rem}
+.card p{color:var(--muted);font-size:.98rem;line-height:1.55;font-weight:300}
+.tag{display:inline-block;font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+  text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem;color:var(--muted)}
+
+/* chrome */
+.topbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:30;background:rgba(255,255,255,.06)}
+.topbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .4s}
+.hud{position:fixed;bottom:2.2vh;left:6vw;right:6vw;z-index:30;display:flex;justify-content:space-between;align-items:center;
+  font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.nav{display:flex;gap:.6rem}
+.nav button{background:var(--card);border:1px solid var(--line);color:var(--ink);width:38px;height:38px;border-radius:50%;
+  cursor:pointer;font-size:1rem;transition:.2s;display:grid;place-items:center}
+.nav button:hover{background:var(--accent);border-color:var(--accent);transform:translateY(-2px)}
+.brand{font-family:'Fraunces',serif;font-style:italic;font-weight:600;color:var(--ink)}
+
+/* dot nav */
+.dots{position:fixed;right:2vw;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:.7rem}
+.dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:.25s;display:block}
+.dots i.on{background:var(--accent);height:22px;border-radius:6px}
+
+/* botones */
+.btn{font-family:'Sora';font-weight:600;font-size:.92rem;border:none;cursor:pointer;border-radius:12px;
+  padding:.8rem 1.3rem;transition:.2s;display:inline-flex;gap:.5rem;align-items:center}
+.btn-primary{background:var(--accent);color:#1a0d08}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn-ghost:hover{border-color:var(--accent)}
+
+/* mono code */
+.mono{font-family:'Space Mono',monospace}
+.promptbox{background:#0a0e14;border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:12px;padding:1.1rem 1.2rem;font-family:'Space Mono',monospace;font-size:.92rem;line-height:1.65;color:#cdd6e3}
+.promptbox .ph{color:var(--gold)}
+
+/* title slide bits */
+.hero-num{position:absolute;right:5vw;top:8vh;font-family:'Fraunces',serif;font-weight:900;
+  font-size:26vw;line-height:.8;color:rgba(255,255,255,.03);z-index:-1;pointer-events:none}
+.meta-row{display:flex;gap:2.4rem;flex-wrap:wrap;margin-top:2.4rem}
+.meta-row div .mono{color:var(--accent2);font-size:.75rem;letter-spacing:.2em}
+.meta-row div p{font-size:1.05rem;margin-top:.2rem}
+
+@media(max-width:820px){
+  .c2,.c3{grid-template-columns:1fr}
+  .slide{padding:5vh 7vw 9vh}
+  .dots{display:none}
+}
+
+/* ---- estilos propios Sesión 6 ---- */
+.litmatrix{margin-top:1.2rem;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:.82rem}
+.litmatrix .mrow{display:grid;grid-template-columns:1.3fr 1fr 1fr 1.2fr;border-bottom:1px solid var(--line)}
+.litmatrix .mrow:last-child{border-bottom:none}
+.litmatrix .mcell{padding:.7rem .8rem;border-right:1px solid var(--line);line-height:1.4}
+.litmatrix .mcell:last-child{border-right:none}
+.litmatrix .mhead{background:rgba(61,220,151,.1)}
+.litmatrix .mhead .mcell{font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.litmatrix .mrow.dim .mcell{color:var(--muted)}
+.litmatrix .mrow.hl{background:rgba(61,220,151,.06)}
+.colbtns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+.colbtn{font-family:'Space Mono',monospace;font-size:.74rem;border:1px solid var(--line);border-radius:8px;padding:.4rem .7rem;
+  cursor:pointer;transition:.18s;color:var(--muted);background:rgba(255,255,255,.02)}
+.colbtn.on{border-color:var(--accent);color:var(--accent);background:rgba(61,220,151,.08)}
+.patternwrap{margin-top:1.2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-items:start}
+.rawnotes{display:flex;flex-direction:column;gap:.5rem}
+.rawnote{border:1px solid var(--line);border-radius:10px;padding:.6rem .8rem;font-size:.8rem;cursor:pointer;transition:.2s;
+  background:rgba(255,255,255,.02);line-height:1.35}
+.rawnote:hover{border-color:var(--accent2)}
+.rawnote.t1{border-left:3px solid #3ddc97}.rawnote.t2{border-left:3px solid #36b3f0}.rawnote.t3{border-left:3px solid #e8b04b}
+.rawnote .ttag{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.1em;opacity:0;transition:.2s;display:block;margin-top:.3rem}
+.rawnote.shown .ttag{opacity:1}
+.themebox{border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;background:rgba(255,255,255,.02)}
+.themebox h4{font-size:.9rem;font-weight:800;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+.themebox .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.themebox .cnt{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted);margin-left:auto}
+.themebox p{font-size:.78rem;color:var(--muted);line-height:1.4;min-height:1.2rem}
+.sli{margin-top:1.4rem}
+.sli input[type=range]{width:100%;accent-color:var(--accent);height:6px;cursor:pointer}
+.slilabels{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted);margin-top:.5rem}
+.sliout{margin-top:1.2rem;border:1px solid var(--line);border-radius:14px;padding:1.2rem;background:var(--card);transition:.3s}
+.sliout .verdict{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase}
+.sliout .extext{font-size:.95rem;line-height:1.5;margin-top:.6rem;color:#cdd6e3}
+
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-home" title="Volver al mapa del curso"><span aria-hidden="true">&#x21A9;</span> Inicio</a>
+<style>.back-home{position:fixed;top:14px;left:14px;z-index:40;display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#eef2f7;text-decoration:none;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;padding:.45rem .8rem;border-radius:999px;backdrop-filter:blur(6px);transition:.2s}.back-home:hover{background:#ff6b3d;border-color:#ff6b3d;color:#1a0d08}.back-home span{font-size:1rem;line-height:1}</style>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="bg-grain"></div>
+<div class="topbar"><div class="fill" id="progress"></div></div>
+<div class="dots" id="dots"></div>
+
+<div class="deck" id="deck">
+
+<!-- 1 · PORTADA -->
+<section class="slide active">
+  <div class="hero-num">06</div>
+  <div class="spread">
+    <div class="kicker reveal">Curso · Optimización de la investigación con IA</div>
+    <h1 class="reveal">Tienes <span class="em2">papers</span>.<br>Te falta el<br><span class="em">argumento</span>.</h1>
+    <p class="lead reveal" style="margin-top:1.6rem">Sesión 6 — Síntesis y matrices de literatura. El paso donde un montón de artículos se convierte en conocimiento organizado: extraer, comparar, encontrar patrones. Aquí vive el valor real de tu revisión.</p>
+    <div class="meta-row reveal">
+      <div><span class="mono">DURACIÓN</span><p>3 horas</p></div>
+      <div><span class="mono">MÓDULO</span><p>3 · Revisión</p></div>
+      <div><span class="mono">PRODUCTO</span><p>2 · Artículo de revisión</p></div>
+      <div><span class="mono">SESIÓN</span><p>06 de 11</p></div>
+    </div>
+    <div class="reveal" style="margin-top:2.6rem"><span class="tag">← →  navegar · F pantalla completa</span></div>
+  </div>
+</section>
+
+<!-- 2 · AGENDA -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Del corpus al conocimiento</div>
+    <h2 class="reveal">Hoy no leemos más.<br><span class="em">Conectamos</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Traes 20-30 papers cribados. Hoy los conviertes en una estructura que revela qué se sabe, qué se discute y qué falta.</p>
+    <div class="cols c2 reveal" style="margin-top:1.8rem">
+      <div class="card"><span class="num">0:10 — 0:45</span><h3>Gestión en Zotero</h3><p>Organizar, etiquetar y preparar el corpus para la extracción.</p></div>
+      <div class="card"><span class="num">0:45 — 1:30</span><h3>Matriz de literatura</h3><p>Extraer hallazgos en columnas comparables. Construcción guiada.</p></div>
+      <div class="card"><span class="num">1:40 — 2:25</span><h3>Patrones y tensiones</h3><p>De filas dispersas a temas. Taller en breakout.</p></div>
+      <div class="card"><span class="num">2:25 — 3:00</span><h3>Síntesis ≠ resumen</h3><p>La diferencia que separa una buena revisión de una mala.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · SÍNTESIS VS RESUMEN (concepto) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">La distinción clave</div>
+    <h2 class="reveal">Resumir es <span class="em">listar</span>.<br>Sintetizar es <span class="em2">tejer</span>.</h2>
+    <div class="cols c2 reveal" style="margin-top:2rem">
+      <div class="card" style="border-left:3px solid var(--danger)">
+        <h3 style="color:var(--danger)">Resumen (lo que NO basta)</h3>
+        <p style="margin-top:.8rem;font-style:italic;color:var(--ink)">«García (2020) encontró X. Luego, Pérez (2021) encontró Y. Después, Lee (2022) halló Z.»</p>
+        <p style="margin-top:.8rem">Un estudio tras otro, sin diálogo. El lector no aprende qué significan juntos.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent)">
+        <h3 class="em">Síntesis (lo que sí)</h3>
+        <p style="margin-top:.8rem;font-style:italic;color:var(--ink)">«Tres estudios coinciden en X, aunque difieren en las condiciones: García y Lee lo observan en clima tropical, mientras Pérez no lo replica en zonas áridas.»</p>
+        <p style="margin-top:.8rem">Los estudios conversan. Emergen patrones y tensiones.</p>
+      </div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.6rem">La IA puede extraer y comparar a gran velocidad, pero <mark>el tejido lo haces tú</mark>: ahí está tu aporte intelectual.</p>
+  </div>
+</section>
+
+<!-- 4 · MATRIZ DE LITERATURA (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 2 · La herramienta central</div>
+    <h2 class="reveal">La matriz de literatura.</h2>
+    <p class="lead reveal" style="margin-top:.6rem">Una fila por estudio, una columna por dato comparable. Activa columnas para ver cómo crece tu matriz. Es lo que Elicit genera y tú refinas.</p>
+    <div class="reveal colbtns" id="colBtns"></div>
+    <div class="reveal litmatrix" id="litMatrix"></div>
+  </div>
+</section>
+
+<!-- 5 · PROMPT DE EXTRACCIÓN -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Herramienta del bloque</div>
+    <h2 class="reveal">Extrae en <span class="em2">columnas</span>,<br>no en párrafos.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Elicit hace esto de forma nativa con tus PDFs. Con un conversacional, pide extracción estructurada de un paper a la vez, siempre verificando contra el original.</p>
+    <div class="reveal promptbox" style="margin-top:1.6rem">
+      <span style="color:var(--accent2)">// extracción estructurada de un paper</span><br>
+      Actúa como asistente de revisión de literatura. Pegaré un abstract o fragmento:<br>
+      <span class="ph">[texto]</span>. Extrae solo información presente en el texto.<br>
+      Tabla: objetivo · método · muestra/corpus · hallazgo · limitación · cita textual breve · utilidad para mi revisión.<br>
+      Si un dato no aparece, escribe «no reportado». No infieras.
+    </div>
+    <p class="lead reveal" style="margin-top:1.4rem">El «no infieras» y el «no reportado» son tus <span class="em">anti-alucinación</span> para la extracción.</p>
+  </div>
+</section>
+
+<!-- 6 · DETECTOR DE PATRONES (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 3 · Patrones y tensiones</div>
+    <h2 class="reveal">Agrupa los hallazgos<br>en <span class="em">temas</span>.</h2>
+    <p class="lead reveal" style="margin-top:.6rem">Toca cada hallazgo disperso y míralo caer en su tema. Así pasas de notas sueltas a la estructura de tu revisión.</p>
+    <div class="reveal patternwrap">
+      <div class="rawnotes" id="rawNotes"></div>
+      <div style="display:flex;flex-direction:column;gap:.8rem" id="themeBoxes"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · MEDIDOR SÍNTESIS (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Autoevaluación</div>
+    <h2 class="reveal">¿Estás resumiendo<br>o <span class="em2">sintetizando</span>?</h2>
+    <p class="lead reveal" style="margin-top:.6rem">Mueve el control y observa cómo cambia un mismo contenido según el grado de síntesis.</p>
+    <div class="reveal sli">
+      <input type="range" min="0" max="3" value="0" id="synSlider">
+      <div class="slilabels"><span>Lista</span><span>Agrupa</span><span>Compara</span><span>Sintetiza</span></div>
+    </div>
+    <div class="reveal sliout" id="synOut"></div>
+  </div>
+</section>
+
+<!-- 8 · TALLER (breakout) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Taller · Breakout rooms · 45 min</div>
+    <h2 class="reveal">Teje tu matriz.</h2>
+    <div class="cols c2 reveal" style="margin-top:1.8rem">
+      <div class="card" style="border-left:3px solid var(--accent)">
+        <h3>Consigna</h3>
+        <p style="margin-top:.8rem">1. Toma 5 papers de tu corpus.<br><br>2. Extrae cada uno en columnas (con Elicit o el prompt de extracción) y arma tu matriz.<br><br>3. Verifica 2 celdas contra el paper original.<br><br>4. Identifica al menos 2 patrones y 1 tensión entre los estudios.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent2)">
+        <h3>Entregable de la sala</h3>
+        <p style="margin-top:.8rem">▹ Una matriz de 5 filas completa.<br>▹ Dos patrones temáticos nombrados.<br>▹ Una tensión o contradicción entre estudios.<br>▹ Bitácora: 2 celdas verificadas, ajuste hecho y dato que la IA no pudo extraer.</p>
+        <p style="margin-top:1rem;color:var(--accent2);font-size:.78rem" class="mono">EL RELATOR COMPARTE LA TENSIÓN MÁS INTERESANTE</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · ESTRUCTURA DE LA REVISIÓN -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Hacia la redacción</div>
+    <h2 class="reveal">Tus temas <span class="em2">son</span><br>tus secciones.</h2>
+    <p class="lead reveal" style="margin-top:1rem">La gran ventaja de sintetizar primero: los temas que encontraste se convierten directamente en la estructura de tu artículo de revisión.</p>
+    <div class="cols c3 reveal" style="margin-top:1.6rem">
+      <div class="card"><span class="num">TEMA A</span><h3>→ Sección 1</h3><p>Los estudios que convergen en un hallazgo y bajo qué condiciones.</p></div>
+      <div class="card"><span class="num">TEMA B</span><h3>→ Sección 2</h3><p>La tensión o debate abierto entre enfoques.</p></div>
+      <div class="card"><span class="num">VACÍO</span><h3>→ Tu aporte</h3><p>Lo que nadie ha resuelto: la puerta a tu propia investigación.</p></div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.6rem">En la <span class="emg">Sesión 7</span> redactas estas secciones con la IA como copiloto, cuidando voz propia y citas verificadas.</p>
+  </div>
+</section>
+
+<!-- 10 · TRABAJO AUTÓNOMO -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Hacia la sesión 7</div>
+    <h2 class="reveal">Lo que llevas a casa.</h2>
+    <div class="cols c3 reveal" style="margin-top:2.2rem">
+      <div class="card"><span class="num">ENTREGABLE</span><h3>Matriz completa</h3><p>Todo tu corpus extraído en columnas comparables y verificado.</p></div>
+      <div class="card"><span class="num">TAREA 01</span><h3>Nombra tus temas</h3><p>3-5 temas que agrupen tus hallazgos: serán las secciones de tu revisión.</p></div>
+      <div class="card"><span class="num">TAREA 02</span><h3>Marca el vacío</h3><p>Identifica qué pregunta sigue sin responder en la literatura. Es tu aporte.</p></div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.8rem">Llegas a la Sesión 7 con el esqueleto de tu revisión ya construido a partir de la evidencia.</p>
+  </div>
+</section>
+
+<!-- 11 · CIERRE -->
+<section class="slide">
+  <div class="spread" style="align-items:center;text-align:center">
+    <div class="kicker reveal" style="justify-content:center">Cierre de la sesión 6</div>
+    <h1 class="reveal" style="max-width:22ch">La IA <span class="em2">extrae</span>.<br>Tú encuentras<br>el <span class="em">significado</span>.</h1>
+    <p class="lead reveal" style="margin:1.8rem auto 0;text-align:center">Hoy convertiste un corpus en una matriz, y la matriz en temas. El argumento de tu revisión ya empieza a verse.</p>
+    <div class="reveal meta-row" style="justify-content:center;margin-top:2.6rem">
+      <div style="text-align:center"><span class="mono">EXTRAE</span><p>En matriz</p></div>
+      <div style="text-align:center"><span class="mono">AGRUPA</span><p>En temas</p></div>
+      <div style="text-align:center"><span class="mono">SIGUE</span><p>Sesión 7 · Redacción</p></div>
+    </div>
+    <div class="reveal brand" style="font-size:1.4rem;margin-top:3rem">Trabajo Científico</div>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<div class="hud">
+  <div class="brand">Trabajo Científico</div>
+  <div class="nav">
+    <button id="prev" aria-label="anterior">‹</button>
+    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 11</span>
+    <button id="next" aria-label="siguiente">›</button>
+  </div>
+</div>
+<script>
+const deck=document.getElementById('deck');
+let slides=[...deck.querySelectorAll('.slide')];
+let i=0;
+const progress=document.getElementById('progress');
+const counter=document.getElementById('counter');
+const dotsWrap=document.getElementById('dots');
+function buildDots(){dotsWrap.innerHTML='';slides.forEach((_,k)=>{const d=document.createElement('i');d.onclick=()=>go(k);dotsWrap.appendChild(d);});}
+function go(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  progress.style.width=((i+1)/slides.length*100)+'%';
+  counter.textContent=String(i+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  [...dotsWrap.children].forEach((d,k)=>d.classList.toggle('on',k===i));
+}
+function next(){go(i+1)} function prev(){go(i-1)}
+document.getElementById('next').onclick=next;
+document.getElementById('prev').onclick=prev;
+addEventListener('keydown',e=>{
+  const t=e.target.tagName; if(t==='INPUT'||t==='TEXTAREA'||t==='RANGE')return;
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+  if(e.key==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+});
+buildDots();go(0);
+
+/* ---- COMP 1: matriz de literatura ---- */
+(function(){
+  const btns=document.getElementById('colBtns');if(!btns)return;
+  const matrix=document.getElementById('litMatrix');
+  const cols=[
+    {key:'estudio',label:'Estudio',fixed:true},
+    {key:'metodo',label:'Método'},
+    {key:'hallazgo',label:'Hallazgo'},
+    {key:'limitacion',label:'Limitación'},
+  ];
+  const data=[
+    {estudio:'García (2020)',metodo:'Experimental, n=120',hallazgo:'AWD ahorra 28% agua',limitacion:'Una sola temporada'},
+    {estudio:'Pérez (2021)',metodo:'Cuasi-experimental',hallazgo:'Sin pérdida de rendimiento',limitacion:'Zona árida, no tropical'},
+    {estudio:'Lee (2022)',metodo:'Ensayo de campo, 2 años',hallazgo:'AWD ahorra 25% agua',limitacion:'Solo dos variedades'},
+  ];
+  const active={estudio:true,metodo:false,hallazgo:false,limitacion:false};
+  cols.forEach(c=>{
+    if(c.fixed)return;
+    const b=document.createElement('div');b.className='colbtn';b.textContent='+ '+c.label;
+    b.onclick=()=>{active[c.key]=!active[c.key];b.classList.toggle('on',active[c.key]);render();};
+    btns.appendChild(b);
+  });
+  function render(){
+    const shown=cols.filter(c=>active[c.key]);
+    const gtc=shown.map((c,k)=>k===0?'1.3fr':'1fr').join(' ');
+    let html='<div class="mrow mhead" style="grid-template-columns:'+gtc+'">'+shown.map(c=>'<div class="mcell">'+c.label+'</div>').join('')+'</div>';
+    data.forEach(r=>{html+='<div class="mrow" style="grid-template-columns:'+gtc+'">'+shown.map(c=>'<div class="mcell">'+r[c.key]+'</div>').join('')+'</div>';});
+    if(shown.length===1)html+='<div class="mrow"><div class="mcell" style="color:var(--muted);font-style:italic">Activa columnas para comparar →</div></div>';
+    matrix.innerHTML=html;
+  }
+  render();
+})();
+
+/* ---- COMP 2: detector de patrones ---- */
+(function(){
+  const raw=document.getElementById('rawNotes');if(!raw)return;
+  const boxes=document.getElementById('themeBoxes');
+  const themes=[
+    {id:'t1',name:'Ahorro de agua',color:'#3ddc97'},
+    {id:'t2',name:'Efecto en rendimiento',color:'#36b3f0'},
+    {id:'t3',name:'Limitaciones contextuales',color:'#e8b04b'},
+  ];
+  const notes=[
+    {txt:'García: AWD ahorra 28% de agua.',theme:'t1'},
+    {txt:'Lee: reducción del 25% en consumo.',theme:'t1'},
+    {txt:'Pérez: rendimiento se mantiene estable.',theme:'t2'},
+    {txt:'García: ligera caída de rendimiento en sequía.',theme:'t2'},
+    {txt:'Pérez: resultados no replican en zona árida.',theme:'t3'},
+    {txt:'Lee: válido solo para dos variedades.',theme:'t3'},
+  ];
+  const counts={t1:0,t2:0,t3:0};
+  themes.forEach(t=>{
+    const d=document.createElement('div');d.className='themebox';d.id='box-'+t.id;
+    d.innerHTML='<h4><span class="dot" style="background:'+t.color+'"></span>'+t.name+'<span class="cnt" id="cnt-'+t.id+'">0 hallazgos</span></h4><p id="p-'+t.id+'" style="color:var(--muted)">Aún sin hallazgos asignados.</p>';
+    boxes.appendChild(d);
+  });
+  notes.forEach((n,k)=>{
+    const cls=n.theme==='t1'?'t1':n.theme==='t2'?'t2':'t3';
+    const d=document.createElement('div');d.className='rawnote '+cls;d.dataset.k=k;
+    d.innerHTML=n.txt+'<span class="ttag">▸ asignado</span>';
+    d.onclick=()=>{
+      if(d.classList.contains('shown'))return;
+      d.classList.add('shown');d.style.opacity='.5';
+      counts[n.theme]++;
+      document.getElementById('cnt-'+n.theme).textContent=counts[n.theme]+' hallazgo'+(counts[n.theme]>1?'s':'');
+      const p=document.getElementById('p-'+n.theme);
+      if(counts[n.theme]===1)p.textContent='Un estudio aporta a este tema.';
+      if(counts[n.theme]>=2){p.innerHTML='<span style="color:var(--accent)">Patrón emergente: varios estudios coinciden aquí.</span>';}
+    };
+    raw.appendChild(d);
+  });
+})();
+
+/* ---- COMP 3: medidor síntesis ---- */
+(function(){
+  const sl=document.getElementById('synSlider');if(!sl)return;
+  const out=document.getElementById('synOut');
+  const levels=[
+    {v:'Nivel 0 · Lista',c:'var(--danger)',t:'García (2020) estudió el riego AWD. Pérez (2021) también estudió el riego. Lee (2022) hizo lo mismo.',note:'Solo enumera. No hay relación entre estudios.'},
+    {v:'Nivel 1 · Agrupa',c:'var(--gold)',t:'Tres estudios (García, Pérez, Lee) analizaron el riego intermitente en arroz.',note:'Agrupa por tema, pero aún no compara resultados.'},
+    {v:'Nivel 2 · Compara',c:'var(--accent2)',t:'García y Lee coinciden en un ahorro de agua cercano al 25-28%, mientras Pérez reporta cifras menores.',note:'Ya hay comparación de hallazgos. Mejor.'},
+    {v:'Nivel 3 · Sintetiza',c:'var(--accent)',t:'El ahorro de agua del AWD (25-28%) es consistente en clima tropical (García, Lee) pero no se replica en zonas áridas (Pérez), lo que sugiere que el contexto climático modula su eficacia: un vacío que ningún estudio ha resuelto.',note:'Patrón + tensión + vacío. Esto es síntesis real.'},
+  ];
+  function render(){
+    const L=levels[+sl.value];
+    out.innerHTML='<span class="verdict" style="color:'+L.c+'">'+L.v+'</span><div class="extext">'+L.t+'</div><p style="margin-top:.7rem;font-size:.82rem;color:var(--muted)">'+L.note+'</p>';
+    out.style.borderColor=L.c;
+  }
+  sl.oninput=render;render();
+})();
+</script>
+</body>
+</html>

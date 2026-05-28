@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 2 · Integridad, ética y prompting académico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117; --bg2:#121a26; --ink:#eef2f7; --muted:#8b97a8;
+  --accent:#3dd6c4; --accent2:#ff6b3d; --gold:#e8b04b;
+  --line:rgba(255,255,255,.1); --card:rgba(255,255,255,.04);
+  --danger:#ff5a5f; --ok:#3ddc97;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Sora',sans-serif; overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* fondo: malla + grano */
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60vw 60vw at 78% 12%, rgba(255,107,61,.16), transparent 60%),
+    radial-gradient(50vw 50vw at 12% 88%, rgba(61,214,196,.13), transparent 60%),
+    radial-gradient(40vw 40vw at 50% 50%, rgba(232,176,75,.06), transparent 70%);
+  animation:meshfloat 18s ease-in-out infinite alternate;}
+@keyframes meshfloat{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-2%,2%,0) scale(1.08)}}
+.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%);}
+
+/* deck */
+.deck{position:relative;z-index:2;height:100vh;width:100vw}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;
+  padding:5.5vh 6vw 8vh;opacity:0;transition:opacity .5s ease}
+.slide.active{display:flex;opacity:1}
+.slide.active .reveal{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+.reveal:nth-child(1){animation-delay:.05s}.reveal:nth-child(2){animation-delay:.15s}
+.reveal:nth-child(3){animation-delay:.25s}.reveal:nth-child(4){animation-delay:.35s}
+.reveal:nth-child(5){animation-delay:.45s}.reveal:nth-child(6){animation-delay:.55s}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+/* tipografía */
+.kicker{font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--accent2);margin-bottom:1.2rem;display:flex;gap:.8rem;align-items:center}
+.kicker::before{content:"";width:34px;height:1px;background:var(--accent2)}
+h1{font-family:'Fraunces',serif;font-weight:900;line-height:.98;letter-spacing:-.02em;
+  font-size:clamp(2.6rem,6.2vw,5.6rem)}
+h2{font-family:'Fraunces',serif;font-weight:600;line-height:1.04;
+  font-size:clamp(1.9rem,4vw,3.3rem);letter-spacing:-.01em}
+h3{font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.1rem,1.7vw,1.5rem)}
+.lead{font-size:clamp(1.05rem,1.5vw,1.35rem);color:var(--muted);max-width:54ch;line-height:1.6;font-weight:300}
+.em{color:var(--accent)}.em2{color:var(--accent2)}.emg{color:var(--gold)}
+mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:inherit;padding:0 .1em}
+
+/* layout helpers */
+.spread{flex:1;display:flex;flex-direction:column;justify-content:center}
+.cols{display:grid;gap:2rem;align-items:start}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:1.6rem 1.7rem;backdrop-filter:blur(6px);position:relative;overflow:hidden}
+.card .num{font-family:'Space Mono',monospace;color:var(--accent);font-size:.85rem;letter-spacing:.2em}
+.card h3{margin:.5rem 0 .6rem}
+.card p{color:var(--muted);font-size:.98rem;line-height:1.55;font-weight:300}
+.tag{display:inline-block;font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+  text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem;color:var(--muted)}
+
+/* chrome */
+.topbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:30;background:rgba(255,255,255,.06)}
+.topbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .4s}
+.hud{position:fixed;bottom:2.2vh;left:6vw;right:6vw;z-index:30;display:flex;justify-content:space-between;align-items:center;
+  font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.nav{display:flex;gap:.6rem}
+.nav button{background:var(--card);border:1px solid var(--line);color:var(--ink);width:38px;height:38px;border-radius:50%;
+  cursor:pointer;font-size:1rem;transition:.2s;display:grid;place-items:center}
+.nav button:hover{background:var(--accent);border-color:var(--accent);transform:translateY(-2px)}
+.brand{font-family:'Fraunces',serif;font-style:italic;font-weight:600;color:var(--ink)}
+
+/* dot nav */
+.dots{position:fixed;right:2vw;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:.7rem}
+.dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:.25s;display:block}
+.dots i.on{background:var(--accent);height:22px;border-radius:6px}
+
+/* botones */
+.btn{font-family:'Sora';font-weight:600;font-size:.92rem;border:none;cursor:pointer;border-radius:12px;
+  padding:.8rem 1.3rem;transition:.2s;display:inline-flex;gap:.5rem;align-items:center}
+.btn-primary{background:var(--accent);color:#1a0d08}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn-ghost:hover{border-color:var(--accent)}
+
+/* mono code */
+.mono{font-family:'Space Mono',monospace}
+.promptbox{background:#0a0e14;border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:12px;padding:1.1rem 1.2rem;font-family:'Space Mono',monospace;font-size:.92rem;line-height:1.65;color:#cdd6e3}
+.promptbox .ph{color:var(--gold)}
+
+/* title slide bits */
+.hero-num{position:absolute;right:5vw;top:8vh;font-family:'Fraunces',serif;font-weight:900;
+  font-size:26vw;line-height:.8;color:rgba(255,255,255,.03);z-index:-1;pointer-events:none}
+.meta-row{display:flex;gap:2.4rem;flex-wrap:wrap;margin-top:2.4rem}
+.meta-row div .mono{color:var(--accent2);font-size:.75rem;letter-spacing:.2em}
+.meta-row div p{font-size:1.05rem;margin-top:.2rem}
+
+@media(max-width:820px){
+  .c2,.c3{grid-template-columns:1fr}
+  .slide{padding:5vh 7vw 9vh}
+  .dots{display:none}
+}
+
+/* ---- estilos propios Sesión 2 ---- */
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.2rem}
+.zone{min-height:150px;border:1.5px dashed var(--line);border-radius:14px;padding:.9rem;transition:.2s;background:rgba(255,255,255,.02)}
+.zone.over{border-color:var(--accent);background:rgba(61,214,196,.07)}
+.zone h4{font-family:'Sora';font-weight:800;font-size:.9rem;margin-bottom:.6rem;letter-spacing:.02em}
+.chip{background:#0a0e14;border:1px solid var(--line);border-radius:10px;padding:.7rem .8rem;margin-bottom:.6rem;
+  font-size:.84rem;line-height:1.4;cursor:grab;transition:.18s;color:#cdd6e3}
+.chip:active{cursor:grabbing}.chip.placed{cursor:default}
+.chip.right{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok) inset}
+.chip.wrong{border-color:var(--danger);box-shadow:0 0 0 1px var(--danger) inset}
+.chip .fb{display:block;margin-top:.4rem;font-size:.72rem;font-family:'Space Mono',monospace}
+.pool{display:flex;flex-direction:column;gap:.6rem;max-width:520px}
+.scoreline{margin-top:1rem;font-family:'Space Mono',monospace;font-size:.85rem;color:var(--muted)}
+.flip{perspective:1200px;cursor:pointer}
+.flip-inner{position:relative;transition:transform .6s;transform-style:preserve-3d;min-height:165px}
+.flip.on .flip-inner{transform:rotateY(180deg)}
+.flip-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;padding:1.3rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;justify-content:center}
+.flip-back{transform:rotateY(180deg);background:rgba(61,214,196,.06)}
+.toggle-row{display:flex;align-items:center;gap:.8rem;padding:.75rem .9rem;border:1px solid var(--line);border-radius:12px;margin-bottom:.6rem;cursor:pointer;transition:.18s}
+.toggle-row:hover{border-color:var(--accent)}
+.toggle-row .sw{width:42px;height:24px;border-radius:999px;background:rgba(255,255,255,.12);position:relative;transition:.2s;flex-shrink:0}
+.toggle-row .sw::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
+.toggle-row.on .sw{background:var(--accent)}.toggle-row.on .sw::after{left:21px}
+.toggle-row span{font-size:.92rem}
+
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-home" title="Volver al mapa del curso"><span aria-hidden="true">&#x21A9;</span> Inicio</a>
+<style>.back-home{position:fixed;top:14px;left:14px;z-index:40;display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#eef2f7;text-decoration:none;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;padding:.45rem .8rem;border-radius:999px;backdrop-filter:blur(6px);transition:.2s}.back-home:hover{background:#ff6b3d;border-color:#ff6b3d;color:#1a0d08}.back-home span{font-size:1rem;line-height:1}</style>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="bg-grain"></div>
+<div class="topbar"><div class="fill" id="progress"></div></div>
+<div class="dots" id="dots"></div>
+
+<div class="deck" id="deck">
+
+<!-- 1 · PORTADA -->
+<section class="slide active">
+  <div class="hero-num">02</div>
+  <div class="spread">
+    <div class="kicker reveal">Curso · Optimización de la investigación con IA</div>
+    <h1 class="reveal">Usarla bien<br>es una <span class="em">decisión</span><br><span class="em2">ética</span>.</h1>
+    <p class="lead reveal" style="margin-top:1.6rem">Sesión 2 — Integridad científica, normas editoriales y el arte de instruir a la IA con rigor. La sesión que define la diferencia entre un atajo riesgoso y una herramienta poderosa.</p>
+    <div class="meta-row reveal">
+      <div><span class="mono">DURACIÓN</span><p>3 horas</p></div>
+      <div><span class="mono">MÓDULO</span><p>1 · Fundamentos</p></div>
+      <div><span class="mono">MODALIDAD</span><p>Virtual sincrónica</p></div>
+      <div><span class="mono">SESIÓN</span><p>02 de 11</p></div>
+    </div>
+    <div class="reveal" style="margin-top:2.6rem"><span class="tag">Usa ← →  para navegar · F pantalla completa</span></div>
+  </div>
+</section>
+
+<!-- 2 · RECAP + AGENDA -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Dónde estamos</div>
+    <h2 class="reveal">Ayer: la IA <span class="em2">propone</span>.<br>Hoy: tú decides <span class="em2">cómo</span>.</h2>
+    <div class="cols c2 reveal" style="margin-top:2.2rem">
+      <div class="card"><span class="num">BLOQUE 1 · 0:08–0:43</span><h3>El lado oscuro</h3><p>Alucinaciones y sesgos en vivo. La rutina de verificación de fuentes.</p></div>
+      <div class="card"><span class="num">BLOQUE 2 · 0:43–1:13</span><h3>Las reglas del juego</h3><p>Declaración de uso, autoría, privacidad y políticas editoriales.</p></div>
+      <div class="card"><span class="num">BLOQUE 3 · 1:13–1:58</span><h3>Taller: juicio ético</h3><p>Breakout: ¿este uso de IA es aceptable? Clasifica y argumenta.</p></div>
+      <div class="card"><span class="num">BLOQUE 4 · 2:08–3:00</span><h3>Prompting científico</h3><p>La técnica R-C-T-F-I e inicio de tu biblioteca de prompts.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · POR QUÉ ALUCINA (recordatorio + profundización) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 1 · El lado oscuro</div>
+    <h2 class="reveal">Tres riesgos que<br>debes anticipar.</h2>
+    <div class="cols c3 reveal" style="margin-top:2.2rem">
+      <div class="card" style="border-left:3px solid var(--accent2)"><span class="num">RIESGO 01</span><h3>Alucinación</h3><p>Inventa hechos, citas y datos que suenan creíbles porque optimiza plausibilidad, no verdad.</p></div>
+      <div class="card" style="border-left:3px solid var(--gold)"><span class="num">RIESGO 02</span><h3>Sesgo</h3><p>Reproduce los desbalances de sus datos de entrenamiento: geografías, idiomas y perspectivas sobrerrepresentadas.</p></div>
+      <div class="card" style="border-left:3px solid var(--accent)"><span class="num">RIESGO 03</span><h3>Fuga de datos</h3><p>Lo que subes a herramientas públicas puede usarse para entrenar modelos. Cuidado con datos sin publicar.</p></div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.8rem">La buena noticia: los tres se gestionan con <mark>hábitos</mark>, no con desconfianza paralizante.</p>
+  </div>
+</section>
+
+<!-- 4 · DEMO ALUCINACIÓN (tarjetas flip) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Demostración · verificar antes de creer</div>
+    <h2 class="reveal">Voltea cada cita.<br><span class="em2">¿Existe de verdad?</span></h2>
+    <p class="lead reveal" style="margin-top:1rem">La IA devolvió estas tres referencias con formato impecable. Haz clic en cada tarjeta para ver el veredicto tras verificarla en la fuente.</p>
+    <div class="cols c3 reveal" id="flipRow" style="margin-top:1.8rem"></div>
+    <p class="lead reveal" style="margin-top:1.6rem">Regla del curso: <mark>ninguna cita entra a tu manuscrito sin que tú la hayas leído en su fuente original.</mark></p>
+  </div>
+</section>
+
+<!-- 5 · LAS REGLAS / NORMAS EDITORIALES -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 2 · Las reglas del juego</div>
+    <h2 class="reveal">Cuatro principios<br>innegociables.</h2>
+    <div class="cols c2 reveal" style="margin-top:2rem">
+      <div class="card"><h3 class="em2">1 · Declaración de uso</h3><p>Las revistas exigen declarar cómo usaste IA y en qué secciones. Omitirlo puede invalidar una publicación.</p></div>
+      <div class="card"><h3 class="em2">2 · Autoría humana</h3><p>Una IA no puede ser coautora: no asume responsabilidad ni rinde cuentas. El consenso editorial es claro.</p></div>
+      <div class="card"><h3 class="em2">3 · Privacidad de datos</h3><p>No subas a herramientas públicas datos sin publicar, de pacientes o confidenciales.</p></div>
+      <div class="card"><h3 class="em2">4 · Integridad</h3><p>Asistir en redacción es válido; fabricar datos o presentar texto sin verificar como propio es mala conducta.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · TALLER 1 · CLASIFICADOR ÉTICO (drag & drop) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 3 · Taller · Breakout 35 min</div>
+    <h2 class="reveal">¿Aceptable, condicionado<br>o inaceptable?</h2>
+    <p class="lead reveal" style="margin-top:.8rem">Un colega usó IA de cuatro maneras. Arrastra cada uso a la zona que corresponda. Verás la justificación al soltarlo.</p>
+    <div class="reveal cols" style="margin-top:1.2rem;grid-template-columns:1fr 2fr;gap:1.6rem;align-items:start">
+      <div class="pool" id="ethicPool"></div>
+      <div class="zones">
+        <div class="zone" data-verdict="ok"><h4 class="em">✓ Aceptable</h4></div>
+        <div class="zone" data-verdict="cond"><h4 class="emg">~ Con declaración</h4></div>
+        <div class="zone" data-verdict="no"><h4 style="color:var(--accent2)">✕ Inaceptable</h4></div>
+      </div>
+    </div>
+    <div class="scoreline reveal" id="ethicScore">Arrastra los 4 usos a su zona.</div>
+  </div>
+</section>
+
+<!-- 7 · ANATOMÍA DEL PROMPT -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 4 · Prompting científico</div>
+    <h2 class="reveal">Cinco piezas para<br>un prompt que <span class="em2">funciona</span>.</h2>
+    <div class="cols reveal" style="grid-template-columns:repeat(5,1fr);gap:1rem;margin-top:2.2rem">
+      <div class="card" style="padding:1.2rem"><span class="num" style="color:var(--accent)">R</span><h3 style="font-size:1.05rem">Rol</h3><p style="font-size:.86rem">Un perfil experto que adopta la IA.</p></div>
+      <div class="card" style="padding:1.2rem"><span class="num" style="color:var(--gold)">C</span><h3 style="font-size:1.05rem">Contexto</h3><p style="font-size:.86rem">Disciplina, población, audiencia.</p></div>
+      <div class="card" style="padding:1.2rem"><span class="num" style="color:var(--accent2)">T</span><h3 style="font-size:1.05rem">Tarea</h3><p style="font-size:.86rem">Una acción concreta y acotada.</p></div>
+      <div class="card" style="padding:1.2rem"><span class="num" style="color:#8a7dff">F</span><h3 style="font-size:1.05rem">Formato</h3><p style="font-size:.86rem">Cómo quieres la salida.</p></div>
+      <div class="card" style="padding:1.2rem"><span class="num" style="color:#ff7dc0">I</span><h3 style="font-size:1.05rem">Iteración</h3><p style="font-size:.86rem">Refinas con seguimiento.</p></div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.8rem">En la siguiente diapositiva lo construyes tú, capa por capa.</p>
+  </div>
+</section>
+
+<!-- 8 · CONSTRUCTOR DE PROMPTS -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Constructor interactivo</div>
+    <h2 class="reveal">Activa cada capa.</h2>
+    <div class="reveal cols c2" style="margin-top:1.4rem;gap:1.6rem">
+      <div id="s2layerBtns"></div>
+      <div>
+        <div class="promptbox" id="s2promptOut" style="min-height:220px"></div>
+        <div class="mono" style="margin-top:.8rem;font-size:.78rem;color:var(--muted)">PRECISIÓN DEL PROMPT</div>
+        <div style="height:10px;background:rgba(255,255,255,.08);border-radius:6px;margin-top:.4rem;overflow:hidden">
+          <div id="s2qualityBar" style="height:100%;width:12%;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:.4s"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · BIBLIOTECA DE PROMPTS -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Tu entregable de hoy</div>
+    <h2 class="reveal">Empieza tu biblioteca<br>de prompts.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Plantillas base para tu disciplina. Cópialas, adáptalas con tus corchetes y califica qué tan bien funcionan. Meta: <strong style="color:var(--ink)">5 prompts probados</strong> al cierre del trabajo autónomo.</p>
+    <div class="cols c3 reveal" style="margin-top:1.6rem">
+      <div class="card"><h3 class="emg">Refinar la pregunta</h3><div class="promptbox" style="margin-top:.7rem;font-size:.72rem;border-left-color:var(--gold)">Actúa como asesor metodológico en <span class="ph">[disciplina]</span>. Mi pregunta es «<span class="ph">[pregunta]</span>». Evalúa claridad, alcance, factibilidad y datos requeridos. Devuelve tabla: problema, mejora propuesta y verificación necesaria.</div></div>
+      <div class="card"><h3 class="emg">Mejorar mi párrafo</h3><div class="promptbox" style="margin-top:.7rem;font-size:.72rem;border-left-color:var(--gold)">Eres editor de estilo académico. Respeta mi voz, no reescribas desde cero: «<span class="ph">[párrafo]</span>». Mejora claridad y concisión. Devuelve versión revisada + lista de cambios + frase que no debo aceptar sin verificar.</div></div>
+      <div class="card"><h3 class="emg">Evaluar uso ético</h3><div class="promptbox" style="margin-top:.7rem;font-size:.72rem;border-left-color:var(--gold)">Actúa como comité de integridad científica. Evalúa este uso de IA: <span class="ph">[caso]</span>. Clasifica: aceptable, declarar, riesgoso o inaceptable. Indica riesgo, mitigación y cómo declararlo.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · DECLARACIÓN DE USO (checklist interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Antes de enviar a una revista</div>
+    <h2 class="reveal">Tu declaración de<br>uso de IA.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Marca lo que aplica a tu manuscrito. La declaración se redacta sola abajo: cópiala y adáptala.</p>
+    <div class="reveal cols c2" style="margin-top:1.4rem;gap:1.6rem;align-items:start">
+      <div id="declToggles"></div>
+      <div class="promptbox" id="declOut" style="min-height:160px;border-left-color:var(--accent2)"><span style="color:var(--muted)">Marca al menos una casilla para generar tu declaración.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · TRABAJO AUTÓNOMO -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Entre la sesión 2 y la 3</div>
+    <h2 class="reveal">Tu trabajo autónomo.</h2>
+    <div class="cols c3 reveal" style="margin-top:2.2rem">
+      <div class="card"><span class="num">TAREA 01</span><h3>Completa tu biblioteca</h3><p>Hasta 5 prompts probados y calificados. Cada ficha debe incluir: prompt usado, respuesta útil, qué modificaste, qué verificaste y qué descartaste.</p></div>
+      <div class="card"><span class="num">TAREA 02</span><h3>Caza una política</h3><p>Busca la política sobre IA de una revista de tu área. Resúmela en 3 líneas en el foro.</p></div>
+      <div class="card"><span class="num">TAREA 03</span><h3>Afina tu problema</h3><p>Redacta en una frase el problema que llevarás a la Sesión 3 (inicio del anteproyecto).</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · CIERRE -->
+<section class="slide">
+  <div class="spread" style="align-items:center;text-align:center">
+    <div class="kicker reveal" style="justify-content:center">Cierre de la sesión 2</div>
+    <h1 class="reveal" style="max-width:22ch">La IA no te exime<br>de <span class="em2">responder</span><br>por tu obra.</h1>
+    <p class="lead reveal" style="margin:1.8rem auto 0;text-align:center">Verificas, declaras, decides. Con ese marco, en la Sesión 3 empiezas a construir tu anteproyecto.</p>
+    <div class="reveal meta-row" style="justify-content:center;margin-top:2.6rem">
+      <div style="text-align:center"><span class="mono">VERIFICA</span><p>Cada cita</p></div>
+      <div style="text-align:center"><span class="mono">DECLARA</span><p>Tu uso de IA</p></div>
+      <div style="text-align:center"><span class="mono">SIGUE</span><p>Sesión 3 · Anteproyecto</p></div>
+    </div>
+    <div class="reveal brand" style="font-size:1.4rem;margin-top:3rem">Trabajo Científico</div>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<div class="hud">
+  <div class="brand">Trabajo Científico</div>
+  <div class="nav">
+    <button id="prev" aria-label="anterior">‹</button>
+    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 12</span>
+    <button id="next" aria-label="siguiente">›</button>
+  </div>
+</div>
+<script>
+const deck=document.getElementById('deck');
+let slides=[...deck.querySelectorAll('.slide')];
+let i=0;
+const progress=document.getElementById('progress');
+const counter=document.getElementById('counter');
+const dotsWrap=document.getElementById('dots');
+function buildDots(){dotsWrap.innerHTML='';slides.forEach((_,k)=>{const d=document.createElement('i');d.onclick=()=>go(k);dotsWrap.appendChild(d);});}
+function go(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  progress.style.width=((i+1)/slides.length*100)+'%';
+  counter.textContent=String(i+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  [...dotsWrap.children].forEach((d,k)=>d.classList.toggle('on',k===i));
+}
+function next(){go(i+1)} function prev(){go(i-1)}
+document.getElementById('next').onclick=next;
+document.getElementById('prev').onclick=prev;
+addEventListener('keydown',e=>{
+  const t=e.target.tagName; if(t==='INPUT'||t==='TEXTAREA')return;
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+  if(e.key==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+});
+buildDots();go(0);
+
+/* ---- COMP 1: tarjetas flip de verificación ---- */
+(function(){
+  const row=document.getElementById('flipRow');if(!row)return;
+  const cards=[
+    {ref:'Martínez & Howe (2021). Soil carbon in tropical savannas. Nature Geoscience, 14(3).',real:false,fb:'DOI inexistente. Los autores no han co-publicado. INVENTADA.'},
+    {ref:'Foley et al. (2005). Global consequences of land use. Science, 309(5734), 570–574.',real:true,fb:'Existe y es muy citada. Verificada en el editor.'},
+    {ref:'Vargas & Lindholm (2020). ML for wildfire prediction. J. of Hydrology, 588.',real:false,fb:'El volumen existe, pero ese artículo no. INVENTADA.'},
+  ];
+  cards.forEach(c=>{
+    const d=document.createElement('div');d.className='flip';
+    d.innerHTML='<div class="flip-inner">'
+      +'<div class="flip-face"><span class="mono" style="font-size:.72rem;color:var(--muted)">REFERENCIA</span><p style="font-size:.86rem;margin-top:.5rem;line-height:1.4;color:#cdd6e3">'+c.ref+'</p><span class="mono" style="font-size:.7rem;color:var(--accent2);margin-top:.8rem">▸ clic para verificar</span></div>'
+      +'<div class="flip-face flip-back"><span class="mono" style="font-size:1.1rem;color:'+(c.real?'var(--ok)':'var(--accent2)')+'">'+(c.real?'✓ EXISTE':'✕ INVENTADA')+'</span><p style="font-size:.84rem;margin-top:.6rem;line-height:1.4;color:#cdd6e3">'+c.fb+'</p></div>'
+      +'</div>';
+    d.onclick=()=>d.classList.toggle('on');
+    row.appendChild(d);
+  });
+})();
+
+/* ---- COMP 2: clasificador ético drag & drop ---- */
+(function(){
+  const pool=document.getElementById('ethicPool');if(!pool)return;
+  const items=[
+    {id:'trad',txt:'Traducir su artículo del español al inglés con IA.',ans:'cond',fb:'Aceptable declarándolo y revisando que no distorsione el sentido.'},
+    {id:'abs',txt:'Redactar el resumen completo a partir de sus resultados reales.',ans:'cond',fb:'Aceptable con declaración y verificación cuidadosa.'},
+    {id:'fake',txt:'Pedir a la IA que «invente» referencias creíbles.',ans:'no',fb:'Inaceptable: fabricación de fuentes.'},
+    {id:'plag',txt:'Parafrasear otro artículo para evadir el detector de plagio.',ans:'no',fb:'Inaceptable: plagio encubierto.'},
+  ];
+  let placed=0,correct=0;
+  const score=document.getElementById('ethicScore');
+  items.forEach(it=>{
+    const c=document.createElement('div');c.className='chip';c.draggable=true;c.id='chip-'+it.id;c.textContent=it.txt;
+    c.addEventListener('dragstart',e=>e.dataTransfer.setData('text',JSON.stringify(it)));
+    pool.appendChild(c);
+  });
+  document.querySelectorAll('.zone').forEach(z=>{
+    z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('over');});
+    z.addEventListener('dragleave',()=>z.classList.remove('over'));
+    z.addEventListener('drop',e=>{
+      e.preventDefault();z.classList.remove('over');
+      const it=JSON.parse(e.dataTransfer.getData('text'));
+      const chip=document.getElementById('chip-'+it.id);
+      if(!chip||chip.classList.contains('placed'))return;
+      const ok=z.dataset.verdict===it.ans;
+      chip.classList.add('placed',ok?'right':'wrong');chip.draggable=false;
+      chip.innerHTML=it.txt+'<span class="fb" style="color:'+(ok?'var(--ok)':'var(--danger)')+'">'+(ok?'✓ ':'✕ ')+it.fb+'</span>';
+      z.appendChild(chip);
+      placed++;if(ok)correct++;
+      score.textContent='Clasificados: '+placed+'/4 · Aciertos: '+correct;
+      if(placed===4)score.innerHTML+=' — <span style="color:var(--accent)">El punto del plagio suele ser el más debatido.</span>';
+    });
+  });
+})();
+
+/* ---- COMP 3: constructor R-C-T-F-I ---- */
+(function(){
+  const btns=document.getElementById('s2layerBtns');if(!btns)return;
+  const out=document.getElementById('s2promptOut');const bar=document.getElementById('s2qualityBar');
+  const layers=[
+    {k:'R',name:'Rol',color:'var(--accent)',text:'Actúa como revisor metodológico de una revista indexada en mi disciplina.'},
+    {k:'C',name:'Contexto',color:'var(--gold)',text:'Investigo [tu tema] con una población de [describir]; escribo para pares académicos.'},
+    {k:'T',name:'Tarea',color:'var(--accent2)',text:'Identifica los 3 vacíos de investigación más relevantes y aún abiertos.'},
+    {k:'F',name:'Formato',color:'#8a7dff',text:'Tabla: vacío · por qué importa · cómo abordarlo. Tono académico, en español.'},
+    {k:'I',name:'Iteración',color:'#ff7dc0',text:'Después profundiza en el vacío más viable para un proyecto de un año.'},
+  ];
+  const active=new Array(layers.length).fill(false);
+  layers.forEach((l,k)=>{
+    const b=document.createElement('button');b.className='btn btn-ghost';
+    b.style.cssText='justify-content:flex-start;text-align:left;margin-bottom:.5rem;width:100%';
+    b.innerHTML='<span class="mono" style="color:'+l.color+';font-weight:700;min-width:1.4rem">'+l.k+'</span> Añadir '+l.name;
+    b.onclick=()=>{active[k]=!active[k];b.style.borderColor=active[k]?l.color:'var(--line)';b.style.background=active[k]?'rgba(255,255,255,.06)':'transparent';render();};
+    btns.appendChild(b);
+  });
+  function render(){
+    const on=active.filter(Boolean).length;
+    if(on===0){out.innerHTML='<span style="color:var(--muted)">Dame ideas sobre mi tema.</span><br><br><span class="mono" style="font-size:.74rem;color:var(--accent2)">▸ Prompt vago → respuesta genérica.</span>';bar.style.width='12%';return;}
+    let html='';layers.forEach((l,k)=>{if(active[k])html+='<span class="mono" style="color:'+l.color+';font-size:.72rem">['+l.name+']</span> '+l.text+'<br><br>';});
+    out.innerHTML=html;bar.style.width=(12+on*17.6)+'%';
+  }
+  render();
+})();
+
+/* ---- COMP 4: generador de declaración de uso ---- */
+(function(){
+  const wrap=document.getElementById('declToggles');if(!wrap)return;
+  const out=document.getElementById('declOut');
+  const opts=[
+    {id:'red',label:'Apoyo en redacción y estilo',txt:'asistencia en la redacción y mejora de estilo del texto'},
+    {id:'trad',label:'Traducción de idioma',txt:'la traducción del manuscrito'},
+    {id:'lit',label:'Búsqueda de literatura',txt:'la búsqueda y organización preliminar de literatura'},
+    {id:'cod',label:'Apoyo en código/análisis',txt:'la generación y depuración de código para el análisis de datos'},
+  ];
+  const state={};
+  opts.forEach(o=>{
+    const r=document.createElement('div');r.className='toggle-row';
+    r.innerHTML='<div class="sw"></div><span>'+o.label+'</span>';
+    r.onclick=()=>{state[o.id]=!state[o.id];r.classList.toggle('on');render();};
+    wrap.appendChild(r);
+  });
+  function render(){
+    const chosen=opts.filter(o=>state[o.id]).map(o=>o.txt);
+    if(!chosen.length){out.innerHTML='<span style="color:var(--muted)">Marca al menos una casilla para generar tu declaración.</span>';return;}
+    let list=chosen.length===1?chosen[0]:chosen.slice(0,-1).join(', ')+' y '+chosen.slice(-1);
+    out.innerHTML='<span style="color:var(--accent)">// Declaración de uso de IA</span><br>Durante la preparación de este trabajo, los autores utilizaron herramientas de inteligencia artificial generativa para '+list+'. Tras su uso, los autores revisaron y editaron el contenido según su criterio y asumen la plena responsabilidad por la versión publicada.';
+  }
+})();
+</script>
+</body>
+</html>

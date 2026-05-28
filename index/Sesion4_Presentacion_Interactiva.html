@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 4 · Marco teórico y diseño metodológico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117; --bg2:#121a26; --ink:#eef2f7; --muted:#8b97a8;
+  --accent:#8a7dff; --accent2:#3dd6c4; --gold:#e8b04b;
+  --line:rgba(255,255,255,.1); --card:rgba(255,255,255,.04);
+  --danger:#ff5a5f; --ok:#3ddc97;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Sora',sans-serif; overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* fondo: malla + grano */
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60vw 60vw at 78% 12%, rgba(255,107,61,.16), transparent 60%),
+    radial-gradient(50vw 50vw at 12% 88%, rgba(61,214,196,.13), transparent 60%),
+    radial-gradient(40vw 40vw at 50% 50%, rgba(232,176,75,.06), transparent 70%);
+  animation:meshfloat 18s ease-in-out infinite alternate;}
+@keyframes meshfloat{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-2%,2%,0) scale(1.08)}}
+.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%);}
+
+/* deck */
+.deck{position:relative;z-index:2;height:100vh;width:100vw}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;
+  padding:5.5vh 6vw 8vh;opacity:0;transition:opacity .5s ease}
+.slide.active{display:flex;opacity:1}
+.slide.active .reveal{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+.reveal:nth-child(1){animation-delay:.05s}.reveal:nth-child(2){animation-delay:.15s}
+.reveal:nth-child(3){animation-delay:.25s}.reveal:nth-child(4){animation-delay:.35s}
+.reveal:nth-child(5){animation-delay:.45s}.reveal:nth-child(6){animation-delay:.55s}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+/* tipografía */
+.kicker{font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--accent2);margin-bottom:1.2rem;display:flex;gap:.8rem;align-items:center}
+.kicker::before{content:"";width:34px;height:1px;background:var(--accent2)}
+h1{font-family:'Fraunces',serif;font-weight:900;line-height:.98;letter-spacing:-.02em;
+  font-size:clamp(2.6rem,6.2vw,5.6rem)}
+h2{font-family:'Fraunces',serif;font-weight:600;line-height:1.04;
+  font-size:clamp(1.9rem,4vw,3.3rem);letter-spacing:-.01em}
+h3{font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.1rem,1.7vw,1.5rem)}
+.lead{font-size:clamp(1.05rem,1.5vw,1.35rem);color:var(--muted);max-width:54ch;line-height:1.6;font-weight:300}
+.em{color:var(--accent)}.em2{color:var(--accent2)}.emg{color:var(--gold)}
+mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:inherit;padding:0 .1em}
+
+/* layout helpers */
+.spread{flex:1;display:flex;flex-direction:column;justify-content:center}
+.cols{display:grid;gap:2rem;align-items:start}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:1.6rem 1.7rem;backdrop-filter:blur(6px);position:relative;overflow:hidden}
+.card .num{font-family:'Space Mono',monospace;color:var(--accent);font-size:.85rem;letter-spacing:.2em}
+.card h3{margin:.5rem 0 .6rem}
+.card p{color:var(--muted);font-size:.98rem;line-height:1.55;font-weight:300}
+.tag{display:inline-block;font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+  text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem;color:var(--muted)}
+
+/* chrome */
+.topbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:30;background:rgba(255,255,255,.06)}
+.topbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .4s}
+.hud{position:fixed;bottom:2.2vh;left:6vw;right:6vw;z-index:30;display:flex;justify-content:space-between;align-items:center;
+  font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.nav{display:flex;gap:.6rem}
+.nav button{background:var(--card);border:1px solid var(--line);color:var(--ink);width:38px;height:38px;border-radius:50%;
+  cursor:pointer;font-size:1rem;transition:.2s;display:grid;place-items:center}
+.nav button:hover{background:var(--accent);border-color:var(--accent);transform:translateY(-2px)}
+.brand{font-family:'Fraunces',serif;font-style:italic;font-weight:600;color:var(--ink)}
+
+/* dot nav */
+.dots{position:fixed;right:2vw;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:.7rem}
+.dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:.25s;display:block}
+.dots i.on{background:var(--accent);height:22px;border-radius:6px}
+
+/* botones */
+.btn{font-family:'Sora';font-weight:600;font-size:.92rem;border:none;cursor:pointer;border-radius:12px;
+  padding:.8rem 1.3rem;transition:.2s;display:inline-flex;gap:.5rem;align-items:center}
+.btn-primary{background:var(--accent);color:#1a0d08}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn-ghost:hover{border-color:var(--accent)}
+
+/* mono code */
+.mono{font-family:'Space Mono',monospace}
+.promptbox{background:#0a0e14;border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:12px;padding:1.1rem 1.2rem;font-family:'Space Mono',monospace;font-size:.92rem;line-height:1.65;color:#cdd6e3}
+.promptbox .ph{color:var(--gold)}
+
+/* title slide bits */
+.hero-num{position:absolute;right:5vw;top:8vh;font-family:'Fraunces',serif;font-weight:900;
+  font-size:26vw;line-height:.8;color:rgba(255,255,255,.03);z-index:-1;pointer-events:none}
+.meta-row{display:flex;gap:2.4rem;flex-wrap:wrap;margin-top:2.4rem}
+.meta-row div .mono{color:var(--accent2);font-size:.75rem;letter-spacing:.2em}
+.meta-row div p{font-size:1.05rem;margin-top:.2rem}
+
+@media(max-width:820px){
+  .c2,.c3{grid-template-columns:1fr}
+  .slide{padding:5vh 7vw 9vh}
+  .dots{display:none}
+}
+
+/* ---- estilos propios Sesión 4 ---- */
+.routebtns{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1rem}
+.routebtn{flex:1;min-width:160px;border:1.5px solid var(--line);border-radius:14px;padding:1.1rem;cursor:pointer;
+  transition:.2s;background:rgba(255,255,255,.02);text-align:left}
+.routebtn:hover{transform:translateY(-3px)}
+.routebtn.on{border-color:var(--accent);background:rgba(138,125,255,.08)}
+.routebtn h4{font-family:'Sora';font-weight:800;font-size:1.05rem;margin-bottom:.3rem}
+.routebtn p{font-size:.82rem;color:var(--muted);line-height:1.4}
+.routepanel{margin-top:1.4rem;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.5rem;
+  min-height:200px;opacity:0;transform:translateY(12px);transition:.4s}
+.routepanel.show{opacity:1;transform:none}
+.routepanel .qitem{display:flex;gap:.7rem;align-items:flex-start;margin-bottom:.8rem;font-size:.95rem;line-height:1.45}
+.routepanel .qitem .qmark{color:var(--accent);font-family:'Space Mono',monospace;font-weight:700;flex-shrink:0}
+.layerstack{display:flex;flex-direction:column;gap:.7rem;margin-top:1.2rem}
+.layerchip{border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;cursor:pointer;transition:.2s;
+  display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.02)}
+.layerchip:hover{border-color:var(--accent2)}
+.layerchip.on{border-left:3px solid var(--accent2);background:rgba(61,214,196,.06)}
+.layerchip .lc-t{font-size:.95rem}.layerchip .lc-d{font-size:.78rem;color:var(--muted);margin-top:.25rem}
+.layerchip .lc-tag{font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.14em;color:var(--accent2);opacity:0;transition:.2s}
+.layerchip.on .lc-tag{opacity:1}
+.cohrow{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+.cohpair{display:grid;grid-template-columns:1fr auto 1fr;gap:.8rem;align-items:center}
+.cohbox{border:1px solid var(--line);border-radius:10px;padding:.7rem .85rem;font-size:.86rem;background:rgba(255,255,255,.02);line-height:1.35}
+.cohlink{font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--muted);transition:.3s;text-align:center}
+.cohpair.ok .cohlink{color:var(--ok)}
+.cohpair.ok .cohbox{border-color:var(--ok)}
+.cohpair.bad .cohlink{color:var(--danger)}
+.cohpair.bad .cohbox{border-color:var(--danger)}
+
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-home" title="Volver al mapa del curso"><span aria-hidden="true">&#x21A9;</span> Inicio</a>
+<style>.back-home{position:fixed;top:14px;left:14px;z-index:40;display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#eef2f7;text-decoration:none;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;padding:.45rem .8rem;border-radius:999px;backdrop-filter:blur(6px);transition:.2s}.back-home:hover{background:#ff6b3d;border-color:#ff6b3d;color:#1a0d08}.back-home span{font-size:1rem;line-height:1}</style>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="bg-grain"></div>
+<div class="topbar"><div class="fill" id="progress"></div></div>
+<div class="dots" id="dots"></div>
+
+<div class="deck" id="deck">
+
+<!-- 1 · PORTADA -->
+<section class="slide active">
+  <div class="hero-num">04</div>
+  <div class="spread">
+    <div class="kicker reveal">Curso · Optimización de la investigación con IA</div>
+    <h1 class="reveal">El <span class="em">esqueleto</span><br>que sostiene<br>tu <span class="em2">proyecto</span>.</h1>
+    <p class="lead reveal" style="margin-top:1.6rem">Sesión 4 — Marco teórico y diseño metodológico: las dos piezas que convierten tu tríada en un anteproyecto completo y defendible. La IA estructura; la literatura valida.</p>
+    <div class="meta-row reveal">
+      <div><span class="mono">DURACIÓN</span><p>3 horas</p></div>
+      <div><span class="mono">MÓDULO</span><p>2 · Anteproyecto</p></div>
+      <div><span class="mono">PRODUCTO</span><p>1 · Anteproyecto ✓</p></div>
+      <div><span class="mono">SESIÓN</span><p>04 de 11</p></div>
+    </div>
+    <div class="reveal" style="margin-top:2.6rem"><span class="tag">← →  navegar · F pantalla completa</span></div>
+  </div>
+</section>
+
+<!-- 2 · DÓNDE ESTAMOS + AGENDA -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Cierre del producto 1</div>
+    <h2 class="reveal">Tienes la <span class="emg">tríada</span>.<br>Hoy le pones <span class="em">cuerpo</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Problema, pregunta y objetivos ya existen. Faltan el marco que los fundamenta y el método que los responderá.</p>
+    <div class="cols c2 reveal" style="margin-top:1.8rem">
+      <div class="card"><span class="num">0:10 — 0:55</span><h3>Marco teórico</h3><p>Qué es, qué no es, y cómo la IA ayuda a estructurarlo sin inventar fuentes.</p></div>
+      <div class="card"><span class="num">0:55 — 1:30</span><h3>Mapa conceptual</h3><p>De la lista de conceptos a una red con sentido. Construcción guiada.</p></div>
+      <div class="card"><span class="num">1:40 — 2:25</span><h3>Diseño metodológico</h3><p>Tu ruta según el enfoque. Taller adaptado a cada metodología.</p></div>
+      <div class="card"><span class="num">2:25 — 3:00</span><h3>Coherencia y cierre</h3><p>¿El método responde la pregunta? Anteproyecto ensamblado.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · QUÉ ES EL MARCO TEÓRICO -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 1 · Marco teórico</div>
+    <h2 class="reveal">No es un resumen.<br>Es una <span class="em">conversación</span>.</h2>
+    <div class="cols c2 reveal" style="margin-top:2rem">
+      <div class="card" style="border-left:3px solid var(--danger)">
+        <h3 style="color:var(--danger)">Lo que NO es</h3>
+        <p style="margin-top:.8rem">▹ Un listado de autores que dijeron cosas.<br><br>▹ Resumir un artículo tras otro sin conectarlos.<br><br>▹ Relleno para «tener teoría».</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent2)">
+        <h3 class="em2">Lo que SÍ es</h3>
+        <p style="margin-top:.8rem">▹ El diálogo entre las teorías y conceptos que sostienen tu estudio.<br><br>▹ La lente con la que mirarás tus datos.<br><br>▹ El puente entre lo que ya se sabe y tu vacío.</p>
+      </div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.8rem">La IA es excelente para <mark>organizar y conectar</mark> conceptos que tú ya identificaste, no para decidir cuáles importan.</p>
+  </div>
+</section>
+
+<!-- 4 · MAPA CONCEPTUAL (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 2 · Estructura del marco</div>
+    <h2 class="reveal">Apila las capas<br>de tu marco.</h2>
+    <p class="lead reveal" style="margin-top:.8rem">Un marco teórico bien armado tiene niveles. Activa cada capa para ver cómo se construye de lo general a lo específico.</p>
+    <div class="reveal layerstack" id="layerStack"></div>
+  </div>
+</section>
+
+<!-- 5 · PROMPT MARCO TEÓRICO -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Herramienta del bloque</div>
+    <h2 class="reveal">Organiza, no <span class="em">inventes</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Dale a la IA los conceptos que TÚ identificaste y pídele estructura, no contenido nuevo. NotebookLM es ideal porque trabaja solo con tus fuentes cargadas.</p>
+    <div class="reveal promptbox" style="margin-top:1.6rem">
+      <span style="color:var(--accent2)">// estructurar el marco</span><br>
+      Estos son los conceptos clave de mi marco: <span class="ph">[lista]</span>.<br>
+      Propón una estructura jerárquica que los conecte de lo general<br>
+      a lo específico, mostrando relaciones entre ellos.<br>
+      No agregues conceptos nuevos ni inventes citas. En español.
+    </div>
+    <p class="lead reveal" style="margin-top:1.4rem">Cada conexión que sugiera la <span class="em2">verificas</span> contra tus fuentes reales en Zotero o NotebookLM.</p>
+  </div>
+</section>
+
+<!-- 6 · SELECTOR DE RUTA METODOLÓGICA (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 3 · Diseño metodológico</div>
+    <h2 class="reveal">¿Cuál es tu <span class="em">ruta</span>?</h2>
+    <p class="lead reveal" style="margin-top:.6rem">No hay un método universal. Elige tu enfoque y verás las preguntas de diseño que debes responder.</p>
+    <div class="reveal routebtns" id="routeBtns"></div>
+    <div class="reveal routepanel" id="routePanel"></div>
+  </div>
+</section>
+
+<!-- 7 · LA IA EN EL MÉTODO -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Cuidado aquí</div>
+    <h2 class="reveal">La IA ayuda a <span class="em2">diseñar</span>,<br>no a <span class="em">inventar datos</span>.</h2>
+    <div class="cols c2 reveal" style="margin-top:2rem">
+      <div class="card" style="border-left:3px solid var(--accent2)">
+        <h3 class="em2">Usos legítimos</h3>
+        <p style="margin-top:.8rem">▹ Discutir alternativas de diseño y sus trade-offs.<br>▹ Sugerir instrumentos validados a revisar.<br>▹ Estimar tamaño muestral o explicar una técnica.<br>▹ Redactar el apartado una vez tú decidiste.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--danger)">
+        <h3 style="color:var(--danger)">Líneas rojas</h3>
+        <p style="margin-top:.8rem">▹ Generar datos que no recolectaste.<br>▹ Aceptar un diseño sin entenderlo.<br>▹ Citar instrumentos sin verificar que existan y estén validados.<br>▹ Delegar la decisión metodológica.</p>
+      </div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.6rem">Regla: si no podrías <mark>defender ese método ante un par</mark>, todavía no es tuyo.</p>
+    <div class="reveal promptbox" style="margin-top:1.2rem;border-left-color:var(--gold);font-size:.82rem">
+      <span style="color:var(--accent2)">// diseño metodológico con trazabilidad</span><br>
+      Actúa como metodólogo. Pregunta: «<span class="ph">[pregunta]</span>». Objetivos: <span class="ph">[objetivos]</span>.<br>
+      Propón una tabla: objetivo · dato necesario · fuente · instrumento/técnica · procedimiento · análisis · limitación.<br>
+      No inventes instrumentos. Si sugieres uno, marca “verificar validez”.
+    </div>
+  </div>
+</section>
+
+<!-- 8 · VERIFICADOR DE COHERENCIA (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">El test decisivo</div>
+    <h2 class="reveal">¿Tu método responde<br>tu pregunta?</h2>
+    <p class="lead reveal" style="margin-top:.6rem">Cada objetivo necesita un método que lo cumpla. Pulsa para revelar si cada pareja es coherente.</p>
+    <div class="reveal cohrow" id="cohRow"></div>
+    <button class="btn btn-primary reveal" id="cohBtn" style="margin-top:1.2rem;align-self:flex-start">⚲ Revisar coherencia</button>
+  </div>
+</section>
+
+<!-- 9 · TALLER (breakout) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Taller · Breakout por afinidad · 45 min</div>
+    <h2 class="reveal">Diseña tu método.</h2>
+    <div class="cols c2 reveal" style="margin-top:1.8rem">
+      <div class="card" style="border-left:3px solid var(--accent)">
+        <h3>Consigna</h3>
+        <p style="margin-top:.8rem">1. En tu sala por enfoque (cuanti / cuali / mixto), responde las preguntas de diseño de tu ruta.<br><br>2. Define enfoque, alcance, población/muestra e instrumentos.<br><br>3. Usa la IA para discutir <strong style="color:var(--ink)">una</strong> alternativa de diseño y sus trade-offs.<br><br>4. Verifica que cada objetivo tenga su método.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent2)">
+        <h3>Entregable de la sala</h3>
+        <p style="margin-top:.8rem">Una tabla objetivo ↔ método ↔ instrumento, revisada por los pares de tu enfoque.</p>
+        <p style="margin-top:.8rem">▹ Bitácora: prompt usado, alternativa sugerida, decisión propia, instrumento a verificar y limitación reconocida.</p>
+        <p style="margin-top:.8rem">El relator comparte el diseño más sólido y la duda metodológica más común de la sala.</p>
+        <p style="margin-top:1rem;color:var(--accent2);font-size:.78rem" class="mono">AGRUPADOS POR METODOLOGÍA, NO POR PROGRAMA</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · ANTEPROYECTO ENSAMBLADO -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Producto 1 · Completo</div>
+    <h2 class="reveal">Tu anteproyecto,<br>de principio a fin.</h2>
+    <p class="lead reveal" style="margin-top:.8rem">Lo que has construido en las sesiones 3 y 4 ya forma un anteproyecto en borrador:</p>
+    <div class="cols c3 reveal" style="margin-top:1.6rem">
+      <div class="card"><span class="num" style="color:var(--gold)">S3</span><h3>Problema</h3><p>Tema convertido en tensión investigable.</p></div>
+      <div class="card"><span class="num" style="color:var(--gold)">S3</span><h3>Pregunta + objetivos</h3><p>Pregunta FINER y objetivos medibles.</p></div>
+      <div class="card"><span class="num" style="color:var(--gold)">S3</span><h3>Justificación</h3><p>Por qué importa, en varios ángulos.</p></div>
+      <div class="card"><span class="num">S4</span><h3>Marco teórico</h3><p>La lente conceptual de tu estudio.</p></div>
+      <div class="card"><span class="num">S4</span><h3>Diseño metodológico</h3><p>Cómo responderás la pregunta.</p></div>
+      <div class="card" style="border-style:dashed;display:flex;align-items:center;justify-content:center"><p style="text-align:center;color:var(--accent2)">= Anteproyecto<br>en borrador ✓</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · TRABAJO AUTÓNOMO -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Hacia el módulo 3</div>
+    <h2 class="reveal">Lo que llevas a casa.</h2>
+    <div class="cols c3 reveal" style="margin-top:2.2rem">
+      <div class="card"><span class="num">ENTREGABLE</span><h3>Anteproyecto en limpio</h3><p>Las cinco piezas integradas en un documento coherente.</p></div>
+      <div class="card"><span class="num">TAREA 01</span><h3>Verifica tu método</h3><p>Confirma que los instrumentos que citas existen y están validados.</p></div>
+      <div class="card"><span class="num">TAREA 02</span><h3>Prepara tu corpus</h3><p>Reúne 5-8 fuentes clave: serán la semilla de tu revisión de literatura.</p></div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.8rem">En la <span class="em2">Sesión 5</span> arranca el Módulo 3: búsqueda sistemática y descubrimiento de literatura asistido por IA.</p>
+  </div>
+</section>
+
+<!-- 12 · CIERRE -->
+<section class="slide">
+  <div class="spread" style="align-items:center;text-align:center">
+    <div class="kicker reveal" style="justify-content:center">Cierre de la sesión 4</div>
+    <h1 class="reveal" style="max-width:22ch">Un método que no<br>entiendes no es<br><span class="em">tuyo</span>.</h1>
+    <p class="lead reveal" style="margin:1.8rem auto 0;text-align:center">Cerraste tu anteproyecto. La IA te ayudó a estructurar y a discutir; cada decisión la tomaste tú, y por eso puedes defenderla.</p>
+    <div class="reveal meta-row" style="justify-content:center;margin-top:2.6rem">
+      <div style="text-align:center"><span class="mono">FUNDAMENTA</span><p>Marco teórico</p></div>
+      <div style="text-align:center"><span class="mono">DISEÑA</span><p>Método coherente</p></div>
+      <div style="text-align:center"><span class="mono">SIGUE</span><p>Sesión 5 · Revisión</p></div>
+    </div>
+    <div class="reveal brand" style="font-size:1.4rem;margin-top:3rem">Trabajo Científico</div>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<div class="hud">
+  <div class="brand">Trabajo Científico</div>
+  <div class="nav">
+    <button id="prev" aria-label="anterior">‹</button>
+    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 12</span>
+    <button id="next" aria-label="siguiente">›</button>
+  </div>
+</div>
+<script>
+const deck=document.getElementById('deck');
+let slides=[...deck.querySelectorAll('.slide')];
+let i=0;
+const progress=document.getElementById('progress');
+const counter=document.getElementById('counter');
+const dotsWrap=document.getElementById('dots');
+function buildDots(){dotsWrap.innerHTML='';slides.forEach((_,k)=>{const d=document.createElement('i');d.onclick=()=>go(k);dotsWrap.appendChild(d);});}
+function go(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  progress.style.width=((i+1)/slides.length*100)+'%';
+  counter.textContent=String(i+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  [...dotsWrap.children].forEach((d,k)=>d.classList.toggle('on',k===i));
+}
+function next(){go(i+1)} function prev(){go(i-1)}
+document.getElementById('next').onclick=next;
+document.getElementById('prev').onclick=prev;
+addEventListener('keydown',e=>{
+  const t=e.target.tagName; if(t==='INPUT'||t==='TEXTAREA')return;
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+  if(e.key==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+});
+buildDots();go(0);
+
+/* ---- COMP 1: capas del marco teórico ---- */
+(function(){
+  const stack=document.getElementById('layerStack');if(!stack)return;
+  const layers=[
+    {t:'1 · Teorías generales',d:'Las grandes teorías que enmarcan tu fenómeno.',tag:'LO MÁS GENERAL'},
+    {t:'2 · Conceptos centrales',d:'Las nociones clave que vas a usar y definir con precisión.',tag:'DEFINICIONES'},
+    {t:'3 · Antecedentes empíricos',d:'Estudios previos que abordaron problemas cercanos al tuyo.',tag:'QUÉ SE HA HECHO'},
+    {t:'4 · Tu vacío y posición',d:'Dónde encaja tu estudio y qué añade a la conversación.',tag:'LO MÁS ESPECÍFICO'},
+  ];
+  layers.forEach((l,k)=>{
+    const d=document.createElement('div');d.className='layerchip';
+    d.innerHTML='<div><div class="lc-t">'+l.t+'</div><div class="lc-d">'+l.d+'</div></div><div class="lc-tag">'+l.tag+'</div>';
+    d.onclick=()=>d.classList.toggle('on');
+    stack.appendChild(d);
+  });
+})();
+
+/* ---- COMP 2: selector de ruta metodológica ---- */
+(function(){
+  const btns=document.getElementById('routeBtns');if(!btns)return;
+  const panel=document.getElementById('routePanel');
+  const routes={
+    cuanti:{name:'Cuantitativo',desc:'Mides, comparas, generalizas.',color:'var(--accent)',qs:[
+      '¿Cuáles son tus variables y cómo las operacionalizas?',
+      '¿Qué diseño? (experimental, cuasi-experimental, correlacional, descriptivo)',
+      '¿Cuál es tu población y cómo calculas el tamaño de muestra?',
+      '¿Qué instrumentos medirán tus variables? ¿Están validados?',
+      '¿Qué pruebas estadísticas responderán cada objetivo?']},
+    cuali:{name:'Cualitativo',desc:'Comprendes, interpretas, profundizas.',color:'var(--accent2)',qs:[
+      '¿Cuál es tu fenómeno y desde qué perspectiva lo abordas?',
+      '¿Qué diseño? (fenomenología, etnografía, teoría fundamentada, estudio de caso)',
+      '¿Quiénes son tus participantes y con qué criterio los eliges?',
+      '¿Cómo recolectas? (entrevistas, observación, grupos focales, documentos)',
+      '¿Cómo analizarás? (codificación, categorías, triangulación)']},
+    mixto:{name:'Mixto',desc:'Combinas ambos para una visión completa.',color:'var(--gold)',qs:[
+      '¿Por qué necesitas ambos enfoques para tu pregunta?',
+      '¿Qué diseño mixto? (secuencial, concurrente, anidado)',
+      '¿Qué fase va primero y cómo alimenta a la otra?',
+      '¿Cómo integras los resultados cuanti y cuali?',
+      '¿Cómo aseguras el rigor en ambas vertientes?']}
+  };
+  Object.entries(routes).forEach(([key,r])=>{
+    const b=document.createElement('div');b.className='routebtn';b.dataset.k=key;
+    b.innerHTML='<h4 style="color:'+r.color+'">'+r.name+'</h4><p>'+r.desc+'</p>';
+    b.onclick=()=>{
+      [...btns.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');
+      panel.classList.remove('show');
+      setTimeout(()=>{
+        panel.innerHTML='<p class="mono" style="font-size:.74rem;color:'+r.color+';letter-spacing:.16em;margin-bottom:1rem">RUTA '+r.name.toUpperCase()+' · PREGUNTAS DE DISEÑO</p>'
+          +r.qs.map(q=>'<div class="qitem"><span class="qmark">▸</span><span>'+q+'</span></div>').join('');
+        panel.classList.add('show');
+      },120);
+    };
+    btns.appendChild(b);
+  });
+})();
+
+/* ---- COMP 3: verificador de coherencia ---- */
+(function(){
+  const row=document.getElementById('cohRow');if(!row)return;
+  const btn=document.getElementById('cohBtn');
+  const pairs=[
+    {obj:'Cuantificar el ahorro de agua del riego intermitente.',met:'Medición de consumo en parcelas con diseño experimental.',ok:true},
+    {obj:'Comparar el rendimiento entre tratamientos de riego.',met:'Análisis de varianza sobre rendimiento medido por parcela.',ok:true},
+    {obj:'Comprender la percepción de los agricultores sobre el cambio.',met:'Solo medición cuantitativa de hectáreas regadas.',ok:false},
+  ];
+  pairs.forEach(p=>{
+    const d=document.createElement('div');d.className='cohpair';
+    d.innerHTML='<div class="cohbox"><span class="mono" style="font-size:.66rem;color:var(--accent)">OBJETIVO</span><br>'+p.obj+'</div>'
+      +'<div class="cohlink">↔</div>'
+      +'<div class="cohbox"><span class="mono" style="font-size:.66rem;color:var(--accent2)">MÉTODO</span><br>'+p.met+'</div>';
+    row.appendChild(d);
+  });
+  let done=false;
+  btn.onclick=()=>{
+    if(done){done=false;[...row.children].forEach(c=>{c.classList.remove('ok','bad');const l=c.querySelector('.cohlink');l.textContent='↔';});btn.textContent='⚲ Revisar coherencia';return;}
+    done=true;
+    [...row.children].forEach((c,k)=>{
+      setTimeout(()=>{
+        const ok=pairs[k].ok;c.classList.add(ok?'ok':'bad');
+        c.querySelector('.cohlink').textContent=ok?'✓':'✕';
+      },k*400);
+    });
+    setTimeout(()=>btn.textContent='↻ Reiniciar',pairs.length*400);
+  };
+})();
+</script>
+</body>
+</html>
