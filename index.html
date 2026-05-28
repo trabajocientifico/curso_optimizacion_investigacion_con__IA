@@ -106,10 +106,58 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 .meta-row div .mono{color:var(--accent2);font-size:.75rem;letter-spacing:.2em}
 .meta-row div p{font-size:1.05rem;margin-top:.2rem}
 
+/* ---- tarjeta docente (portada) ---- */
+.docente-card{
+  position:absolute;right:6vw;top:50%;transform:translateY(-50%);
+  width:min(360px,32vw);z-index:5;
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:1.6rem 1.7rem;backdrop-filter:blur(10px);
+  text-decoration:none;color:var(--ink);transition:.28s cubic-bezier(.2,.7,.2,1);
+  display:flex;flex-direction:column;gap:.7rem;overflow:hidden
+}
+.docente-card::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--accent),var(--gold));
+}
+.docente-card:hover{
+  border-color:var(--accent);transform:translateY(-50%) translateX(-6px);
+  box-shadow:0 24px 60px -20px rgba(255,107,61,.45)
+}
+.docente-card .dc-tag{
+  font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent2);display:flex;align-items:center;gap:.6rem
+}
+.docente-card .dc-tag::before{content:"";width:18px;height:1px;background:var(--accent2)}
+.docente-card .dc-name{
+  font-family:'Fraunces',serif;font-weight:700;font-size:1.55rem;line-height:1.05;
+  letter-spacing:-.01em;color:var(--ink)
+}
+.docente-card .dc-name .phd{
+  font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.18em;
+  background:var(--accent);color:#1a0d08;padding:.3em .55em;border-radius:4px;
+  vertical-align:.45em;margin-left:.35em;font-weight:700
+}
+.docente-card .dc-role{
+  color:var(--muted);font-size:.82rem;line-height:1.5;font-weight:300
+}
+.docente-card .dc-role b{color:var(--ink);font-weight:500}
+.docente-card .dc-cta{
+  font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.16em;
+  color:var(--accent);margin-top:.4rem;text-transform:uppercase;font-weight:700;
+  display:flex;align-items:center;gap:.5rem;padding-top:.7rem;border-top:1px solid var(--line)
+}
+.docente-card .dc-cta .arr{transition:transform .25s}
+.docente-card:hover .dc-cta .arr{transform:translateX(4px)}
+
 @media(max-width:820px){
   .c2,.c3{grid-template-columns:1fr}
   .slide{padding:5vh 7vw 9vh}
   .dots{display:none}
+  .docente-card{
+    position:static;transform:none;width:100%;margin-top:1.8rem;
+    max-width:none
+  }
+  .docente-card:hover{transform:none}
 }
 
 /* ---- estilos mapa inaugural ---- */
@@ -172,7 +220,7 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 <!-- 1 · PORTADA INAUGURAL -->
 <section class="slide active">
   <div class="hero-num">00</div>
-  <div class="spread">
+  <div class="spread" style="max-width:62%">
     <div class="kicker reveal">Bienvenida · Mapa del recorrido</div>
     <h1 class="reveal">Un viaje de la<br><span class="em">idea</span> al <span class="em2">paper</span>.</h1>
     <p class="lead reveal" style="margin-top:1.6rem">Optimización de la investigación científica con Inteligencia Artificial. Once sesiones, cuatro módulos, tres productos reales que saldrás escribiendo. No es un curso sobre IA: es un curso para investigar mejor con ella.</p>
@@ -184,6 +232,12 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
     </div>
     <div class="reveal" style="margin-top:2.4rem"><span class="tag">→  para ver el mapa completo</span></div>
   </div>
+  <a class="docente-card reveal" href="index/perfil.html" aria-label="Ver perfil completo del docente">
+    <span class="dc-tag">Docente del curso</span>
+    <span class="dc-name">Oscar Ivan<br>Vargas Pineda<span class="phd">PhD</span></span>
+    <span class="dc-role"><b>Científico de Datos</b> · <b>Docente Investigador</b> · <b>Divulgador Científico</b></span>
+    <span class="dc-cta">Ver perfil completo <span class="arr">→</span></span>
+  </a>
 </section>
 
 <!-- 2 · MAPA INTERACTIVO -->

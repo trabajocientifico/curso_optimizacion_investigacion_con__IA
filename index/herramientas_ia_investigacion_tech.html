@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA · Investigación Científica · TC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --bg-elev: #111114;
+    --bg-card: #16171b;
+    --border: #1f2127;
+    --border-bright: #2a2d36;
+    --text: #e8e9ed;
+    --text-dim: #8b8d96;
+    --text-mute: #56585f;
+    --accent: #00ff9f;
+    --accent-soft: rgba(0, 255, 159, 0.08);
+    --accent-line: rgba(0, 255, 159, 0.25);
+    --warn: #ff7849;
+    --info: #5ba3ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter Tight', -apple-system, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+
+  /* ───── Subtle dot grid background ───── */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Soft glow ambient */
+  body::after {
+    content: "";
+    position: fixed;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0, 255, 159, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ───── Slide engine ───── */
+  .deck {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 80px 96px 88px;
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .slide.active {
+    display: flex;
+    opacity: 1;
+    animation: slideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ───── System chrome / HUD ───── */
+  .hud {
+    position: fixed;
+    z-index: 100;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--text-mute);
+  }
+
+  .hud-top {
+    top: 24px;
+    left: 32px;
+    right: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hud-bottom {
+    bottom: 24px;
+    left: 32px;
+    right: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .hud-id {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hud-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .hud-section { display: flex; gap: 24px; align-items: center; }
+  .hud-section .sep { color: var(--text-mute); }
+  .hud-section .label { color: var(--text-mute); }
+  .hud-section .value { color: var(--text); }
+  .hud-section .accent { color: var(--accent); }
+
+  .nav {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .nav-btn {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .progress-track {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border);
+    z-index: 99;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* ───── Typography system ───── */
+  .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .meta::before {
+    content: "";
+    width: 8px; height: 1px;
+    background: var(--accent);
+  }
+
+  .meta-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 4px 8px;
+    border: 1px solid var(--accent-line);
+    background: var(--accent-soft);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .meta-tag::before {
+    content: "▸";
+    color: var(--accent);
+  }
+
+  h1.display {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 300;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    color: var(--text);
+  }
+
+  h1.display .accent { color: var(--accent); font-weight: 400; }
+  h1.display .dim { color: var(--text-dim); font-weight: 200; }
+
+  h2.title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 400;
+    font-size: clamp(36px, 5vw, 60px);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    margin-bottom: 16px;
+  }
+
+  h2.title .accent { color: var(--accent); }
+  h2.title .dim { color: var(--text-dim); font-weight: 300; }
+
+  .lede {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 300;
+    font-size: clamp(16px, 1.4vw, 20px);
+    line-height: 1.5;
+    color: var(--text-dim);
+    max-width: 760px;
+    letter-spacing: -0.005em;
+  }
+
+  /* ───── SLIDE 1 — Cover ───── */
+  .cover {
+    justify-content: space-between;
+  }
+
+  .cover-top {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .cover-id {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+  }
+
+  .cover-id .ascii-logo {
+    color: var(--accent);
+    font-size: 14px;
+    letter-spacing: -0.05em;
+  }
+
+  .cover-title {
+    margin-top: 80px;
+    max-width: 1200px;
+  }
+
+  .cover-sub {
+    margin-top: 40px;
+    max-width: 720px;
+  }
+
+  .cover-bottom {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .cover-meta-block .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 8px;
+  }
+
+  .cover-meta-block .value {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .cover-meta-block .value.accent { color: var(--accent); }
+
+  /* ───── SLIDE 2 — Stat / Problem ───── */
+  .stat-slide {
+    justify-content: center;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .stat-mega {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 200;
+    font-size: clamp(120px, 18vw, 280px);
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+    color: var(--text);
+    position: relative;
+  }
+
+  .stat-mega .unit {
+    font-size: 0.25em;
+    vertical-align: super;
+    color: var(--accent);
+    font-weight: 400;
+    margin-left: 8px;
+    letter-spacing: 0;
+  }
+
+  .stat-mega::after {
+    content: "";
+    position: absolute;
+    bottom: -16px; left: 0;
+    width: 80px; height: 2px;
+    background: var(--accent);
+  }
+
+  .stat-context .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+    margin-top: 32px;
+  }
+
+  .stat-text p {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 300;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--text);
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .stat-text p .accent { color: var(--accent); font-weight: 400; }
+
+  .stat-card-inline {
+    margin-top: 32px;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .stat-card-inline .key { color: var(--accent); }
+
+  /* ───── SLIDE 3 — Process map ───── */
+  .process-slide {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .process-header { margin-bottom: 48px; max-width: 900px; }
+
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .phase {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .phase::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .phase:hover {
+    border-color: var(--border-bright);
+    background: var(--bg-elev);
+  }
+
+  .phase:hover::before { opacity: 1; }
+
+  .phase-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .phase-num::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .phase-name {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .phase-desc {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-dim);
+    margin-top: auto;
+  }
+
+  .phase-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: var(--text-mute);
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .phase-count .accent { color: var(--accent); }
+
+  /* ───── Tools slides ───── */
+  .tools-slide { display: flex; flex-direction: column; }
+
+  .tools-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 28px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tools-header-left { max-width: 760px; }
+
+  .tools-header-right {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.05em;
+  }
+
+  .tools-header-right .count {
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    flex: 1;
+  }
+
+  .tools-grid.three { grid-template-columns: repeat(3, 1fr); }
+
+  .tool {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tool::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0;
+    width: 2px; height: 0;
+    background: var(--accent);
+    transition: height 0.3s;
+  }
+
+  .tool:hover { background: var(--bg-elev); border-color: var(--border-bright); }
+  .tool:hover::before { height: 100%; }
+
+  .tool-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+
+  .tool-name {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .tool-name a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .tool-name a:hover { color: var(--accent); }
+
+  .tool-name a::after {
+    content: " ↗";
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7em;
+    color: var(--text-mute);
+    margin-left: 4px;
+    transition: color 0.2s;
+  }
+
+  .tool-name a:hover::after { color: var(--accent); }
+
+  .tool-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border: 1px solid var(--border-bright);
+    color: var(--text-dim);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .tool-badge.free { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
+  .tool-badge.paid { color: var(--warn); border-color: rgba(255, 120, 73, 0.3); background: rgba(255, 120, 73, 0.06); }
+
+  .tool-desc {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    margin-bottom: 18px;
+    letter-spacing: -0.005em;
+  }
+
+  .tool-desc strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .tool-meta {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tool-meta-row {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-dim);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .tool-meta-row .label {
+    color: var(--accent);
+    min-width: 52px;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+
+  .tool-meta-row .value {
+    color: var(--text-dim);
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+
+  /* ───── Stack slide ───── */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    flex: 1;
+  }
+
+  .stack-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .stack-card.pro {
+    border-color: var(--accent-line);
+    background: linear-gradient(180deg, var(--bg-card) 0%, rgba(0, 255, 159, 0.02) 100%);
+  }
+
+  .stack-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stack-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 400;
+    font-size: 28px;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .stack-title .accent { color: var(--accent); }
+
+  .stack-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+
+  .stack-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  .stack-price .num {
+    display: block;
+    font-size: 24px;
+    font-weight: 500;
+    font-family: 'Inter Tight', sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  .stack-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+  }
+
+  .stack-list li {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+
+  .stack-list li:hover {
+    border-color: var(--accent-line);
+    background: var(--bg);
+  }
+
+  .stack-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 500;
+    min-width: 24px;
+  }
+
+  .stack-item-name {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .stack-item-role {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--text-mute);
+    margin-top: 3px;
+  }
+
+  .stack-note {
+    margin-top: 20px;
+    padding: 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-dim);
+    font-weight: 300;
+    font-style: normal;
+  }
+
+  /* ───── Ethics slide ───── */
+  .ethics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 64px;
+    align-items: stretch;
+    flex: 1;
+  }
+
+  .ethics-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-right: 32px;
+    border-right: 1px solid var(--border);
+  }
+
+  .ethics-bignum {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 200;
+    font-size: clamp(80px, 11vw, 160px);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    color: var(--accent);
+  }
+
+  .ethics-bignum-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-top: 12px;
+    max-width: 240px;
+    line-height: 1.5;
+  }
+
+  .ethics-quote {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--text-dim);
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    letter-spacing: -0.005em;
+  }
+
+  .ethics-quote .accent { color: var(--accent); font-weight: 400; }
+
+  .ethics-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .ethics-rule {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 18px;
+    align-items: flex-start;
+    transition: all 0.2s;
+  }
+
+  .ethics-rule:hover { border-color: var(--accent-line); }
+
+  .ethics-rule-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding-top: 2px;
+  }
+
+  .ethics-rule-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 500;
+    font-size: 17px;
+    letter-spacing: -0.015em;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+
+  .ethics-rule-text {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 300;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+
+  /* ───── Closing slide ───── */
+  .closing {
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .closing-meta {
+    margin-bottom: 60px;
+  }
+
+  .closing h1 {
+    max-width: 1200px;
+    margin-bottom: 48px;
+  }
+
+  .closing-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 48px 0 32px;
+    position: relative;
+  }
+
+  .closing-divider::after {
+    content: "";
+    position: absolute;
+    left: 0; top: -1px;
+    width: 80px; height: 3px;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  .closing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+
+  .closing-block .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 12px;
+  }
+
+  .closing-block .value {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 16px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .closing-block .value a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.2s;
+    padding-bottom: 2px;
+  }
+
+  .closing-block .value a:hover { border-bottom-color: var(--accent); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* ───── Responsive ───── */
+  @media (max-width: 1100px) {
+    .slide { padding: 64px 48px 80px; }
+    .stat-grid, .ethics-grid { grid-template-columns: 1fr; gap: 32px; }
+    .ethics-left { border-right: none; padding-right: 0; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .tools-grid, .stack-grid { grid-template-columns: 1fr; }
+    .tools-grid.three, .process-grid { grid-template-columns: repeat(2, 1fr); }
+    .closing-grid, .cover-bottom { grid-template-columns: 1fr 1fr; gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HUD top -->
+<div class="hud hud-top">
+  <div class="hud-id">
+    <span class="hud-dot"></span>
+    <span style="color: var(--text);">TC</span>
+    <span style="color: var(--text-mute);">/</span>
+    <span>ai_research_toolkit</span>
+    <span style="color: var(--text-mute);">/</span>
+    <span style="color: var(--accent);">v2026.05</span>
+  </div>
+  <div class="hud-section">
+    <span class="label">SESSION</span>
+    <span class="value">Optimización · IA · Investigación</span>
+  </div>
+</div>
+
+<!-- HUD bottom -->
+<div class="hud hud-bottom">
+  <div class="hud-section">
+    <span class="label">FRAME</span>
+    <span class="accent" id="slide-num">01</span>
+    <span class="sep">/</span>
+    <span id="slide-total">11</span>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" id="prev-btn" aria-label="Anterior">◂</button>
+    <button class="nav-btn" id="next-btn" aria-label="Siguiente">▸</button>
+  </div>
+  <div class="hud-section">
+    <span class="label">AUTHOR</span>
+    <span class="value">O. Vargas, PhD</span>
+    <span class="sep">·</span>
+    <span class="value">trabajocientifico.org</span>
+  </div>
+</div>
+
+<!-- Progress -->
+<div class="progress-track"><div class="progress-fill" id="progress" style="width: 9.09%"></div></div>
+
+<div class="deck" id="deck">
+
+  <!-- ═══════════ SLIDE 1 — Cover ═══════════ -->
+  <section class="slide cover active">
+    <div class="cover-top">
+      <div class="cover-id">
+        <span class="ascii-logo">[ TC ]</span>
+        <span style="color: var(--text-mute);">└─</span>
+        <span>module · 01_intro</span>
+        <span style="color: var(--text-mute);">└─</span>
+        <span style="color: var(--accent);">research × AI</span>
+      </div>
+
+      <div class="meta-tag">Curso · 32h · 11 sesiones · Virtual sincrónico</div>
+    </div>
+
+    <div class="cover-title">
+      <h1 class="display">
+        Herramientas de IA<br>
+        para acelerar la<br>
+        <span class="accent">investigación científica.</span>
+      </h1>
+    </div>
+
+    <div class="cover-sub">
+      <p class="lede">
+        Un mapa operativo de las plataformas que están redefiniendo cómo descubrimos, leemos, escribimos y publicamos ciencia en 2026. Del proyecto al manuscrito indexado.
+      </p>
+    </div>
+
+    <div class="cover-bottom">
+      <div class="cover-meta-block">
+        <div class="label">// Curso</div>
+        <div class="value">Optimización de la investigación científica con Inteligencia Artificial</div>
+      </div>
+      <div class="cover-meta-block">
+        <div class="label">// Audiencia</div>
+        <div class="value">Docentes universitarios &amp; investigadores</div>
+      </div>
+      <div class="cover-meta-block">
+        <div class="label">// Instructor</div>
+        <div class="value accent">Oscar I. Vargas Pineda, PhD</div>
+      </div>
+      <div class="cover-meta-block">
+        <div class="label">// Build</div>
+        <div class="value">Trabajo Científico · 2026</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 2 — Problema / Estadística ═══════════ -->
+  <section class="slide stat-slide">
+    <div class="stat-grid">
+      <div>
+        <div class="meta" style="margin-bottom: 32px;">// El contexto · 2026</div>
+        <div class="stat-mega">5.14<span class="unit">M</span></div>
+        <div class="stat-context">
+          <div class="label">Artículos científicos publicados anualmente</div>
+        </div>
+      </div>
+
+      <div class="stat-text">
+        <p>Hace una década, el cuello de botella era <span class="accent">encontrar</span> la literatura.</p>
+        <p>Hoy es <span class="accent">procesarla.</span></p>
+        <p style="font-size: 17px; color: var(--text-mute); line-height: 1.6;">
+          Los flujos asistidos por IA reducen los tiempos de revisión hasta en un 30 % manteniendo —o mejorando— la calidad metodológica.
+        </p>
+
+        <div class="stat-card-inline">
+          <span class="key">$ premise</span><br>
+          La IA no piensa por nosotros. Amplifica la productividad de quien sabe<br>
+          <span class="key">→</span> <span style="color: var(--text);">qué herramienta usar</span> <span class="key">en</span> <span style="color: var(--text);">qué momento.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 3 — Process Map ═══════════ -->
+  <section class="slide process-slide">
+    <div class="process-header">
+      <div class="meta" style="margin-bottom: 20px;">// El proceso · seis fases</div>
+      <h2 class="title">Del <span class="dim">descubrimiento</span> al <span class="accent">envío.</span></h2>
+      <p class="lede">No existe una "mejor herramienta". Existe la mejor herramienta para cada fase del trabajo investigativo.</p>
+    </div>
+
+    <div class="process-grid">
+      <div class="phase">
+        <div class="phase-num">PHASE_01</div>
+        <div class="phase-name">Descubrimiento &amp; mapeo</div>
+        <div class="phase-desc">Encontrar el paisaje intelectual de un campo y los papers seminales.</div>
+        <div class="phase-count"><span class="accent">04</span> herramientas</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">PHASE_02</div>
+        <div class="phase-name">Búsqueda con evidencia</div>
+        <div class="phase-desc">Responder preguntas con base en literatura revisada por pares.</div>
+        <div class="phase-count"><span class="accent">04</span> herramientas</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">PHASE_03</div>
+        <div class="phase-name">Lectura profunda</div>
+        <div class="phase-desc">Comprender, sintetizar y dialogar con un corpus completo.</div>
+        <div class="phase-count"><span class="accent">03</span> herramientas</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">PHASE_04</div>
+        <div class="phase-name">Escritura académica</div>
+        <div class="phase-desc">Redactar proyecto, marco teórico y manuscrito para revista indexada.</div>
+        <div class="phase-count"><span class="accent">04</span> herramientas</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">PHASE_05</div>
+        <div class="phase-name">Análisis de datos</div>
+        <div class="phase-desc">Procesar, modelar y visualizar datos con asistentes de código.</div>
+        <div class="phase-count"><span class="accent">02</span> herramientas</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">PHASE_06</div>
+        <div class="phase-name">Revisión &amp; envío</div>
+        <div class="phase-desc">Verificar citas, integridad y preparar el manuscrito para submission.</div>
+        <div class="phase-count"><span class="accent">04</span> herramientas</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 4 — Fase 1 ═══════════ -->
+  <section class="slide tools-slide">
+    <div class="tools-header">
+      <div class="tools-header-left">
+        <div class="meta" style="margin-bottom: 16px;">// Phase 01 · Discovery &amp; mapping</div>
+        <h2 class="title">Cartografiar el <span class="accent">campo.</span></h2>
+        <p class="lede">Antes de leer, hay que saber qué existe, cómo se conecta y quién marca la pauta.</p>
+      </div>
+      <div class="tools-header-right">
+        <div class="count">04</div>
+        <div>herramientas</div>
+      </div>
+    </div>
+
+    <div class="tools-grid">
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://www.semanticscholar.org" target="_blank" rel="noopener">Semantic Scholar</a></div>
+          <div class="tool-badge free">Free</div>
+        </div>
+        <div class="tool-desc">Motor de búsqueda académica con <strong>+200M de papers</strong> indexados. Base sobre la que se construye buena parte del ecosistema de IA académica.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Punto de entrada gratuito, API abierta, búsqueda semántica.</span></div>
+          <div class="tool-meta-row"><span class="label">EDU</span><span class="value">Enseñar la diferencia entre búsqueda por keyword y por significado.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://www.connectedpapers.com" target="_blank" rel="noopener">Connected Papers</a></div>
+          <div class="tool-badge free">Free</div>
+        </div>
+        <div class="tool-desc">Visualizador de redes de citación a partir de un <strong>seed paper.</strong> Genera un grafo visual en segundos, sin necesidad de cuenta.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Identificar el paisaje de un tema y los papers seminales.</span></div>
+          <div class="tool-meta-row"><span class="label">EDU</span><span class="value">Mostrar visualmente la genealogía intelectual de un campo.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://www.researchrabbit.ai" target="_blank" rel="noopener">Research Rabbit</a></div>
+          <div class="tool-badge free">Free</div>
+        </div>
+        <div class="tool-desc">El <strong>"Spotify de la ciencia".</strong> Recomendador de papers, autores y colaboradores con seguimiento longitudinal y alertas automáticas.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Proyectos largos: tesis, líneas de investigación, posdoctorados.</span></div>
+          <div class="tool-meta-row"><span class="label">SYNC</span><span class="value">Sincronización directa y bidireccional con Zotero.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://www.litmaps.com" target="_blank" rel="noopener">Litmaps</a></div>
+          <div class="tool-badge paid">Freemium</div>
+        </div>
+        <div class="tool-desc">Mantiene <strong>"vivos"</strong> los mapas de literatura con alertas automáticas y visualizaciones temporales del campo.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Tesis largas, revisiones sistemáticas en curso, vigilancia tecnológica.</span></div>
+          <div class="tool-meta-row"><span class="label">EDU</span><span class="value">Monitorear un tema más allá del momento del proyecto.</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 5 — Fase 2 ═══════════ -->
+  <section class="slide tools-slide">
+    <div class="tools-header">
+      <div class="tools-header-left">
+        <div class="meta" style="margin-bottom: 16px;">// Phase 02 · Evidence-based search</div>
+        <h2 class="title">Preguntar, <span class="dim">no</span> <span class="accent">tecletear.</span></h2>
+        <p class="lede">El cambio de paradigma: ya no buscamos por keywords. Le hacemos preguntas a la literatura y recibimos respuestas con evidencia citada.</p>
+      </div>
+      <div class="tools-header-right">
+        <div class="count">04</div>
+        <div>herramientas</div>
+      </div>
+    </div>
+
+    <div class="tools-grid">
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://elicit.com" target="_blank" rel="noopener">Elicit</a></div>
+          <div class="tool-badge paid">USD 12/mes</div>
+        </div>
+        <div class="tool-desc">Buscador estructurado para <strong>revisiones sistemáticas.</strong> Define variables (PICO, métodos, resultados) y extrae datos en tablas comparativas.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Screening masivo, extracción estructurada, meta-análisis preliminares.</span></div>
+          <div class="tool-meta-row"><span class="label">LIMIT</span><span class="value">No escribe ni gestiona referencias. Es un motor de evidencia.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://consensus.app" target="_blank" rel="noopener">Consensus</a></div>
+          <div class="tool-badge paid">Freemium · USD 10</div>
+        </div>
+        <div class="tool-desc">Responde preguntas SÍ/NO con un <strong>consensus meter</strong> que muestra qué porcentaje de la literatura apoya, contradice o está dividida.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Justificar hipótesis, identificar gaps, verificar afirmaciones.</span></div>
+          <div class="tool-meta-row"><span class="label">EDU</span><span class="value">Demostrar el concepto de "estado del arte" de forma visual.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://scite.ai" target="_blank" rel="noopener">Scite</a></div>
+          <div class="tool-badge paid">USD 20/mes</div>
+        </div>
+        <div class="tool-desc">Inteligencia de citaciones. Clasifica 1.200M de citas como <strong>supporting, contrasting o mentioning.</strong> Verifica si un paper ha sido contradicho.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Auditoría de fuentes antes de incluirlas en un manuscrito.</span></div>
+          <div class="tool-meta-row"><span class="label">KEY</span><span class="value">El conteo de citas dice cuántas. Scite dice cómo.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://www.perplexity.ai" target="_blank" rel="noopener">Perplexity</a></div>
+          <div class="tool-badge paid">Freemium · USD 20</div>
+        </div>
+        <div class="tool-desc">Buscador conversacional con <strong>citas en línea.</strong> Útil para temas emergentes —regulación, normativa, noticias— aún no consolidados en bases académicas.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Contextos donde la literatura académica todavía no existe.</span></div>
+          <div class="tool-meta-row"><span class="label">WARN</span><span class="value">Mezcla fuentes web académicas y no académicas: verificar.</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 6 — Fase 3 ═══════════ -->
+  <section class="slide tools-slide">
+    <div class="tools-header">
+      <div class="tools-header-left">
+        <div class="meta" style="margin-bottom: 16px;">// Phase 03 · Deep reading</div>
+        <h2 class="title">Dialogar con el <span class="accent">corpus.</span></h2>
+        <p class="lede">Sube tus papers, conversa con ellos. Interlocutores entrenados sobre tu propia biblioteca.</p>
+      </div>
+      <div class="tools-header-right">
+        <div class="count">03</div>
+        <div>herramientas</div>
+      </div>
+    </div>
+
+    <div class="tools-grid three">
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://notebooklm.google.com" target="_blank" rel="noopener">NotebookLM</a></div>
+          <div class="tool-badge free">Free</div>
+        </div>
+        <div class="tool-desc">Análisis multi-documento <strong>source-grounded.</strong> Hasta ~50 fuentes / 500K palabras. Cero alucinación: cada respuesta anclada con citas por oración.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Conversar con el corpus de una revisión completa.</span></div>
+          <div class="tool-meta-row"><span class="label">PLUS</span><span class="value">Audio Overviews tipo podcast: didáctica auditiva.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://typeset.io" target="_blank" rel="noopener">SciSpace</a></div>
+          <div class="tool-badge paid">USD 12/mes</div>
+        </div>
+        <div class="tool-desc">Lector inteligente que explica papers <strong>párrafo a párrafo.</strong> Desentraña métodos densos, fórmulas y figuras complejas.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Onboarding rápido en una técnica desconocida.</span></div>
+          <div class="tool-meta-row"><span class="label">EDU</span><span class="value">Enseñar lectura crítica de papers densos.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://claude.ai" target="_blank" rel="noopener">Claude · Projects</a></div>
+          <div class="tool-badge paid">USD 20/mes</div>
+        </div>
+        <div class="tool-desc">Ventana de contexto de <strong>200K tokens</strong> (~150K palabras). Razonamiento crítico y síntesis comparativa sobre múltiples papers a la vez.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Análisis comparativo, crítica metodológica, discusión.</span></div>
+          <div class="tool-meta-row"><span class="label">PAIR</span><span class="value">Dupla con NotebookLM: rigor + potencia de síntesis.</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 7 — Fase 4 ═══════════ -->
+  <section class="slide tools-slide">
+    <div class="tools-header">
+      <div class="tools-header-left">
+        <div class="meta" style="margin-bottom: 16px;">// Phase 04 · Academic writing</div>
+        <h2 class="title">Escribir, <span class="dim">pulir,</span> <span class="accent">traducir.</span></h2>
+        <p class="lede">De la primera idea al manuscrito listo para revisión por pares. La IA no escribe por nosotros: nos ayuda a expresar mejor lo que pensamos.</p>
+      </div>
+      <div class="tools-header-right">
+        <div class="count">04</div>
+        <div>herramientas</div>
+      </div>
+    </div>
+
+    <div class="tools-grid">
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://paperpal.com" target="_blank" rel="noopener">Paperpal</a></div>
+          <div class="tool-badge paid">USD 25/mes</div>
+        </div>
+        <div class="tool-desc">Asistente de escritura académica de <strong>Cactus Communications</strong> (Editage). Calibrado con 23+ años de experiencia STM. Incluye Manuscript Checker con 30+ verificaciones de pre-envío.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Edición de lenguaje calibrada al estilo de revistas indexadas.</span></div>
+          <div class="tool-meta-row"><span class="label">LATAM</span><span class="value">Maneja muy bien la transición español → inglés académico.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://www.writefull.com" target="_blank" rel="noopener">Writefull</a></div>
+          <div class="tool-badge paid">USD 15/mes</div>
+        </div>
+        <div class="tool-desc">Especializado en escritura científica, integrado con <strong>Overleaf (LaTeX).</strong> Su Sentence Palette ofrece frases tipo por sección (Abstract, Methods, Results...).</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Manuscritos en LaTeX: ingeniería, física, ciencias duras.</span></div>
+          <div class="tool-meta-row"><span class="label">PLUS</span><span class="value">Academizer: convierte texto informal en registro académico.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://www.trinka.ai" target="_blank" rel="noopener">Trinka AI</a></div>
+          <div class="tool-badge paid">USD 6.67/mes</div>
+        </div>
+        <div class="tool-desc">Alternativa económica con <strong>10.000 palabras gratis/mes.</strong> Foco en escritura técnico-científica y formato según guías de revista.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Estudiantes de maestría y doctorado con presupuesto limitado.</span></div>
+          <div class="tool-meta-row"><span class="label">PLUS</span><span class="value">Identifica citas faltantes y formatea según style guide.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://claude.ai" target="_blank" rel="noopener">Claude · ChatGPT · Gemini</a></div>
+          <div class="tool-badge paid">USD 20/mes</div>
+        </div>
+        <div class="tool-desc">Modelos generalistas. Excelentes para <strong>brainstorming,</strong> estructuración de argumentos, redacción de borradores y traducción crítica.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Esqueleto del proyecto, primer borrador, traducción académica.</span></div>
+          <div class="tool-meta-row"><span class="label">⚠ ETHICS</span><span class="value">Declarar uso en Métodos. Verificar toda afirmación citada.</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 8 — Fases 5 & 6 ═══════════ -->
+  <section class="slide tools-slide">
+    <div class="tools-header">
+      <div class="tools-header-left">
+        <div class="meta" style="margin-bottom: 16px;">// Phase 05 + 06 · Data analysis &amp; submission</div>
+        <h2 class="title">Datos, código, <span class="accent">integridad.</span></h2>
+        <p class="lede">El último kilómetro: convertir resultados en figuras publicables y manuscritos auditados antes del <em>submission</em>.</p>
+      </div>
+      <div class="tools-header-right">
+        <div class="count">06</div>
+        <div>herramientas</div>
+      </div>
+    </div>
+
+    <div class="tools-grid three">
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://claude.com/product/claude-code" target="_blank" rel="noopener">Claude Code</a></div>
+          <div class="tool-badge paid">Incluido en Pro</div>
+        </div>
+        <div class="tool-desc">Asistente de código por terminal. Análisis estadístico en <strong>Python/R,</strong> depuración, generación de figuras a 300 dpi.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Pipelines reproducibles de análisis de datos.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://julius.ai" target="_blank" rel="noopener">Julius AI</a></div>
+          <div class="tool-badge paid">Freemium · USD 20</div>
+        </div>
+        <div class="tool-desc">Análisis exploratorio sobre <strong>CSV/Excel sin escribir código.</strong> Ideal para audiencias no técnicas o como complemento didáctico.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">EDA rápido, gráficos, estadísticos descriptivos.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://www.zotero.org" target="_blank" rel="noopener">Zotero + plugins IA</a></div>
+          <div class="tool-badge free">Free · OSS</div>
+        </div>
+        <div class="tool-desc">Gestor de referencias open-source. <strong>9.000+ estilos de cita.</strong> Integrable con Research Rabbit, Scite y plugins de búsqueda semántica.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Centro de gravedad de toda biblioteca académica seria.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://manusights.com" target="_blank" rel="noopener">Manusights</a></div>
+          <div class="tool-badge paid">Pago/revisión</div>
+        </div>
+        <div class="tool-desc">Verifica citas contra bases de datos en vivo, analiza figuras y puntúa el manuscrito frente a patrones de <strong>desk-reject</strong> de la revista objetivo.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Auditoría pre-envío. Detecta citas retractadas y DOIs inválidos.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://www.rayyan.ai" target="_blank" rel="noopener">Rayyan</a></div>
+          <div class="tool-badge paid">Freemium</div>
+        </div>
+        <div class="tool-desc">Plataforma colaborativa para revisiones sistemáticas. Screening de títulos y abstracts con asistencia de IA y trazabilidad <strong>PRISMA.</strong></div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Revisiones sistemáticas en equipo con doble cegamiento.</span></div>
+        </div>
+      </article>
+
+      <article class="tool">
+        <div class="tool-head">
+          <div class="tool-name"><a href="https://www.paperguide.ai" target="_blank" rel="noopener">Paperguide</a></div>
+          <div class="tool-badge paid">Freemium · USD 12</div>
+        </div>
+        <div class="tool-desc">Suite <strong>end-to-end:</strong> búsqueda, revisión de literatura, gestión de referencias y escritura citada en una sola plataforma.</div>
+        <div class="tool-meta">
+          <div class="tool-meta-row"><span class="label">USE</span><span class="value">Investigadores que buscan un único tablero de control.</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 9 — Stacks ═══════════ -->
+  <section class="slide tools-slide">
+    <div class="tools-header">
+      <div class="tools-header-left">
+        <div class="meta" style="margin-bottom: 16px;">// Recommended stacks · 2026</div>
+        <h2 class="title">No necesitas <span class="dim">todo.</span></h2>
+        <p class="lede">La mayoría de investigadores rinde mejor con 3–5 herramientas bien integradas que con 15 herramientas ocasionales. Dos combinaciones probadas:</p>
+      </div>
+      <div class="tools-header-right">
+        <div class="count">02</div>
+        <div>stacks</div>
+      </div>
+    </div>
+
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-header">
+          <div>
+            <div class="stack-title">Stack <span class="accent">starter</span></div>
+            <div class="stack-sub">Estudiantes · primer proyecto</div>
+          </div>
+          <div class="stack-price">
+            <span class="num">$0</span>
+            USD / mes
+          </div>
+        </div>
+
+        <ul class="stack-list">
+          <li><span class="stack-num">01</span><div><div class="stack-item-name">Semantic Scholar</div><span class="stack-item-role">descubrimiento</span></div></li>
+          <li><span class="stack-num">02</span><div><div class="stack-item-name">Research Rabbit</div><span class="stack-item-role">recomendación + sync Zotero</span></div></li>
+          <li><span class="stack-num">03</span><div><div class="stack-item-name">NotebookLM</div><span class="stack-item-role">diálogo con corpus</span></div></li>
+          <li><span class="stack-num">04</span><div><div class="stack-item-name">Zotero</div><span class="stack-item-role">gestión de referencias</span></div></li>
+          <li><span class="stack-num">05</span><div><div class="stack-item-name">Elicit (free tier)</div><span class="stack-item-role">screening estructurado</span></div></li>
+        </ul>
+
+        <div class="stack-note">
+          Cobertura completa del flujo investigativo sin gasto. Suficiente para una tesis de maestría o un primer paper.
+        </div>
+      </div>
+
+      <div class="stack-card pro">
+        <div class="stack-header">
+          <div>
+            <div class="stack-title">Stack <span class="accent">professional</span></div>
+            <div class="stack-sub">Docentes · investigadores activos</div>
+          </div>
+          <div class="stack-price">
+            <span class="num">~$80</span>
+            USD / mes
+          </div>
+        </div>
+
+        <ul class="stack-list">
+          <li><span class="stack-num">01</span><div><div class="stack-item-name">Elicit Pro</div><span class="stack-item-role">revisiones sistemáticas a escala</span></div></li>
+          <li><span class="stack-num">02</span><div><div class="stack-item-name">Claude Pro + Projects</div><span class="stack-item-role">razonamiento + código + escritura</span></div></li>
+          <li><span class="stack-num">03</span><div><div class="stack-item-name">Scite</div><span class="stack-item-role">validación de citas</span></div></li>
+          <li><span class="stack-num">04</span><div><div class="stack-item-name">Paperpal</div><span class="stack-item-role">edición y submission-readiness</span></div></li>
+          <li><span class="stack-num">05</span><div><div class="stack-item-name">Zotero + Research Rabbit</div><span class="stack-item-role">biblioteca activa</span></div></li>
+        </ul>
+
+        <div class="stack-note">
+          ROI claro para quien publica varios artículos al año o dirige tesis. Cubre del descubrimiento al envío con auditoría.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 10 — Ética ═══════════ -->
+  <section class="slide">
+    <div style="margin-bottom: 40px;">
+      <div class="meta" style="margin-bottom: 16px;">// Ethics · integrity · disclosure</div>
+      <h2 class="title">La IA <span class="dim">no es</span> <span class="accent">autora.</span></h2>
+    </div>
+
+    <div class="ethics-grid">
+      <div class="ethics-left">
+        <div>
+          <div class="ethics-bignum">04</div>
+          <div class="ethics-bignum-label">Reglas no negociables para todo investigador que use IA en su flujo de trabajo</div>
+        </div>
+
+        <div class="ethics-quote">
+          Toda revista seria exige declarar qué herramientas se usaron, cómo se usaron, y qué secciones tocaron. La <span class="accent">responsabilidad final</span> es siempre del autor humano.
+        </div>
+      </div>
+
+      <div class="ethics-rules">
+        <div class="ethics-rule">
+          <div class="ethics-rule-num">R_01</div>
+          <div>
+            <div class="ethics-rule-title">Declarar el uso en Métodos</div>
+            <div class="ethics-rule-text">Springer Nature, Elsevier, IEEE y la mayoría de editoriales lo exigen. Especificar qué herramienta, qué versión, qué secciones tocó.</div>
+          </div>
+        </div>
+
+        <div class="ethics-rule">
+          <div class="ethics-rule-num">R_02</div>
+          <div>
+            <div class="ethics-rule-title">La IA no firma papers</div>
+            <div class="ethics-rule-text">No puede asumir responsabilidad por el contenido. La autoría es exclusivamente humana, sin excepciones.</div>
+          </div>
+        </div>
+
+        <div class="ethics-rule">
+          <div class="ethics-rule-num">R_03</div>
+          <div>
+            <div class="ethics-rule-title">Verificar toda cita</div>
+            <div class="ethics-rule-text">Los modelos generalistas pueden alucinar referencias. NotebookLM y Scite mitigan el riesgo, pero la verificación humana sigue siendo obligatoria.</div>
+          </div>
+        </div>
+
+        <div class="ethics-rule">
+          <div class="ethics-rule-num">R_04</div>
+          <div>
+            <div class="ethics-rule-title">Imágenes generadas por IA: prohibidas</div>
+            <div class="ethics-rule-text">Nature y otras revistas top no aceptan figuras creadas con IA generativa. Solo edición técnica, con divulgación clara.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 11 — Cierre ═══════════ -->
+  <section class="slide closing">
+    <div class="closing-meta">
+      <div class="meta">// End_of_session · continuar en S02</div>
+    </div>
+
+    <h1 class="display">
+      La IA no <span class="dim">reemplaza</span> al<br>
+      investigador. <span class="accent">Amplifica</span> al<br>
+      investigador <span class="dim">que sabe pensar.</span>
+    </h1>
+
+    <p class="lede" style="max-width: 820px;">
+      Las herramientas cambian cada mes. El criterio, no. Este curso te entrena para evaluar, escoger y combinar las herramientas que sirvan a <em>tu</em> pregunta de investigación —no al revés.
+    </p>
+
+    <div class="closing-divider"></div>
+
+    <div class="closing-grid">
+      <div class="closing-block">
+        <div class="label">// instructor</div>
+        <div class="value">Oscar Iván Vargas Pineda, PhD<br><span style="color: var(--text-mute); font-size: 13px;">Data Scientist · UNILLANOS · USTA</span></div>
+      </div>
+      <div class="closing-block">
+        <div class="label">// contact</div>
+        <div class="value">
+          <a href="mailto:oscarvargas@trabajocientifico.org">oscarvargas@trabajocientifico.org</a><br>
+          <a href="https://trabajocientifico.github.io/servicios/" target="_blank" rel="noopener">trabajocientifico.github.io</a>
+        </div>
+      </div>
+      <div class="closing-block">
+        <div class="label">// brand</div>
+        <div class="value">
+          <a href="https://www.youtube.com/@TCientifico" target="_blank" rel="noopener">YouTube · @TCientifico</a><br>
+          <span style="color: var(--text-mute); font-size: 13px;">Villavicencio · Colombia · 2026</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  document.getElementById('slide-total').textContent = String(total).padStart(2, '0');
+
+  function go(i) {
+    if (i < 0 || i >= total) return;
+    slides[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+    document.getElementById('slide-num').textContent = String(current + 1).padStart(2, '0');
+    document.getElementById('progress').style.width = `${((current + 1) / total) * 100}%`;
+    slides[current].scrollTop = 0;
+  }
+
+  document.getElementById('next-btn').addEventListener('click', () => go(current + 1));
+  document.getElementById('prev-btn').addEventListener('click', () => go(current - 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(current - 1); }
+    if (e.key === 'Home') go(0);
+    if (e.key === 'End') go(total - 1);
+  });
+
+  go(0);
+</script>
+
+</body>
+</html>
