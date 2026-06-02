@@ -124,6 +124,15 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   .dots{display:none}
 }
 
+/* ---- bloque título oficial del curso ---- */
+.course-title{display:flex;flex-direction:column;gap:.55rem;margin:-.4rem 0 1.4rem;padding:1rem 1.2rem 1.05rem;
+  border-left:3px solid var(--gold);background:linear-gradient(90deg,rgba(232,176,75,.08),transparent 70%);
+  border-radius:0 12px 12px 0;max-width:46ch}
+.course-title .ct-label{font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--gold);font-weight:700}
+.course-title .ct-name{font-family:'Fraunces',serif;font-style:italic;font-weight:600;
+  font-size:clamp(1.15rem,1.7vw,1.55rem);line-height:1.25;color:var(--ink);letter-spacing:-.005em}
+
 /* ---- estilos mapa inaugural ---- */
 .roadmap{display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem}
 .modrow{display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:stretch}
@@ -171,8 +180,12 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   <div class="hero-num">00</div>
   <div class="spread">
     <div class="kicker reveal">Bienvenida · Mapa del recorrido</div>
+    <div class="course-title reveal">
+      <span class="ct-label">Curso</span>
+      <span class="ct-name">Optimización de la Investigación<br>Mediante Herramientas de Inteligencia Artificial</span>
+    </div>
     <h1 class="reveal">Un viaje de la<br><span class="em">idea</span> al <span class="em2">paper</span>.</h1>
-    <p class="lead reveal" style="margin-top:1.6rem">Optimización de la investigación científica con Inteligencia Artificial. Once sesiones, cuatro módulos, dos productos reales que saldrás escribiendo en equipo. No es un curso sobre IA: es un curso para investigar mejor con ella.</p>
+    <p class="lead reveal" style="margin-top:1.6rem">Once sesiones, cuatro módulos y dos productos reales que saldrás escribiendo en equipo. No es un curso sobre IA: es un curso para investigar mejor con ella.</p>
     <div class="meta-row reveal">
       <div><span class="mono">DURACIÓN</span><p>32 horas</p></div>
       <div><span class="mono">SESIONES</span><p>11 (10×3h + 1×2h)</p></div>
