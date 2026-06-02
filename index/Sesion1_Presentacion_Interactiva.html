@@ -582,41 +582,126 @@ Entrega el archivo completo dentro de un bloque de código, listo para pegar en 
   </div>
 </section>
 
-<!-- ============ 13 · TALLER BREAKOUT ============ -->
+<!-- ============ 13 · BÚSQUEDA PROFUNDA · EVENTOS ============ -->
+<section class="slide">
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal">Mini-taller · Búsqueda profunda</div>
+    <h2 class="reveal" style="font-size:clamp(1.6rem,3.2vw,2.6rem)">Encuentra <span class="em2">eventos académicos</span> sobre tu tema.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:66ch">Las funciones de <strong style="color:var(--ink)">Deep Research</strong> rastrean la web, leen fuentes y devuelven un informe con enlaces. Aquí buscaremos congresos sobre <strong style="color:var(--ink)">gestión del agua</strong>.</p>
+
+    <div class="wsteps reveal">
+      <div class="wstep"><span class="wn">1</span><div><div class="wt">Elige una IA con web</div><div class="ws">ChatGPT, Perplexity o Gemini. Activa el modo "Deep Research".</div></div></div>
+      <div class="wstep"><span class="wn">2</span><div><div class="wt">Pega el prompt</div><div class="ws">Sustituye "gestión del agua" por tu propio tema si lo prefieres.</div></div></div>
+      <div class="wstep"><span class="wn">3</span><div><div class="wt">Verifica cada URL</div><div class="ws">Abre los enlaces uno por uno. Si no carga, descarta el evento.</div></div></div>
+    </div>
+
+    <div class="chatpick reveal">
+      <a href="https://chatgpt.com/" target="_blank" rel="noopener" class="chatbtn">
+        <svg viewBox="0 0 32 32" aria-label="ChatGPT"><rect width="32" height="32" rx="7" fill="#10a37f"/><path d="M16 8 L23 12 V20 L16 24 L9 20 V12 Z" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="16" cy="16" r="2.6" fill="#fff"/></svg>
+        <div><div class="ct">ChatGPT · Deep Research</div><div class="cu">chatgpt.com</div></div>
+      </a>
+      <a href="https://www.perplexity.ai/" target="_blank" rel="noopener" class="chatbtn">
+        <svg viewBox="0 0 32 32" aria-label="Perplexity"><rect width="32" height="32" rx="7" fill="#20808d"/><g fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"><circle cx="16" cy="16" r="7"/><line x1="16" y1="6" x2="16" y2="26"/><line x1="9" y1="16" x2="23" y2="16"/></g></svg>
+        <div><div class="ct">Perplexity</div><div class="cu">perplexity.ai</div></div>
+      </a>
+      <a href="https://gemini.google.com/app" target="_blank" rel="noopener" class="chatbtn">
+        <svg viewBox="0 0 32 32" aria-label="Gemini"><defs><linearGradient id="gemGrad3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4285f4"/><stop offset="1" stop-color="#9b72ff"/></linearGradient></defs><rect width="32" height="32" rx="7" fill="#0d1117"/><path d="M16 5 C16 12 20 16 27 16 C20 16 16 20 16 27 C16 20 12 16 5 16 C12 16 16 12 16 5 Z" fill="url(#gemGrad3)"/></svg>
+        <div><div class="ct">Gemini · Deep Research</div><div class="cu">gemini.google.com</div></div>
+      </a>
+    </div>
+
+    <div class="promptbig reveal">
+      <div class="ph">
+        <span>▸ Prompt · eventos académicos sobre gestión del agua</span>
+        <button class="copybtn" id="copyDeepBtn" type="button">📋 Copiar</button>
+      </div>
+      <div class="pc" id="deepPrompt">Actúa como asistente de investigación con acceso a la web y modo Deep Research activado. Necesito un listado verificable de eventos académicos y científicos (congresos, simposios, conferencias y workshops) sobre GESTIÓN DEL AGUA que se realizarán entre junio de 2026 y diciembre de 2027.
+
+Para cada evento entrega:
+- Nombre oficial del evento y edición/año.
+- Sociedad científica u organización anfitriona.
+- Fechas exactas y ciudad / país (o modalidad virtual).
+- Líneas temáticas o ejes declarados.
+- Fechas clave: cierre de envío de resúmenes y notificación de aceptación.
+- URL oficial del evento (solo si la has consultado: si no estás seguro, escribe "[verificar]").
+- Indexación de memorias o proceedings (Scopus, WoS, IEEE, IWA, IAHR) cuando aplique.
+
+Reglas estrictas:
+- Prioriza eventos con revisión por pares y memorias indexadas.
+- Incluye al menos un evento en español/Latinoamérica y dos internacionales.
+- NO inventes URL, fechas ni nombres: lo dudoso márcalo "[verificar]".
+- Entrega el resultado en una tabla y, debajo, un párrafo describiendo qué fuentes consultaste y cómo hiciste la búsqueda.</div>
+    </div>
+
+    <p class="reveal mono" style="margin-top:.9rem;font-size:.72rem;color:var(--muted);letter-spacing:.14em">▸ DEEP RESEARCH REDUCE LA ALUCINACIÓN, NO LA ELIMINA. ABRE CADA URL ANTES DE AGENDAR.</p>
+  </div>
+</section>
+
+<!-- ============ 14 · TALLER BREAKOUT ============ -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">Taller · Breakout rooms · 30 min</div>
     <h2 class="reveal">Compara dos IA<br>con tu propio tema.</h2>
-    <div class="cols c2 reveal" style="margin-top:2rem">
+    <div class="cols c2 reveal" style="margin-top:1.6rem">
       <div class="card" style="border-left:3px solid var(--accent)">
         <h3>Consigna</h3>
-        <p style="margin-top:.8rem">1. Toma un tema que te interese investigar.<br><br>2. Usa este prompt mínimo en <strong style="color:var(--ink)">dos</strong> herramientas distintas:</p>
-        <div class="promptbox" style="margin-top:.7rem;font-size:.78rem">Actúa como asesor de investigación en <span class="ph">[campo]</span>. Estoy explorando <span class="ph">[tema]</span>. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. <strong style="color:var(--ink)">No inventes citas.</strong></div>
-        <p style="margin-top:.8rem">3. Verifica una afirmación de cada una en Google Scholar.</p>
+        <p style="margin-top:.7rem;font-size:.92rem">1. Toma un tema que te interese investigar.<br><br>2. Usa este prompt mínimo en <strong style="color:var(--ink)">dos</strong> herramientas distintas:</p>
+        <div class="promptbox" style="margin-top:.6rem;font-size:.76rem">Actúa como asesor de investigación en <span class="ph">[campo]</span>. Estoy explorando <span class="ph">[tema]</span>. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. <strong style="color:var(--ink)">No inventes citas.</strong></div>
+        <p style="margin-top:.7rem;font-size:.92rem">3. Verifica una afirmación de cada una en Google Scholar.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--gold)">
+        <h3 style="color:var(--gold)">Ejemplo · gestión del agua</h3>
+        <p style="margin-top:.7rem;font-size:.92rem">Cómo se ve el mismo prompt con un tema real:</p>
+        <div class="promptbox" style="margin-top:.6rem;font-size:.76rem;border-left-color:var(--gold)">Actúa como asesor de investigación en <strong style="color:var(--gold)">ingeniería hidráulica y ambiental</strong>. Estoy explorando <strong style="color:var(--gold)">la gestión sostenible del agua en cuencas andinas frente al cambio climático</strong>. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. <strong style="color:var(--ink)">No inventes citas.</strong></div>
+        <p style="margin-top:.7rem;font-size:.82rem;color:var(--muted)">► Solo cambian <strong style="color:var(--ink)">[campo]</strong> y <strong style="color:var(--ink)">[tema]</strong>. La estructura del prompt no se toca.</p>
+      </div>
+    </div>
+
+    <div class="cols c2 reveal" style="margin-top:1rem">
+      <div class="card" style="border-left:3px solid var(--accent2)">
+        <h3>Aclaraciones</h3>
+        <p style="margin-top:.6rem;font-size:.82rem;color:var(--muted);line-height:1.5"><strong style="color:var(--ink)">¿Por qué pedir "no inventes citas"?</strong> Porque las IA tienden a fabricar autores y años para sonar creíbles. Con esa instrucción se concentran en ideas; aun así, vigila si aparecen.</p>
+        <p style="margin-top:.5rem;font-size:.82rem;color:var(--muted);line-height:1.5"><strong style="color:var(--ink)">¿Cómo verifico en Scholar?</strong> Si la respuesta dice "según X (2020)…", copia el título o autor en <span class="mono" style="color:var(--accent2)">scholar.google.com</span>. Si no aparece o el paper dice otra cosa, es alucinación.</p>
+        <p style="margin-top:.5rem;font-size:.82rem;color:var(--muted);line-height:1.5"><strong style="color:var(--ink)">¿La alucinación la detecto yo?</strong> Sí, el veredicto es tuyo con Scholar en mano. Puedes pedirle a una tercera IA "compara estas dos respuestas y marca diferencias factuales", pero la fuente la confirmas tú.</p>
       </div>
       <div class="card" style="border-left:3px solid var(--accent2)">
         <h3>Entregable de la sala</h3>
-        <p style="margin-top:.8rem">Un hallazgo en <strong style="color:var(--ink)">3 frases</strong>:<br><br>▹ ¿En qué coincidieron las dos IA?<br>▹ ¿En qué se contradijeron?<br>▹ ¿Encontraron alguna alucinación?</p>
-        <p style="margin-top:1rem;color:var(--accent2);font-size:.78rem" class="mono">RELATOR POR SALA · 1 MIN EN PLENARIA</p>
-        <p style="margin-top:1rem;color:var(--muted);font-size:.78rem">► En la Sesión 2 aprenderemos a redactar prompts más sofisticados con la técnica R-C-T-F-I.</p>
+        <p style="margin-top:.7rem;font-size:.92rem">Un hallazgo en <strong style="color:var(--ink)">3 frases</strong>:<br><br>▹ ¿En qué coincidieron las dos IA?<br>▹ ¿En qué se contradijeron?<br>▹ ¿Encontraron alguna alucinación?</p>
+        <p style="margin-top:.8rem;color:var(--accent2);font-size:.74rem" class="mono">RELATOR POR SALA · 1 MIN EN PLENARIA</p>
+        <p style="margin-top:.6rem;color:var(--muted);font-size:.78rem">► En la Sesión 2 aprenderemos a redactar prompts más sofisticados con la técnica R-C-T-F-I.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ 14 · DEFINE TU TEMA + CIERRE ============ -->
+<!-- ============ 15 · DEFINE TU TEMA + CIERRE ============ -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">El punto de partida · cierre</div>
     <h2 class="reveal">Antes de irte: <span class="em2">define tu tema</span>.</h2>
-    <p class="lead reveal" style="margin-top:1rem">Este tema te acompañará en las 10 sesiones siguientes y será la base de los dos productos de tu equipo. Complétalo en una frase:</p>
-    <div class="reveal promptbox" style="margin-top:1.4rem;font-size:1.05rem;line-height:2.1;border-left-color:var(--accent2)">
-      Quiero investigar <span class="ph">[fenómeno / problema]</span><br>
-      en <span class="ph">[contexto / población]</span><br>
-      porque <span class="ph">[relevancia / vacío que percibo]</span>.
+    <p class="lead reveal" style="margin-top:.9rem">Este tema te acompañará en las 10 sesiones siguientes y será la base de los dos productos de tu equipo. Complétalo en una frase:</p>
+
+    <div class="cols c2 reveal" style="margin-top:1.2rem;gap:1.4rem">
+      <div>
+        <div class="mono" style="font-size:.7rem;letter-spacing:.18em;color:var(--accent2);margin-bottom:.5rem">▸ PLANTILLA</div>
+        <div class="promptbox" style="font-size:.98rem;line-height:1.95;border-left-color:var(--accent2)">
+          Quiero investigar <span class="ph">[fenómeno / problema]</span><br>
+          en <span class="ph">[contexto / población]</span><br>
+          porque <span class="ph">[relevancia / vacío que percibo]</span>.
+        </div>
+      </div>
+      <div>
+        <div class="mono" style="font-size:.7rem;letter-spacing:.18em;color:var(--gold);margin-bottom:.5rem">▸ EJEMPLO · GESTIÓN DEL AGUA</div>
+        <div class="promptbox" style="font-size:.92rem;line-height:1.85;border-left-color:var(--gold)">
+          Quiero investigar <strong style="color:var(--gold)">la eficiencia hídrica del riego por goteo</strong><br>
+          en <strong style="color:var(--gold)">pequeños productores de café del eje cafetero colombiano</strong><br>
+          porque <strong style="color:var(--gold)">el cambio climático reduce la disponibilidad de agua y no hay datos locales sobre el retorno de esta tecnología</strong>.
+        </div>
+      </div>
     </div>
-    <p class="lead reveal" style="margin-top:1.4rem">Pégalo en el documento compartido. En la <span class="emg">Sesión 2</span> aprenderemos a interrogar este tema con ética y prompting riguroso.</p>
-    <div class="reveal meta-row" style="margin-top:1.6rem">
+
+    <p class="lead reveal" style="margin-top:1.2rem">Pégalo en el documento compartido. En la <span class="emg">Sesión 2</span> aprenderemos a interrogar este tema con ética y prompting riguroso.</p>
+    <div class="reveal meta-row" style="margin-top:1.2rem">
       <div><span class="mono">TAREA</span><p>Define tu tema</p></div>
       <div><span class="mono">PRUEBA</span><p>Conversor + comparar 2 IA</p></div>
       <div><span class="mono">SIGUE</span><p>Sesión 2 · Ética y prompting</p></div>
@@ -757,15 +842,14 @@ buildDots();go(0);
   };
 })();
 
-/* ---------- copiar prompt del mini-taller ---------- */
-(function(){
-  const btn=document.getElementById('copyConvBtn');
-  const src=document.getElementById('convPrompt');
+/* ---------- copiar prompts (mini-taller + búsqueda profunda) ---------- */
+function wireCopy(btnId, srcId){
+  const btn=document.getElementById(btnId);
+  const src=document.getElementById(srcId);
   if(!btn||!src)return;
   const flash=()=>{
-    const old=btn.textContent;
     btn.textContent='✓ Copiado';btn.classList.add('ok');
-    setTimeout(()=>{btn.textContent=old.startsWith('✓')?'📋 Copiar':old;btn.classList.remove('ok');},2000);
+    setTimeout(()=>{btn.textContent='📋 Copiar';btn.classList.remove('ok');},2000);
   };
   btn.onclick=async()=>{
     const txt=src.innerText;
@@ -779,7 +863,9 @@ buildDots();go(0);
       document.body.removeChild(ta);
     }
   };
-})();
+}
+wireCopy('copyConvBtn','convPrompt');
+wireCopy('copyDeepBtn','deepPrompt');
 </script>
 </body>
 </html>
