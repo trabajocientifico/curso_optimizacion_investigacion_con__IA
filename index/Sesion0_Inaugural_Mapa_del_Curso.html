@@ -13,6 +13,17 @@
   --accent:#ff6b3d; --accent2:#3dd6c4; --gold:#e8b04b;
   --line:rgba(255,255,255,.1); --card:rgba(255,255,255,.04);
   --danger:#ff5a5f; --ok:#3ddc97;
+  --code-bg:#0a0e14; --code-ink:#cdd6e3;
+  --mesh-a:rgba(255,107,61,.16); --mesh-b:rgba(61,214,196,.13); --mesh-c:rgba(232,176,75,.06);
+  --grain-op:.05; --grid-op:.4;
+}
+:root[data-theme="light"]{
+  --bg:#f7f4ee; --bg2:#ece8df; --ink:#1a1f29; --muted:#5a6878;
+  --accent:#d4501c; --accent2:#0e8a7c; --gold:#b8842e;
+  --line:rgba(0,0,0,.12); --card:rgba(0,0,0,.03);
+  --code-bg:#1a1f29; --code-ink:#cdd6e3;
+  --mesh-a:rgba(212,80,28,.10); --mesh-b:rgba(14,138,124,.08); --mesh-c:rgba(184,132,46,.06);
+  --grain-op:.035; --grid-op:.5;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
@@ -20,18 +31,19 @@ body{
   background:var(--bg); color:var(--ink);
   font-family:'Sora',sans-serif; overflow:hidden;
   -webkit-font-smoothing:antialiased;
+  transition:background-color .35s ease, color .35s ease;
 }
 /* fondo: malla + grano */
 .bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(60vw 60vw at 78% 12%, rgba(255,107,61,.16), transparent 60%),
-    radial-gradient(50vw 50vw at 12% 88%, rgba(61,214,196,.13), transparent 60%),
-    radial-gradient(40vw 40vw at 50% 50%, rgba(232,176,75,.06), transparent 70%);
+    radial-gradient(60vw 60vw at 78% 12%, var(--mesh-a), transparent 60%),
+    radial-gradient(50vw 50vw at 12% 88%, var(--mesh-b), transparent 60%),
+    radial-gradient(40vw 40vw at 50% 50%, var(--mesh-c), transparent 70%);
   animation:meshfloat 18s ease-in-out infinite alternate;}
 @keyframes meshfloat{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-2%,2%,0) scale(1.08)}}
-.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:var(--grain-op);
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
-.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:var(--grid-op);
   background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
   background-size:64px 64px;mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%);}
 
@@ -95,8 +107,8 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 
 /* mono code */
 .mono{font-family:'Space Mono',monospace}
-.promptbox{background:#0a0e14;border:1px solid var(--line);border-left:3px solid var(--accent);
-  border-radius:12px;padding:1.1rem 1.2rem;font-family:'Space Mono',monospace;font-size:.92rem;line-height:1.65;color:#cdd6e3}
+.promptbox{background:var(--code-bg);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:12px;padding:1.1rem 1.2rem;font-family:'Space Mono',monospace;font-size:.92rem;line-height:1.65;color:var(--code-ink)}
 .promptbox .ph{color:var(--gold)}
 
 /* title slide bits */
@@ -160,12 +172,12 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   <div class="spread">
     <div class="kicker reveal">Bienvenida · Mapa del recorrido</div>
     <h1 class="reveal">Un viaje de la<br><span class="em">idea</span> al <span class="em2">paper</span>.</h1>
-    <p class="lead reveal" style="margin-top:1.6rem">Optimización de la investigación científica con Inteligencia Artificial. Once sesiones, cuatro módulos, tres productos reales que saldrás escribiendo. No es un curso sobre IA: es un curso para investigar mejor con ella.</p>
+    <p class="lead reveal" style="margin-top:1.6rem">Optimización de la investigación científica con Inteligencia Artificial. Once sesiones, cuatro módulos, dos productos reales que saldrás escribiendo en equipo. No es un curso sobre IA: es un curso para investigar mejor con ella.</p>
     <div class="meta-row reveal">
       <div><span class="mono">DURACIÓN</span><p>32 horas</p></div>
       <div><span class="mono">SESIONES</span><p>11 (10×3h + 1×2h)</p></div>
       <div><span class="mono">MODALIDAD</span><p>Virtual sincrónica</p></div>
-      <div><span class="mono">PRODUCTOS</span><p>3 entregables</p></div>
+      <div><span class="mono">PRODUCTOS</span><p>2 entregables</p></div>
     </div>
     <div class="reveal" style="margin-top:2.4rem"><span class="tag">→  para ver el mapa completo</span></div>
   </div>
@@ -188,18 +200,17 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 3 · LOS TRES PRODUCTOS -->
+<!-- 3 · LOS DOS PRODUCTOS -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">Lo que te llevas</div>
-    <h2 class="reveal">Tres productos,<br>no tres <span class="em">certificados</span>.</h2>
-    <p class="lead reveal" style="margin-top:1rem">La evaluación es por lo que construyes, no por exámenes. Al terminar, tendrás en tus manos:</p>
-    <div class="productbar reveal" style="margin-top:1.8rem">
-      <div class="prodchip lit"><span class="pn">Producto 1 · Módulo 2</span><h4>Anteproyecto</h4><p style="color:var(--muted);font-size:.82rem;margin-top:.5rem;line-height:1.4">Problema, objetivos, marco y método.</p></div>
-      <div class="prodchip rev"><span class="pn">Producto 2 · Módulo 3</span><h4>Artículo de revisión</h4><p style="color:var(--muted);font-size:.82rem;margin-top:.5rem;line-height:1.4">Búsqueda, síntesis y redacción.</p></div>
-      <div class="prodchip art"><span class="pn">Producto 3 · Módulo 4</span><h4>Artículo original</h4><p style="color:var(--muted);font-size:.82rem;margin-top:.5rem;line-height:1.4">IMRyD, datos y plan de envío.</p></div>
+    <h2 class="reveal">Dos entregables,<br>en <span class="em">equipo</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">La evaluación es por lo que construyes, no por exámenes. Trabajaremos en <mark>grupos de máximo 4 personas</mark> y al cierre cada equipo tendrá en sus manos dos productos científicos reales:</p>
+    <div class="productbar reveal" style="grid-template-columns:1fr 1fr;margin-top:1.8rem">
+      <div class="prodchip lit"><span class="pn">Producto 1 · Módulo 2</span><h4>Anteproyecto</h4><p style="color:var(--muted);font-size:.82rem;margin-top:.5rem;line-height:1.4">Problema, objetivos, marco teórico y diseño metodológico.</p></div>
+      <div class="prodchip art"><span class="pn">Producto 2 · Módulos 3 y 4</span><h4>Artículo científico</h4><p style="color:var(--muted);font-size:.82rem;margin-top:.5rem;line-height:1.4">Revisión de literatura <span class="em">o</span> artículo original (IMRyD), según el material del equipo.</p></div>
     </div>
-    <p class="lead reveal" style="margin-top:1.6rem">¿Sin resultados aún? El producto 3 puede ser un <mark>protocolo de análisis</mark> o una revisión ampliada. Nadie se queda sin entregable.</p>
+    <p class="lead reveal" style="margin-top:1.6rem">El curso recibe a personas <mark>con y sin investigación en marcha</mark>. Si el equipo ya cuenta con datos, el producto 2 puede ser un artículo original; si aún no, será una revisión de literatura bien construida. Nadie se queda sin entregable.</p>
   </div>
 </section>
 
@@ -218,6 +229,7 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 <div class="hud">
   <div class="brand">Trabajo Científico</div>
   <div class="nav">
+    <button id="themeToggle" aria-label="cambiar tema" title="Cambiar tema (T)"><span id="themeIcon">☾</span></button>
     <button id="prev" aria-label="anterior">‹</button>
     <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 04</span>
     <button id="next" aria-label="siguiente">›</button>
@@ -246,7 +258,27 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key===' ')next();
   if(e.key==='ArrowLeft')prev();
   if(e.key==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+  if(e.key==='t'||e.key==='T')toggleTheme();
 });
+
+/* ---- tema claro / oscuro ---- */
+const themeIcon=document.getElementById('themeIcon');
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  if(themeIcon)themeIcon.textContent = t==='light' ? '☀' : '☾';
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
+  const next=cur==='light'?'dark':'light';
+  applyTheme(next);
+  try{localStorage.setItem('mapaTheme',next)}catch(e){}
+}
+(function initTheme(){
+  let saved='dark';
+  try{saved=localStorage.getItem('mapaTheme')||'dark'}catch(e){}
+  applyTheme(saved);
+})();
+const _tt=document.getElementById('themeToggle');if(_tt)_tt.onclick=toggleTheme;
 buildDots();go(0);
 
 /* ---- mapa interactivo de módulos ---- */
@@ -258,11 +290,11 @@ buildDots();go(0);
     {n:'2',h:'Anteproyecto',color:'#e8b04b',sessions:['S3 · Problema y objetivos','S4 · Marco y método'],
      desc:'Conviertes tu tema en una propuesta investigable: problema, pregunta, objetivos medibles, marco teórico y diseño metodológico, validando cada paso contra la literatura.',product:'Producto 1 · Anteproyecto'},
     {n:'3',h:'Revisión de literatura',color:'#3dd6c4',sessions:['S5 · Búsqueda','S6 · Síntesis','S7 · Redacción'],
-     desc:'El módulo más extenso. Búsqueda sistemática reproducible, descubrimiento asistido, matrices de síntesis y redacción con voz propia y citas verificadas.',product:'Producto 2 · Artículo de revisión'},
+     desc:'El módulo más extenso. Búsqueda sistemática reproducible, descubrimiento asistido, matrices de síntesis y redacción con voz propia y citas verificadas. Aquí toma forma el producto 2 para los equipos que harán revisión de literatura.',product:'Producto 2 · Artículo científico'},
     {n:'4',h:'Artículo original',color:'#7c8cff',sessions:['S8 · IMRyD','S9 · Datos (Colab+Gemini)','S10 · Publicación'],
-     desc:'De los datos al manuscrito: estructura IMRyD, análisis y visualización con Colab y Gemini, y el camino a la publicación: revista, revisores y declaración de uso de IA.',product:'Producto 3 · Artículo original'},
+     desc:'De los datos al manuscrito: estructura IMRyD, análisis y visualización con Colab y Gemini, y el camino a la publicación. Ruta del producto 2 para equipos que cuentan con datos propios.',product:'Producto 2 · Artículo científico'},
     {n:'★',h:'Cierre',color:'#19c2a8',sessions:['S11 · Socialización (2h)'],
-     desc:'Presentas tus tres productos, recibes retroalimentación de tus pares y consolidas tu plan de envío. El cierre del viaje.',product:null},
+     desc:'Presentas tus dos productos, recibes retroalimentación de tus pares y consolidas tu plan de envío. El cierre del viaje.',product:null},
   ];
   mods.forEach((m,idx)=>{
     if(idx>0){
@@ -273,7 +305,7 @@ buildDots();go(0);
     const badge=document.createElement('div');badge.className='modbadge';
     badge.innerHTML='<div class="mnum" style="color:'+m.color+'">'+m.n+'</div><div class="mh">'+(m.n==='★'?'Final':'Módulo')+'</div>';
     const card=document.createElement('div');card.className='modcard';card.style.setProperty('--m',m.color);
-    card.innerHTML='<h3>'+m.h+' <span class="sess">'+m.sessions.length+' '+(m.sessions.length>1?'sesiones':'sesión')+'</span></h3>'
+    card.innerHTML='<h3>'+m.h+'</h3>'
       +'<div class="seslist">'+m.sessions.map(s=>'<span class="sespill">'+s+'</span>').join('')+'</div>'
       +'<div class="desc">'+m.desc+(m.product?'<br><span class="product" style="--m:'+m.color+'">▸ '+m.product+'</span>':'')+'</div>';
     card.onclick=()=>{

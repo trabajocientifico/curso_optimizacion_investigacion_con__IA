@@ -13,6 +13,17 @@
   --accent:#ff6b3d; --accent2:#3dd6c4; --gold:#e8b04b;
   --line:rgba(255,255,255,.1); --card:rgba(255,255,255,.04);
   --danger:#ff5a5f; --ok:#3ddc97;
+  --code-bg:#0a0e14; --code-ink:#cdd6e3;
+  --mesh-a:rgba(255,107,61,.16); --mesh-b:rgba(61,214,196,.13); --mesh-c:rgba(232,176,75,.06);
+  --grain-op:.05; --grid-op:.4;
+}
+:root[data-theme="light"]{
+  --bg:#f7f4ee; --bg2:#ece8df; --ink:#1a1f29; --muted:#5a6878;
+  --accent:#d4501c; --accent2:#0e8a7c; --gold:#b8842e;
+  --line:rgba(0,0,0,.12); --card:rgba(0,0,0,.03);
+  --code-bg:#1a1f29; --code-ink:#cdd6e3;
+  --mesh-a:rgba(212,80,28,.10); --mesh-b:rgba(14,138,124,.08); --mesh-c:rgba(184,132,46,.06);
+  --grain-op:.035; --grid-op:.5;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
@@ -20,22 +31,21 @@ body{
   background:var(--bg); color:var(--ink);
   font-family:'Sora',sans-serif; overflow:hidden;
   -webkit-font-smoothing:antialiased;
+  transition:background-color .35s ease, color .35s ease;
 }
-/* fondo: malla + grano */
 .bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(60vw 60vw at 78% 12%, rgba(255,107,61,.16), transparent 60%),
-    radial-gradient(50vw 50vw at 12% 88%, rgba(61,214,196,.13), transparent 60%),
-    radial-gradient(40vw 40vw at 50% 50%, rgba(232,176,75,.06), transparent 70%);
+    radial-gradient(60vw 60vw at 78% 12%, var(--mesh-a), transparent 60%),
+    radial-gradient(50vw 50vw at 12% 88%, var(--mesh-b), transparent 60%),
+    radial-gradient(40vw 40vw at 50% 50%, var(--mesh-c), transparent 70%);
   animation:meshfloat 18s ease-in-out infinite alternate;}
 @keyframes meshfloat{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-2%,2%,0) scale(1.08)}}
-.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:var(--grain-op);
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
-.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:var(--grid-op);
   background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
   background-size:64px 64px;mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%);}
 
-/* deck */
 .deck{position:relative;z-index:2;height:100vh;width:100vw}
 .slide{position:absolute;inset:0;display:none;flex-direction:column;
   padding:5.5vh 6vw 8vh;opacity:0;transition:opacity .5s ease}
@@ -46,7 +56,6 @@ body{
 .reveal:nth-child(5){animation-delay:.45s}.reveal:nth-child(6){animation-delay:.55s}
 @keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
 
-/* tipografía */
 .kicker{font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.32em;
   text-transform:uppercase;color:var(--accent2);margin-bottom:1.2rem;display:flex;gap:.8rem;align-items:center}
 .kicker::before{content:"";width:34px;height:1px;background:var(--accent2)}
@@ -59,7 +68,6 @@ h3{font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.1rem,1.7vw,1.
 .em{color:var(--accent)}.em2{color:var(--accent2)}.emg{color:var(--gold)}
 mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:inherit;padding:0 .1em}
 
-/* layout helpers */
 .spread{flex:1;display:flex;flex-direction:column;justify-content:center}
 .cols{display:grid;gap:2rem;align-items:start}
 .c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}
@@ -71,7 +79,6 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 .tag{display:inline-block;font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;
   text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem;color:var(--muted)}
 
-/* chrome */
 .topbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:30;background:rgba(255,255,255,.06)}
 .topbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .4s}
 .hud{position:fixed;bottom:2.2vh;left:6vw;right:6vw;z-index:30;display:flex;justify-content:space-between;align-items:center;
@@ -82,24 +89,20 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 .nav button:hover{background:var(--accent);border-color:var(--accent);transform:translateY(-2px)}
 .brand{font-family:'Fraunces',serif;font-style:italic;font-weight:600;color:var(--ink)}
 
-/* dot nav */
 .dots{position:fixed;right:2vw;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:.7rem}
 .dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:.25s;display:block}
 .dots i.on{background:var(--accent);height:22px;border-radius:6px}
 
-/* botones */
 .btn{font-family:'Sora';font-weight:600;font-size:.92rem;border:none;cursor:pointer;border-radius:12px;
-  padding:.8rem 1.3rem;transition:.2s;display:inline-flex;gap:.5rem;align-items:center}
+  padding:.8rem 1.3rem;transition:.2s;display:inline-flex;gap:.5rem;align-items:center;text-decoration:none}
 .btn-primary{background:var(--accent);color:#1a0d08}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-2px)}
 .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn-ghost:hover{border-color:var(--accent)}
 
-/* mono code */
 .mono{font-family:'Space Mono',monospace}
-.promptbox{background:#0a0e14;border:1px solid var(--line);border-left:3px solid var(--accent);
-  border-radius:12px;padding:1.1rem 1.2rem;font-family:'Space Mono',monospace;font-size:.92rem;line-height:1.65;color:#cdd6e3}
+.promptbox{background:var(--code-bg);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:12px;padding:1.1rem 1.2rem;font-family:'Space Mono',monospace;font-size:.92rem;line-height:1.65;color:var(--code-ink)}
 .promptbox .ph{color:var(--gold)}
 
-/* title slide bits */
 .hero-num{position:absolute;right:5vw;top:8vh;font-family:'Fraunces',serif;font-weight:900;
   font-size:26vw;line-height:.8;color:rgba(255,255,255,.03);z-index:-1;pointer-events:none}
 .meta-row{display:flex;gap:2.4rem;flex-wrap:wrap;margin-top:2.4rem}
@@ -112,7 +115,47 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   .dots{display:none}
 }
 
-/* ---- caja de herramientas (slide nueva) ---- */
+/* ---- stat hero (5.14M) ---- */
+.stathero{display:grid;grid-template-columns:1fr 1.1fr;gap:4rem;align-items:center;margin-top:1.6rem}
+.statbig{font-family:'Fraunces',serif;font-weight:200;font-size:clamp(6rem,16vw,14rem);line-height:.85;letter-spacing:-.04em;position:relative}
+.statbig .unit{font-size:.25em;vertical-align:super;color:var(--accent);font-weight:400;margin-left:.2em}
+.statbig::after{content:"";position:absolute;bottom:-1rem;left:0;width:80px;height:2px;background:var(--accent)}
+.statlabel{font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-top:2rem}
+@media(max-width:820px){.stathero{grid-template-columns:1fr;gap:1.4rem}}
+
+/* ---- phase map ---- */
+.phasemap{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-top:1.6rem}
+.phasecard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;transition:.22s;position:relative;overflow:hidden}
+.phasecard::before{content:"";position:absolute;left:0;top:0;width:100%;height:2px;background:linear-gradient(90deg,var(--accent2),transparent)}
+.phasecard:hover{border-color:var(--accent2);transform:translateY(-2px)}
+.phasecard .pn{font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;display:flex;align-items:center;gap:.5rem}
+.phasecard .pn::after{content:"";flex:1;height:1px;background:var(--line)}
+.phasecard h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;margin:.6rem 0 .4rem}
+.phasecard p{color:var(--muted);font-size:.82rem;line-height:1.45;font-weight:300}
+.phasecard .pmod{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.1em;margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--line)}
+@media(max-width:820px){.phasemap{grid-template-columns:1fr}}
+
+/* ---- stacks ---- */
+.stacks{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-top:1.6rem}
+.stack{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.6rem 1.7rem;transition:.22s}
+.stack:hover{transform:translateY(-3px)}
+.stack.pro{border-color:rgba(255,107,61,.28);background:linear-gradient(180deg,var(--card),rgba(255,107,61,.03))}
+.stackhead{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid var(--line)}
+.stackhead h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.4rem}
+.stackhead .sub{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:.16em;margin-top:.3rem;text-transform:uppercase}
+.stackprice{text-align:right}
+.stackprice .num{font-family:'Fraunces',serif;font-weight:600;font-size:1.9rem;line-height:1}
+.stack.pro .stackprice .num{color:var(--accent)}
+.stack:not(.pro) .stackprice .num{color:var(--accent2)}
+.stackprice .u{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);margin-top:.2rem}
+.stacklist{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.stacklist li{display:flex;align-items:baseline;gap:.7rem;font-size:.92rem;line-height:1.35;padding:.55rem .7rem;background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:8px}
+.stacklist .n{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--accent);font-weight:700;min-width:1.4rem}
+.stacklist .role{display:block;font-family:'Space Mono',monospace;font-size:.66rem;color:var(--muted);margin-top:.15rem;letter-spacing:.04em}
+.stacknote{margin-top:1rem;padding:.85rem 1rem;background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:10px;font-size:.82rem;color:var(--muted);line-height:1.5}
+@media(max-width:820px){.stacks{grid-template-columns:1fr}}
+
+/* ---- caja de herramientas ---- */
 .toolgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.4rem}
 .toolcat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.05rem 1.15rem;
   display:flex;flex-direction:column;gap:.55rem;transition:.25s;position:relative;overflow:hidden}
@@ -121,11 +164,11 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 .toolcat:hover::before{opacity:1;width:5px}
 .toolcat .catlabel{display:flex;align-items:center;gap:.55rem;font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
 .toolcat .catn{color:var(--accent);font-weight:700}
-.toolcat .cattitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.1rem;color:var(--ink);line-height:1.15}
-.toolcat .logos{display:flex;gap:.85rem;flex-wrap:wrap;align-items:flex-start;margin-top:.15rem}
-.toolcat .logo{display:flex;flex-direction:column;align-items:center;gap:.3rem;font-family:'Space Mono',monospace;font-size:.6rem;color:#cdd6e3;letter-spacing:.04em;text-align:center;min-width:44px}
-.toolcat .logo svg{width:40px;height:40px;border-radius:9px;display:block;box-shadow:0 4px 14px rgba(0,0,0,.35)}
-.toolcat .desc{color:var(--muted);font-size:.8rem;line-height:1.45;font-weight:300;margin-top:auto}
+.toolcat .cattitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;color:var(--ink);line-height:1.15}
+.toolcat .logos{display:flex;gap:.7rem;flex-wrap:wrap;align-items:flex-start;margin-top:.1rem}
+.toolcat .logo{display:flex;flex-direction:column;align-items:center;gap:.25rem;font-family:'Space Mono',monospace;font-size:.58rem;color:#cdd6e3;letter-spacing:.04em;text-align:center;min-width:40px}
+.toolcat .logo svg{width:34px;height:34px;border-radius:8px;display:block;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.toolcat .desc{color:var(--muted);font-size:.76rem;line-height:1.4;font-weight:300;margin-top:auto}
 @media(max-width:1100px){.toolgrid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:680px){.toolgrid{grid-template-columns:1fr}}
 
@@ -146,7 +189,7 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 .chatbtn:hover::after{color:var(--accent);transform:translate(2px,-2px)}
 .promptbig{background:#0a0e14;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;margin-top:.9rem;overflow:hidden}
 .promptbig .ph{display:flex;justify-content:space-between;align-items:center;padding:.55rem .85rem;background:rgba(255,255,255,.03);border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-.promptbig .pc{padding:.9rem 1.05rem;font-family:'Space Mono',monospace;font-size:.78rem;line-height:1.55;color:#cdd6e3;max-height:28vh;overflow-y:auto;white-space:pre-wrap}
+.promptbig .pc{padding:.9rem 1.05rem;font-family:'Space Mono',monospace;font-size:.78rem;line-height:1.55;color:#cdd6e3;max-height:24vh;overflow-y:auto;white-space:pre-wrap}
 .copybtn{background:var(--accent);color:#1a0d08;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;padding:.4rem .8rem;border-radius:8px;font-weight:700;transition:.2s}
 .copybtn:hover{filter:brightness(1.1)}
 .copybtn.ok{background:var(--ok);color:#0d1117}
@@ -164,7 +207,7 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 
 <div class="deck" id="deck">
 
-<!-- ============ SLIDE 1 · PORTADA ============ -->
+<!-- ============ 1 · PORTADA ============ -->
 <section class="slide active">
   <div class="hero-num">01</div>
   <div class="spread">
@@ -183,37 +226,37 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- ============ SLIDE 2 · AGENDA ============ -->
+<!-- ============ 2 · AGENDA ============ -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">Ruta de la sesión</div>
     <h2 class="reveal">Tres horas, cuatro momentos.</h2>
     <div class="cols c2 reveal" style="margin-top:2.4rem">
       <div class="card">
-        <span class="num">00:00 — 00:40</span>
+        <span class="num">00:00 — 00:35</span>
         <h3>El paisaje</h3>
-        <p>Qué es la IA generativa, qué tipos existen y cómo funciona por dentro a grandes rasgos. Demostración comparativa en vivo.</p>
+        <p>Qué es la IA generativa, cómo funciona y por qué eso explica que «alucine». La rutina de verificación que usaremos todo el curso.</p>
       </div>
       <div class="card">
-        <span class="num">00:40 — 01:20</span>
-        <h3>La grieta</h3>
-        <p>Por qué la IA «alucina». Demostración en vivo de una referencia inventada y de sesgos. La rutina de verificación.</p>
+        <span class="num">00:35 — 01:20</span>
+        <h3>El ecosistema</h3>
+        <p>Mapa de las 6 fases del trabajo investigativo y las herramientas que ya existen para cada una. Dos stacks recomendados.</p>
       </div>
       <div class="card">
         <span class="num">01:30 — 02:20</span>
         <h3>El primer contacto</h3>
-        <p>Taller guiado: cada docente explora dos herramientas con su propio tema y compara resultados.</p>
+        <p>Mini-taller: tu primer aplicativo creado con IA. Luego comparamos dos chatbots con tu propio tema de interés.</p>
       </div>
       <div class="card">
         <span class="num">02:20 — 03:00</span>
         <h3>El punto de partida</h3>
-        <p>Cada participante define su tema tentativo de investigación. Cierre y enlace con la Sesión 2.</p>
+        <p>Cada participante define su tema tentativo de investigación. Cierre y enlace con la Sesión 2 (ética y prompting).</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ SLIDE 3 · PREGUNTA DETONANTE ============ -->
+<!-- ============ 3 · PREGUNTA DETONANTE ============ -->
 <section class="slide">
   <div class="spread" style="align-items:center;text-align:center">
     <div class="kicker reveal" style="justify-content:center">Antes de empezar</div>
@@ -223,7 +266,24 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- ============ SLIDE 4 · QUÉ ES / QUÉ NO ES ============ -->
+<!-- ============ 4 · EL PROBLEMA · 5.14M ============ -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">El contexto · 2026</div>
+    <div class="reveal stathero">
+      <div>
+        <div class="statbig">5.14<span class="unit">M</span></div>
+        <div class="statlabel">Artículos científicos publicados al año</div>
+      </div>
+      <div>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.4rem)">Hace una década, el cuello de botella era <span class="em">encontrar</span> la literatura.<br><br>Hoy es <span class="em2">procesarla</span>.</h2>
+        <p class="lead" style="margin-top:1.4rem;max-width:62ch">Los flujos asistidos por IA reducen los tiempos de revisión hasta un 30% manteniendo —o mejorando— la calidad metodológica. La IA no piensa por ti: <mark>amplifica la productividad de quien sabe qué herramienta usar en qué momento.</mark></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 · QUÉ ES / QUÉ NO ES ============ -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">Definamos el terreno</div>
@@ -242,38 +302,77 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- ============ SLIDE 5 · TIPOS DE HERRAMIENTAS ============ -->
+<!-- ============ 6 · CÓMO FUNCIONA (predictor) ============ -->
 <section class="slide">
   <div class="spread">
-    <div class="kicker reveal">El ecosistema</div>
-    <h2 class="reveal">No todas las IA<br>sirven para lo mismo.</h2>
-    <div class="cols c3 reveal" style="margin-top:2.2rem">
-      <div class="card">
-        <span class="num">01</span><h3>Conversacionales</h3>
-        <p>Modelos de lenguaje de propósito general. Redactan, explican, reformulan.</p>
-        <p style="margin-top:.7rem;color:var(--accent2)" class="mono">Claude · ChatGPT · Gemini</p>
-      </div>
-      <div class="card">
-        <span class="num">02</span><h3>Especializadas en ciencia</h3>
-        <p>Buscan, leen y sintetizan literatura real con citas rastreables.</p>
-        <p style="margin-top:.7rem;color:var(--accent2)" class="mono">Elicit · Consensus · Semantic&nbsp;Scholar</p>
-      </div>
-      <div class="card">
-        <span class="num">03</span><h3>De apoyo al flujo</h3>
-        <p>Gestión, estilo, síntesis de tus propias fuentes, cribado.</p>
-        <p style="margin-top:.7rem;color:var(--accent2)" class="mono">Zotero · NotebookLM · Paperpal</p>
-      </div>
+    <div class="kicker reveal">Bajo el capó</div>
+    <h2 class="reveal">Predice la siguiente palabra.<br><span class="em2">Eso es todo.</span></h2>
+    <p class="lead reveal" style="margin-top:1.2rem">Un modelo no «consulta» nada: estima qué palabra es más probable después de la anterior. Pruébalo: haz clic para revelar cómo el modelo completa la frase, una palabra a la vez.</p>
+    <div class="reveal" style="margin-top:1.8rem;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.8rem">
+      <div id="predictText" class="mono" style="font-size:1.3rem;line-height:1.7;min-height:3.4rem">El agua hierve a los <span id="predictSlot" style="color:var(--muted)">_____</span></div>
+      <div id="predictOpts" style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.2rem"></div>
+      <button class="btn btn-ghost" id="predictReset" style="margin-top:1.2rem;display:none">↻ Reiniciar</button>
     </div>
-    <p class="lead reveal" style="margin-top:1.8rem">Regla práctica: para <span class="emg">hechos y citas</span> usa las especializadas; para <span class="emg">redactar y pensar</span>, las conversacionales. Nunca pidas referencias a un modelo conversacional.</p>
+    <p class="lead reveal" style="margin-top:1.4rem;max-width:72ch">El modelo elige por <span class="em">probabilidad</span>, no por verdad. Cuando la opción más probable resulta falsa pero suena bien, eso es una <mark>alucinación</mark>. Lo verás en la siguiente diapositiva.</p>
   </div>
 </section>
 
-<!-- ============ SLIDE 6 · CAJA DE HERRAMIENTAS ============ -->
+<!-- ============ 7 · DEMOSTRADOR DE ALUCINACIÓN ============ -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">La grieta · demostración en vivo</div>
+    <h2 class="reveal">La cita que <span class="em">nunca existió</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Le pedimos a un modelo conversacional cinco referencias con DOI. Las devuelve impecablemente formateadas. Verifica cada una en la base real:</p>
+    <div class="reveal" style="margin-top:1.6rem;display:grid;gap:.8rem" id="refList"></div>
+    <div class="reveal" style="margin-top:1.4rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-primary" id="verifyBtn">⚲ Verificar todas las referencias</button>
+      <span id="verifyResult" class="mono" style="font-size:.85rem;color:var(--muted)"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8 · RUTINA DE VERIFICACIÓN ============ -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">La defensa</div>
+    <h2 class="reveal">Tu rutina anti-alucinación.</h2>
+    <div class="cols c3 reveal" style="margin-top:2.2rem">
+      <div class="card"><span class="num">PASO 01</span><h3>Desconfía por defecto</h3><p>Toda afirmación factual y toda cita es sospechosa hasta que la confirmes.</p></div>
+      <div class="card"><span class="num">PASO 02</span><h3>Rastrea la fuente</h3><p>Busca el DOI o título en Scholar, Scopus o la web del editor. ¿Existe? ¿Dice eso?</p></div>
+      <div class="card"><span class="num">PASO 03</span><h3>Tú respondes</h3><p>Lo que entra a tu manuscrito lo firmas tú. El modelo no rinde cuentas; tú sí.</p></div>
+    </div>
+    <div class="reveal promptbox" style="margin-top:1.8rem">
+      <span style="color:var(--accent2)">// prompt de auto-verificación</span><br>
+      Revisa esta afirmación que generaste: «<span class="ph">[afirmación]</span>».<br>
+      Indica tu nivel de confianza, qué partes podrían ser inventadas<br>
+      y qué debo verificar en fuentes primarias. No agregues nada nuevo.
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9 · MAPA DE LAS 6 FASES ============ -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">El ecosistema · seis fases</div>
+    <h2 class="reveal">Del <span class="em2">descubrimiento</span><br>al <span class="em">envío</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">No existe una «mejor herramienta». Existe la mejor herramienta para cada fase del trabajo investigativo.</p>
+    <div class="reveal phasemap">
+      <div class="phasecard"><div class="pn">FASE 01</div><h3>Descubrir &amp; mapear</h3><p>Encontrar el paisaje intelectual del campo y los papers seminales.</p><div class="pmod">► Módulo 3 · Revisión</div></div>
+      <div class="phasecard"><div class="pn">FASE 02</div><h3>Búsqueda con evidencia</h3><p>Responder preguntas con base en literatura revisada por pares.</p><div class="pmod">► Módulo 3 · Revisión</div></div>
+      <div class="phasecard"><div class="pn">FASE 03</div><h3>Lectura profunda</h3><p>Comprender, sintetizar y dialogar con un corpus completo.</p><div class="pmod">► Módulo 3 · Revisión</div></div>
+      <div class="phasecard"><div class="pn">FASE 04</div><h3>Escritura académica</h3><p>Redactar proyecto, marco teórico y manuscrito para revista indexada.</p><div class="pmod">► Módulos 2 y 4</div></div>
+      <div class="phasecard"><div class="pn">FASE 05</div><h3>Análisis de datos</h3><p>Procesar, modelar y visualizar datos con asistentes de código.</p><div class="pmod">► Módulo 4 · Artículo</div></div>
+      <div class="phasecard"><div class="pn">FASE 06</div><h3>Revisión &amp; envío</h3><p>Verificar citas, integridad y preparar el manuscrito para submission.</p><div class="pmod">► Módulo 4 · Artículo</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 · CAJA DE HERRAMIENTAS ============ -->
 <section class="slide">
   <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Tu caja de herramientas</div>
-    <h2 class="reveal" style="font-size:clamp(1.6rem,3.2vw,2.6rem)">Las plataformas<br>que vamos a usar.</h2>
-    <p class="reveal" style="color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:62ch">Seis frentes complementarios. Cada uno cumple un rol distinto en el ciclo de investigación.</p>
+    <h2 class="reveal" style="font-size:clamp(1.6rem,3.2vw,2.6rem)">Una para cada fase.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:62ch">Vista resumida por categorías. Cada herramienta aparecerá en su sesión correspondiente cuando la necesites.</p>
     <div class="toolgrid reveal">
 
       <div class="toolcat">
@@ -298,14 +397,18 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 
       <div class="toolcat">
         <div class="catlabel"><span class="catn">02</span><span>Literatura científica</span></div>
-        <div class="cattitle">SciSpace</div>
+        <div class="cattitle">SciSpace · Elicit</div>
         <div class="logos">
           <div class="logo">
             <svg viewBox="0 0 32 32" aria-label="SciSpace"><rect width="32" height="32" rx="7" fill="#6a4cff"/><g fill="none" stroke="#fff" stroke-width="1.4"><ellipse cx="16" cy="16" rx="11" ry="4"/><ellipse cx="16" cy="16" rx="11" ry="4" transform="rotate(60 16 16)"/><ellipse cx="16" cy="16" rx="11" ry="4" transform="rotate(120 16 16)"/></g><circle cx="16" cy="16" r="2.6" fill="#fff"/></svg>
             <span>SciSpace</span>
           </div>
+          <div class="logo">
+            <svg viewBox="0 0 32 32" aria-label="Elicit"><rect width="32" height="32" rx="7" fill="#1a3a8a"/><text x="16" y="22" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="15" fill="#fff">E</text></svg>
+            <span>Elicit</span>
+          </div>
         </div>
-        <p class="desc">Búsqueda en papers reales, resúmenes guiados y exploración con cita rastreable.</p>
+        <p class="desc">Búsqueda en papers reales, resúmenes guiados y extracción estructurada con cita rastreable.</p>
       </div>
 
       <div class="toolcat">
@@ -322,7 +425,7 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 
       <div class="toolcat">
         <div class="catlabel"><span class="catn">04</span><span>Revisión sistemática</span></div>
-        <div class="cattitle">PRISM GPT</div>
+        <div class="cattitle">PRISM GPT · Rayyan</div>
         <div class="logos">
           <div class="logo">
             <svg viewBox="0 0 32 32" aria-label="PRISM GPT"><rect width="32" height="32" rx="7" fill="#0d1117"/><path d="M16 6 L26 24 L6 24 Z" fill="none" stroke="#fff" stroke-width="1.6"/><line x1="2" y1="20" x2="11" y2="20" stroke="#fff" stroke-width="1.3"/><line x1="22" y1="17" x2="30" y2="11" stroke="#ff5a5f" stroke-width="1.4"/><line x1="22" y1="20" x2="30" y2="20" stroke="#fbbc04" stroke-width="1.4"/><line x1="22" y1="23" x2="30" y2="29" stroke="#4285f4" stroke-width="1.4"/></svg>
@@ -369,11 +472,59 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
       </div>
 
     </div>
-    <p class="reveal mono" style="margin-top:1.2rem;font-size:.74rem;color:var(--muted);letter-spacing:.16em">▸ NO ES UN CATÁLOGO PARA MEMORIZAR. CADA HERRAMIENTA APARECERÁ EN SU SESIÓN.</p>
+    <div class="reveal" style="margin-top:1.4rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+      <a href="herramientas_ia_investigacion_tech.html" target="_blank" rel="noopener" class="btn btn-primary">Ver catálogo completo · 24 herramientas ↗</a>
+      <span class="mono" style="font-size:.72rem;color:var(--muted);letter-spacing:.14em">▸ COMPARATIVAS, PRECIOS Y CASOS DE USO POR FASE</span>
+    </div>
   </div>
 </section>
 
-<!-- ============ SLIDE 7 · MINI-TALLER · CONVERSOR CON IA ============ -->
+<!-- ============ 11 · STACKS RECOMENDADOS ============ -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">No necesitas todo</div>
+    <h2 class="reveal">Dos stacks probados.</h2>
+    <p class="lead reveal" style="margin-top:.8rem;max-width:68ch">La mayoría rinde mejor con 3-5 herramientas bien integradas que con 15 ocasionales. Elige el combo según tu momento; podrás escalar después.</p>
+    <div class="reveal stacks">
+      <div class="stack">
+        <div class="stackhead">
+          <div>
+            <h3>Stack <span class="em2">starter</span></h3>
+            <div class="sub">Estudiantes · primer proyecto</div>
+          </div>
+          <div class="stackprice"><div class="num">$0</div><div class="u">USD / mes</div></div>
+        </div>
+        <ul class="stacklist">
+          <li><span class="n">01</span><div><strong>Semantic Scholar</strong><span class="role">descubrimiento</span></div></li>
+          <li><span class="n">02</span><div><strong>Research Rabbit</strong><span class="role">recomendación + sync Zotero</span></div></li>
+          <li><span class="n">03</span><div><strong>NotebookLM</strong><span class="role">diálogo con corpus</span></div></li>
+          <li><span class="n">04</span><div><strong>Zotero</strong><span class="role">gestión de referencias</span></div></li>
+          <li><span class="n">05</span><div><strong>Elicit (free tier)</strong><span class="role">screening estructurado</span></div></li>
+        </ul>
+        <div class="stacknote">Cobertura completa del flujo investigativo sin gasto. Suficiente para una tesis de maestría o un primer paper.</div>
+      </div>
+      <div class="stack pro">
+        <div class="stackhead">
+          <div>
+            <h3>Stack <span class="em">professional</span></h3>
+            <div class="sub">Docentes · investigadores activos</div>
+          </div>
+          <div class="stackprice"><div class="num">~$80</div><div class="u">USD / mes</div></div>
+        </div>
+        <ul class="stacklist">
+          <li><span class="n">01</span><div><strong>Elicit Pro</strong><span class="role">revisiones sistemáticas a escala</span></div></li>
+          <li><span class="n">02</span><div><strong>Claude Pro + Projects</strong><span class="role">razonamiento + código + escritura</span></div></li>
+          <li><span class="n">03</span><div><strong>Scite</strong><span class="role">validación de citas</span></div></li>
+          <li><span class="n">04</span><div><strong>Paperpal</strong><span class="role">edición y submission-readiness</span></div></li>
+          <li><span class="n">05</span><div><strong>Zotero + Research Rabbit</strong><span class="role">biblioteca activa</span></div></li>
+        </ul>
+        <div class="stacknote">ROI claro para quien publica varios artículos al año o dirige tesis. Cubre del descubrimiento al envío con auditoría.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 · MINI-TALLER · CONVERSOR ============ -->
 <section class="slide">
   <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Mini-taller · Tu primer aplicativo con IA</div>
@@ -431,142 +582,45 @@ Entrega el archivo completo dentro de un bloque de código, listo para pegar en 
   </div>
 </section>
 
-<!-- ============ SLIDE 8 · CÓMO FUNCIONA (interactivo) ============ -->
+<!-- ============ 13 · TALLER BREAKOUT ============ -->
 <section class="slide">
   <div class="spread">
-    <div class="kicker reveal">Bajo el capó</div>
-    <h2 class="reveal">Predice la siguiente palabra.<br><span class="em2">Eso es todo.</span></h2>
-    <p class="lead reveal" style="margin-top:1.2rem">Un modelo no «consulta» nada: estima qué palabra es más probable después de la anterior. Pruébalo: haz clic para revelar cómo el modelo completa la frase, una palabra a la vez.</p>
-    <div class="reveal" style="margin-top:1.8rem;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.8rem">
-      <div id="predictText" class="mono" style="font-size:1.3rem;line-height:1.7;min-height:3.4rem">El agua hierve a los <span id="predictSlot" style="color:var(--muted)">_____</span></div>
-      <div id="predictOpts" style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.2rem"></div>
-      <button class="btn btn-ghost" id="predictReset" style="margin-top:1.2rem;display:none">↻ Reiniciar</button>
-    </div>
-    <p class="lead reveal" style="margin-top:1.4rem;max-width:72ch">El modelo elige por <span class="em">probabilidad</span>, no por verdad. Cuando la opción más probable resulta falsa pero suena bien, eso es una <mark>alucinación</mark>.</p>
-  </div>
-</section>
-
-<!-- ============ SLIDE 7 · DEMOSTRADOR DE ALUCINACIÓN ============ -->
-<section class="slide">
-  <div class="spread">
-    <div class="kicker reveal">Demostración en vivo</div>
-    <h2 class="reveal">La cita que <span class="em">nunca existió</span>.</h2>
-    <p class="lead reveal" style="margin-top:1rem">Le pedimos a un modelo conversacional cinco referencias con DOI. Las devuelve impecablemente formateadas. Verifica cada una en la base real:</p>
-    <div class="reveal" style="margin-top:1.6rem;display:grid;gap:.8rem" id="refList"></div>
-    <div class="reveal" style="margin-top:1.4rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
-      <button class="btn btn-primary" id="verifyBtn">⚲ Verificar todas las referencias</button>
-      <span id="verifyResult" class="mono" style="font-size:.85rem;color:var(--muted)"></span>
-    </div>
-  </div>
-</section>
-
-<!-- ============ SLIDE 8 · RUTINA DE VERIFICACIÓN ============ -->
-<section class="slide">
-  <div class="spread">
-    <div class="kicker reveal">La defensa</div>
-    <h2 class="reveal">Tu rutina anti-alucinación.</h2>
-    <div class="cols c3 reveal" style="margin-top:2.2rem">
-      <div class="card"><span class="num">PASO 01</span><h3>Desconfía por defecto</h3><p>Toda afirmación factual y toda cita es sospechosa hasta que la confirmes.</p></div>
-      <div class="card"><span class="num">PASO 02</span><h3>Rastrea la fuente</h3><p>Busca el DOI o título en Scholar, Scopus o la web del editor. ¿Existe? ¿Dice eso?</p></div>
-      <div class="card"><span class="num">PASO 03</span><h3>Tú respondes</h3><p>Lo que entra a tu manuscrito lo firmas tú. El modelo no rinde cuentas; tú sí.</p></div>
-    </div>
-    <div class="reveal promptbox" style="margin-top:1.8rem">
-      <span style="color:var(--accent2)">// prompt de auto-verificación</span><br>
-      Revisa esta afirmación que generaste: «<span class="ph">[afirmación]</span>».<br>
-      Indica tu nivel de confianza, qué partes podrían ser inventadas<br>
-      y qué debo verificar en fuentes primarias. No agregues nada nuevo.
-    </div>
-  </div>
-</section>
-
-<!-- ============ SLIDE 9 · LABORATORIO DE PROMPTS ============ -->
-<section class="slide">
-  <div class="spread">
-    <div class="kicker reveal">Laboratorio interactivo</div>
-    <h2 class="reveal">De un prompt <span class="em">pobre</span> a uno <span class="em2">científico</span>.</h2>
-    <p class="lead reveal" style="margin-top:1rem">Activa cada capa y observa cómo la instrucción se vuelve precisa. Es la técnica <strong style="color:var(--ink)">R-C-T-F-I</strong> que usaremos todo el curso.</p>
-    <div class="reveal cols c2" style="margin-top:1.6rem;gap:1.6rem">
-      <div style="display:flex;flex-direction:column;gap:.6rem" id="layerBtns"></div>
-      <div>
-        <div class="promptbox" id="promptOut" style="min-height:200px"></div>
-        <div class="mono" style="margin-top:.8rem;font-size:.78rem;color:var(--muted)">CALIDAD ESTIMADA DE LA RESPUESTA</div>
-        <div style="height:10px;background:rgba(255,255,255,.08);border-radius:6px;margin-top:.4rem;overflow:hidden">
-          <div id="qualityBar" style="height:100%;width:12%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ SLIDE 10 · BANCO DE PROMPTS ============ -->
-<section class="slide">
-  <div class="spread">
-    <div class="kicker reveal">Para copiar hoy</div>
-    <h2 class="reveal">Tres prompts para tu<br>primer contacto.</h2>
-    <div class="cols c3 reveal" style="margin-top:2rem">
-      <div class="card">
-        <h3 style="color:var(--gold)">A · Explorar un tema</h3>
-        <div class="promptbox" style="margin-top:.8rem;font-size:.78rem;border-left-color:var(--gold)">Actúa como asesor de investigación en <span class="ph">[campo]</span>. Estoy explorando <span class="ph">[tema]</span>. Dame 5 líneas posibles con: problema investigable, pregunta inicial, población/contexto, datos necesarios y dificultad. No inventes citas. Cierra con qué debo verificar en literatura real.</div>
-      </div>
-      <div class="card">
-        <h3 style="color:var(--gold)">B · Afilar la pregunta</h3>
-        <div class="promptbox" style="margin-top:.8rem;font-size:.78rem;border-left-color:var(--gold)">Eres asesor metodológico. Mi pregunta es «<span class="ph">[pregunta]</span>». Evalúa claridad, alcance, factibilidad y datos requeridos. Devuelve una tabla con: problema detectado, 3 reformulaciones, ventaja de cada una y qué debo comprobar antes de adoptarla.</div>
-      </div>
-      <div class="card">
-        <h3 style="color:var(--gold)">C · Comparar dos IA</h3>
-        <div class="promptbox" style="margin-top:.8rem;font-size:.78rem;border-left-color:var(--gold)">Pega el MISMO prompt A en dos herramientas. Luego pide: compara ambas respuestas en una tabla con coincidencias, diferencias, posibles alucinaciones, afirmaciones verificables y cuál usarías como punto de partida.</div>
-      </div>
-    </div>
-    <p class="lead reveal" style="margin-top:1.6rem">Estos prompts son la semilla de tu <span class="em2">biblioteca personal</span>, que construirás en la Sesión 2.</p>
-  </div>
-</section>
-
-<!-- ============ SLIDE 11 · TALLER (breakout) ============ -->
-<section class="slide">
-  <div class="spread">
-    <div class="kicker reveal">Taller · Breakout rooms · 40 min</div>
-    <h2 class="reveal">Tu primer experimento.</h2>
+    <div class="kicker reveal">Taller · Breakout rooms · 30 min</div>
+    <h2 class="reveal">Compara dos IA<br>con tu propio tema.</h2>
     <div class="cols c2 reveal" style="margin-top:2rem">
       <div class="card" style="border-left:3px solid var(--accent)">
         <h3>Consigna</h3>
-        <p style="margin-top:.8rem">1. Toma un tema que te interese investigar.<br><br>2. Usa el <strong style="color:var(--ink)">prompt A</strong> en <strong style="color:var(--ink)">dos</strong> herramientas distintas.<br><br>3. Compara las respuestas: ¿qué coincide?, ¿qué difiere?, ¿alguna inventó una cita?<br><br>4. Verifica una afirmación de cada una en Google Scholar.</p>
+        <p style="margin-top:.8rem">1. Toma un tema que te interese investigar.<br><br>2. Usa este prompt mínimo en <strong style="color:var(--ink)">dos</strong> herramientas distintas:</p>
+        <div class="promptbox" style="margin-top:.7rem;font-size:.78rem">Actúa como asesor de investigación en <span class="ph">[campo]</span>. Estoy explorando <span class="ph">[tema]</span>. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. <strong style="color:var(--ink)">No inventes citas.</strong></div>
+        <p style="margin-top:.8rem">3. Verifica una afirmación de cada una en Google Scholar.</p>
       </div>
       <div class="card" style="border-left:3px solid var(--accent2)">
         <h3>Entregable de la sala</h3>
-        <p style="margin-top:.8rem">Un hallazgo en <strong style="color:var(--ink)">3 frases</strong>:<br><br>▹ ¿En qué se parecieron las dos IA?<br>▹ ¿En qué se contradijeron?<br>▹ ¿Encontraron alguna alucinación?<br>▹ Bitácora mínima: prompt usado, respuesta útil, qué verificaste y qué descartaste.</p>
+        <p style="margin-top:.8rem">Un hallazgo en <strong style="color:var(--ink)">3 frases</strong>:<br><br>▹ ¿En qué coincidieron las dos IA?<br>▹ ¿En qué se contradijeron?<br>▹ ¿Encontraron alguna alucinación?</p>
         <p style="margin-top:1rem;color:var(--accent2);font-size:.78rem" class="mono">RELATOR POR SALA · 1 MIN EN PLENARIA</p>
+        <p style="margin-top:1rem;color:var(--muted);font-size:.78rem">► En la Sesión 2 aprenderemos a redactar prompts más sofisticados con la técnica R-C-T-F-I.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ SLIDE 12 · DEFINE TU TEMA ============ -->
+<!-- ============ 14 · DEFINE TU TEMA + CIERRE ============ -->
 <section class="slide">
   <div class="spread">
-    <div class="kicker reveal">El punto de partida</div>
-    <h2 class="reveal">Antes de irte: define tu tema.</h2>
-    <p class="lead reveal" style="margin-top:1rem">Este tema te acompañará en las 10 sesiones siguientes y será la base de tus tres productos. Complétalo en una frase:</p>
-    <div class="reveal promptbox" style="margin-top:1.6rem;font-size:1.05rem;line-height:2.1;border-left-color:var(--accent2)">
+    <div class="kicker reveal">El punto de partida · cierre</div>
+    <h2 class="reveal">Antes de irte: <span class="em2">define tu tema</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Este tema te acompañará en las 10 sesiones siguientes y será la base de los dos productos de tu equipo. Complétalo en una frase:</p>
+    <div class="reveal promptbox" style="margin-top:1.4rem;font-size:1.05rem;line-height:2.1;border-left-color:var(--accent2)">
       Quiero investigar <span class="ph">[fenómeno / problema]</span><br>
       en <span class="ph">[contexto / población]</span><br>
       porque <span class="ph">[relevancia / vacío que percibo]</span>.
     </div>
     <p class="lead reveal" style="margin-top:1.4rem">Pégalo en el documento compartido. En la <span class="emg">Sesión 2</span> aprenderemos a interrogar este tema con ética y prompting riguroso.</p>
-  </div>
-</section>
-
-<!-- ============ SLIDE 13 · CIERRE ============ -->
-<section class="slide">
-  <div class="spread" style="align-items:center;text-align:center">
-    <div class="kicker reveal" style="justify-content:center">Cierre de la sesión 1</div>
-    <h1 class="reveal" style="max-width:20ch">La IA <span class="em">propone</span>.<br>El investigador <span class="em2">decide</span>.</h1>
-    <p class="lead reveal" style="margin:1.8rem auto 0;text-align:center">Hoy viste qué es la IA, por qué alucina y cómo darle instrucciones útiles. Mañana: cómo usarla con integridad científica.</p>
-    <div class="reveal meta-row" style="justify-content:center;margin-top:2.6rem">
-      <div style="text-align:center"><span class="mono">TAREA</span><p>Define tu tema</p></div>
-      <div style="text-align:center"><span class="mono">PRUEBA</span><p>Compara dos IA</p></div>
-      <div style="text-align:center"><span class="mono">SIGUE</span><p>Sesión 2 · Ética</p></div>
+    <div class="reveal meta-row" style="margin-top:1.6rem">
+      <div><span class="mono">TAREA</span><p>Define tu tema</p></div>
+      <div><span class="mono">PRUEBA</span><p>Conversor + comparar 2 IA</p></div>
+      <div><span class="mono">SIGUE</span><p>Sesión 2 · Ética y prompting</p></div>
     </div>
-    <div class="reveal brand" style="font-size:1.4rem;margin-top:3rem">Trabajo Científico</div>
   </div>
 </section>
 
@@ -575,8 +629,9 @@ Entrega el archivo completo dentro de un bloque de código, listo para pegar en 
 <div class="hud">
   <div class="brand">Trabajo Científico</div>
   <div class="nav">
+    <button id="themeToggle" aria-label="cambiar tema" title="Cambiar tema (T)"><span id="themeIcon">☾</span></button>
     <button id="prev" aria-label="anterior">‹</button>
-    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 15</span>
+    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 14</span>
     <button id="next" aria-label="siguiente">›</button>
   </div>
 </div>
@@ -607,10 +662,30 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key===' ')next();
   if(e.key==='ArrowLeft')prev();
   if(e.key==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+  if(e.key==='t'||e.key==='T')toggleTheme();
 });
+
+/* ---- tema claro / oscuro ---- */
+const themeIcon=document.getElementById('themeIcon');
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  if(themeIcon)themeIcon.textContent = t==='light' ? '☀' : '☾';
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
+  const next=cur==='light'?'dark':'light';
+  applyTheme(next);
+  try{localStorage.setItem('mapaTheme',next)}catch(e){}
+}
+(function initTheme(){
+  let saved='dark';
+  try{saved=localStorage.getItem('mapaTheme')||'dark'}catch(e){}
+  applyTheme(saved);
+})();
+const _tt=document.getElementById('themeToggle');if(_tt)_tt.onclick=toggleTheme;
 buildDots();go(0);
 
-/* ---------- COMPONENTE 1: predictor de palabra ---------- */
+/* ---------- predictor de palabra ---------- */
 (function(){
   const slot=document.getElementById('predictSlot');
   const opts=document.getElementById('predictOpts');
@@ -645,7 +720,7 @@ buildDots();go(0);
   render();
 })();
 
-/* ---------- COMPONENTE 2: demostrador de alucinación ---------- */
+/* ---------- demostrador de alucinación ---------- */
 (function(){
   const list=document.getElementById('refList');
   const btn=document.getElementById('verifyBtn');
@@ -682,43 +757,7 @@ buildDots();go(0);
   };
 })();
 
-/* ---------- COMPONENTE 3: laboratorio R-C-T-F-I ---------- */
-(function(){
-  const btns=document.getElementById('layerBtns');
-  const out=document.getElementById('promptOut');
-  const bar=document.getElementById('qualityBar');
-  if(!btns)return;
-  const layers=[
-    {k:'R',name:'Rol',color:'var(--accent)',text:'Actúa como revisor metodológico de una revista indexada en mi área.'},
-    {k:'C',name:'Contexto',color:'var(--gold)',text:'Investigo el efecto del estrés hídrico en cultivos de arroz en los Llanos; escribo para una audiencia de pares.'},
-    {k:'T',name:'Tarea',color:'var(--accent2)',text:'Identifica los 3 vacíos de investigación más citados sobre este tema.'},
-    {k:'F',name:'Formato',color:'#8a7dff',text:'Preséntalo en una tabla: vacío · por qué importa · posible abordaje. Tono académico, en español.'},
-    {k:'I',name:'Iteración',color:'#ff7dc0',text:'Luego profundiza en el vacío más prometedor para un estudio de 1 año.'},
-  ];
-  const active=new Array(layers.length).fill(false);
-  layers.forEach((l,k)=>{
-    const b=document.createElement('button');
-    b.className='btn btn-ghost';b.style.justifyContent='flex-start';b.style.textAlign='left';
-    b.innerHTML='<span class="mono" style="color:'+l.color+';font-weight:700;min-width:1.4rem">'+l.k+'</span> Añadir '+l.name;
-    b.onclick=()=>{active[k]=!active[k];b.style.borderColor=active[k]?l.color:'var(--line)';
-      b.style.background=active[k]?'rgba(255,255,255,.06)':'transparent';render();};
-    btns.appendChild(b);
-  });
-  function render(){
-    const on=layers.filter((_,k)=>active[k]);
-    if(on.length===0){
-      out.innerHTML='<span style="color:var(--muted)">Háblame de los vacíos en el estudio del arroz.</span><br><br><span class="mono" style="font-size:.74rem;color:var(--danger)">▸ Prompt vago: respuesta genérica e inútil.</span>';
-      bar.style.width='12%';return;
-    }
-    let html='';
-    layers.forEach((l,k)=>{if(active[k])html+='<span class="mono" style="color:'+l.color+';font-size:.72rem">['+l.name+']</span> '+l.text+'<br><br>';});
-    out.innerHTML=html;
-    bar.style.width=(12+on.length*17.6)+'%';
-  }
-  render();
-})();
-
-/* ---------- COMPONENTE 4: copiar prompt del mini-taller ---------- */
+/* ---------- copiar prompt del mini-taller ---------- */
 (function(){
   const btn=document.getElementById('copyConvBtn');
   const src=document.getElementById('convPrompt');
