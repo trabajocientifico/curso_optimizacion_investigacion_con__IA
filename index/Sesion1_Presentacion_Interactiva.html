@@ -637,7 +637,51 @@ Reglas estrictas:
   </div>
 </section>
 
-<!-- ============ 14 · TALLER BREAKOUT ============ -->
+<!-- ============ 14 · ESTUDIAR CON IA · TABLA + ESQUEMA ============ -->
+<section class="slide">
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal">Mini-taller · Estudiar con IA</div>
+    <h2 class="reveal" style="font-size:clamp(1.6rem,3.2vw,2.6rem)">Una <span class="em2">tabla</span> y un <span class="em">esquema visual</span> para aprender.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:66ch">Dos prompts encadenados en la <strong style="color:var(--ink)">misma conversación</strong>: primero pide la teoría como tabla, luego pide una imagen que la sintetice.</p>
+
+    <div class="chatpick reveal">
+      <a href="https://chatgpt.com/" target="_blank" rel="noopener" class="chatbtn">
+        <svg viewBox="0 0 32 32" aria-label="ChatGPT"><rect width="32" height="32" rx="7" fill="#10a37f"/><path d="M16 8 L23 12 V20 L16 24 L9 20 V12 Z" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="16" cy="16" r="2.6" fill="#fff"/></svg>
+        <div><div class="ct">ChatGPT</div><div class="cu">tabla + imagen</div></div>
+      </a>
+      <a href="https://gemini.google.com/app" target="_blank" rel="noopener" class="chatbtn">
+        <svg viewBox="0 0 32 32" aria-label="Gemini"><defs><linearGradient id="gemGrad4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4285f4"/><stop offset="1" stop-color="#9b72ff"/></linearGradient></defs><rect width="32" height="32" rx="7" fill="#0d1117"/><path d="M16 5 C16 12 20 16 27 16 C20 16 16 20 16 27 C16 20 12 16 5 16 C12 16 16 12 16 5 Z" fill="url(#gemGrad4)"/></svg>
+        <div><div class="ct">Gemini</div><div class="cu">tabla + imagen</div></div>
+      </a>
+      <a href="https://claude.ai/new" target="_blank" rel="noopener" class="chatbtn">
+        <svg viewBox="0 0 32 32" aria-label="Claude"><rect width="32" height="32" rx="7" fill="#cc785c"/><g stroke="#fff" stroke-width="2.4" stroke-linecap="round"><line x1="16" y1="7" x2="16" y2="25"/><line x1="7" y1="16" x2="25" y2="16"/><line x1="10" y1="10" x2="22" y2="22"/><line x1="22" y1="10" x2="10" y2="22"/></g></svg>
+        <div><div class="ct">Claude</div><div class="cu">solo tabla</div></div>
+      </a>
+    </div>
+
+    <div class="cols c2 reveal" style="margin-top:1rem;gap:1rem">
+      <div class="promptbig" style="margin-top:0">
+        <div class="ph">
+          <span>▸ Prompt 1 · tabla comparativa</span>
+          <button class="copybtn" id="copyTableBtn" type="button">📋 Copiar</button>
+        </div>
+        <div class="pc" id="tablePrompt">Actúa como docente de metodología de la investigación. Explícame cuáles son los TIPOS de investigación y los NIVELES de investigación científica. Estructúralo en una tabla con las columnas: nombre, objetivo, características clave y diferencias con los demás. Al final añade un párrafo corto sobre cuándo conviene elegir cada uno.</div>
+      </div>
+
+      <div class="promptbig" style="margin-top:0;border-left-color:var(--accent2)">
+        <div class="ph">
+          <span>▸ Prompt 2 · esquema visual (imagen)</span>
+          <button class="copybtn" id="copyImgBtn" type="button">📋 Copiar</button>
+        </div>
+        <div class="pc" id="imgPrompt">A partir de la tabla anterior, genera una IMAGEN tipo infografía didáctica que resuma los tipos y niveles de investigación científica. Estilo: esquema limpio, fondo claro, jerarquía visual evidente, iconos sencillos y etiquetas en español. Incluye los nombres, una palabra clave por categoría y flechas que muestren la progresión entre niveles.</div>
+      </div>
+    </div>
+
+    <p class="reveal mono" style="margin-top:.9rem;font-size:.72rem;color:var(--muted);letter-spacing:.14em">▸ PEGA EL PROMPT 1, LEE LA RESPUESTA, Y EN LA MISMA CONVERSACIÓN PEGA EL PROMPT 2. CLAUDE NO GENERA IMÁGENES NATIVAS.</p>
+  </div>
+</section>
+
+<!-- ============ 15 · TALLER BREAKOUT ============ -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">Taller · Breakout rooms · 30 min</div>
@@ -903,6 +947,8 @@ function wireCopy(btnId, srcId){
 }
 wireCopy('copyConvBtn','convPrompt');
 wireCopy('copyDeepBtn','deepPrompt');
+wireCopy('copyTableBtn','tablePrompt');
+wireCopy('copyImgBtn','imgPrompt');
 wireCopy('copyMini1Btn','copyMini1Src');
 wireCopy('copyMini2Btn','copyMini2Src');
 wireCopy('copyMini3Btn','copyMini3Src');

@@ -147,6 +147,29 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 .stackopt .price.paid{color:var(--accent2)}
 @media(max-width:820px){.stackgrid{grid-template-columns:1fr}}
 
+/* ---- mini copy button sobre cualquier promptbox ---- */
+.miniprompt{position:relative}
+.miniprompt .copy{position:absolute;top:.4rem;right:.4rem;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--muted);font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;padding:.28rem .55rem;border-radius:6px;cursor:pointer;transition:.18s;z-index:2;font-weight:700}
+.miniprompt .copy:hover{color:var(--accent);border-color:var(--accent);background:rgba(61,214,196,.08)}
+.miniprompt .copy.ok{color:var(--ok);border-color:var(--ok);background:rgba(61,220,151,.1)}
+
+/* ---- actividad: ordenar anteproyecto ---- */
+.orderzone{display:grid;grid-template-columns:1.05fr 1fr;gap:1.6rem;margin-top:1.2rem;align-items:flex-start}
+.orderpool{display:flex;flex-direction:column;gap:.4rem}
+.orderchip{background:#0a0e14;border:1px solid var(--line);border-radius:9px;padding:.5rem .7rem;font-size:.8rem;line-height:1.3;cursor:grab;color:#cdd6e3;transition:.18s;user-select:none}
+.orderchip:hover{border-color:var(--accent2)}
+.orderchip:active{cursor:grabbing}
+.orderchip.placed{opacity:.32;cursor:default;border-color:var(--line)}
+.orderslots{display:flex;flex-direction:column;gap:.4rem}
+.orderslot{display:flex;align-items:center;gap:.7rem;border:1.5px dashed var(--line);border-radius:9px;padding:.45rem .65rem;min-height:42px;transition:.18s;background:rgba(255,255,255,.015)}
+.orderslot.over{border-color:var(--accent);background:rgba(61,214,196,.07)}
+.orderslot .pos{font-family:'Fraunces',serif;font-weight:900;font-size:1.05rem;color:var(--accent);min-width:1.4rem;text-align:center;line-height:1}
+.orderslot .holder{flex:1;font-size:.8rem;color:#cdd6e3;line-height:1.3;cursor:pointer}
+.orderslot .holder[data-empty="true"]{color:rgba(255,255,255,.22);font-style:italic;font-size:.74rem;cursor:default}
+.orderslot.right{border-style:solid;border-color:var(--ok);background:rgba(61,220,151,.08)}
+.orderslot.wrong{border-style:solid;border-color:var(--danger);background:rgba(255,90,95,.07)}
+@media(max-width:820px){.orderzone{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -295,14 +318,44 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
     <h2 class="reveal">Seis plantillas<br>para arrancar.</h2>
     <p class="lead reveal" style="margin-top:.8rem;max-width:68ch">Cópialas, adáptalas con tus corchetes y califica qué tan bien funcionan. Meta: <strong style="color:var(--ink)">5 prompts probados</strong> al cierre del trabajo autónomo.</p>
     <div class="cols c3 reveal" style="margin-top:1.4rem">
-      <div class="card"><h3 class="emg">A · Explorar un tema</h3><div class="promptbox" style="margin-top:.7rem;font-size:.7rem;border-left-color:var(--gold)">Actúa como asesor de investigación en <span class="ph">[campo]</span>. Estoy explorando <span class="ph">[tema]</span>. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. No inventes citas.</div></div>
-      <div class="card"><h3 class="emg">B · Afilar la pregunta</h3><div class="promptbox" style="margin-top:.7rem;font-size:.7rem;border-left-color:var(--gold)">Eres asesor metodológico. Mi pregunta es «<span class="ph">[pregunta]</span>». Evalúa claridad, alcance, factibilidad y datos requeridos. Tabla: problema, 3 reformulaciones, ventajas, verificación.</div></div>
-      <div class="card"><h3 class="emg">C · Comparar dos IA</h3><div class="promptbox" style="margin-top:.7rem;font-size:.7rem;border-left-color:var(--gold)">Pega el MISMO prompt A en dos herramientas. Luego pide: compara ambas respuestas en una tabla con coincidencias, diferencias, posibles alucinaciones y cuál usarías de punto de partida.</div></div>
+      <div class="card"><h3 class="emg">A · Explorar un tema</h3>
+        <div class="miniprompt" style="margin-top:.7rem">
+          <button class="copy" data-copy="promptA">📋 Copiar</button>
+          <div class="promptbox" id="promptA" style="font-size:.7rem;border-left-color:var(--gold);padding-top:1.7rem">Actúa como asesor de investigación en <span class="ph">[campo]</span>. Estoy explorando <span class="ph">[tema]</span>. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. No inventes citas.</div>
+        </div>
+      </div>
+      <div class="card"><h3 class="emg">B · Afilar la pregunta</h3>
+        <div class="miniprompt" style="margin-top:.7rem">
+          <button class="copy" data-copy="promptB">📋 Copiar</button>
+          <div class="promptbox" id="promptB" style="font-size:.7rem;border-left-color:var(--gold);padding-top:1.7rem">Eres asesor metodológico. Mi pregunta es «<span class="ph">[pregunta]</span>». Evalúa claridad, alcance, factibilidad y datos requeridos. Tabla: problema, 3 reformulaciones, ventajas, verificación.</div>
+        </div>
+      </div>
+      <div class="card"><h3 class="emg">C · Comparar dos IA</h3>
+        <div class="miniprompt" style="margin-top:.7rem">
+          <button class="copy" data-copy="promptC">📋 Copiar</button>
+          <div class="promptbox" id="promptC" style="font-size:.7rem;border-left-color:var(--gold);padding-top:1.7rem">Pega el MISMO prompt A en dos herramientas. Luego pide: compara ambas respuestas en una tabla con coincidencias, diferencias, posibles alucinaciones y cuál usarías de punto de partida.</div>
+        </div>
+      </div>
     </div>
     <div class="cols c3 reveal" style="margin-top:1rem">
-      <div class="card"><h3 class="emg">D · Mejorar mi párrafo</h3><div class="promptbox" style="margin-top:.7rem;font-size:.7rem;border-left-color:var(--gold)">Eres editor de estilo académico. Respeta mi voz, no reescribas desde cero: «<span class="ph">[párrafo]</span>». Mejora claridad y concisión. Devuelve versión + lista de cambios + frase a verificar.</div></div>
-      <div class="card"><h3 class="emg">E · Evaluar uso ético</h3><div class="promptbox" style="margin-top:.7rem;font-size:.7rem;border-left-color:var(--gold)">Actúa como comité de integridad. Evalúa este uso de IA: <span class="ph">[caso]</span>. Clasifica: aceptable, declarar, riesgoso o inaceptable. Indica riesgo, mitigación y cómo declararlo.</div></div>
-      <div class="card"><h3 class="emg">F · Auto-verificación</h3><div class="promptbox" style="margin-top:.7rem;font-size:.7rem;border-left-color:var(--gold)">Revisa esta afirmación que generaste: «<span class="ph">[afirmación]</span>». Indica nivel de confianza, qué partes podrían ser inventadas y qué debo verificar en fuentes primarias. No agregues nada nuevo.</div></div>
+      <div class="card"><h3 class="emg">D · Mejorar mi párrafo</h3>
+        <div class="miniprompt" style="margin-top:.7rem">
+          <button class="copy" data-copy="promptD">📋 Copiar</button>
+          <div class="promptbox" id="promptD" style="font-size:.7rem;border-left-color:var(--gold);padding-top:1.7rem">Eres editor de estilo académico. Respeta mi voz, no reescribas desde cero: «<span class="ph">[párrafo]</span>». Mejora claridad y concisión. Devuelve versión + lista de cambios + frase a verificar.</div>
+        </div>
+      </div>
+      <div class="card"><h3 class="emg">E · Evaluar uso ético</h3>
+        <div class="miniprompt" style="margin-top:.7rem">
+          <button class="copy" data-copy="promptE">📋 Copiar</button>
+          <div class="promptbox" id="promptE" style="font-size:.7rem;border-left-color:var(--gold);padding-top:1.7rem">Actúa como comité de integridad. Evalúa este uso de IA: <span class="ph">[caso]</span>. Clasifica: aceptable, declarar, riesgoso o inaceptable. Indica riesgo, mitigación y cómo declararlo.</div>
+        </div>
+      </div>
+      <div class="card"><h3 class="emg">F · Auto-verificación</h3>
+        <div class="miniprompt" style="margin-top:.7rem">
+          <button class="copy" data-copy="promptF">📋 Copiar</button>
+          <div class="promptbox" id="promptF" style="font-size:.7rem;border-left-color:var(--gold);padding-top:1.7rem">Revisa esta afirmación que generaste: «<span class="ph">[afirmación]</span>». Indica nivel de confianza, qué partes podrían ser inventadas y qué debo verificar en fuentes primarias. No agregues nada nuevo.</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -315,7 +368,10 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
     <p class="lead reveal" style="margin-top:1rem">Marca lo que aplica a tu manuscrito. La declaración se redacta sola abajo: cópiala y adáptala.</p>
     <div class="reveal cols c2" style="margin-top:1.4rem;gap:1.6rem;align-items:start">
       <div id="declToggles"></div>
-      <div class="promptbox" id="declOut" style="min-height:160px;border-left-color:var(--accent2)"><span style="color:var(--muted)">Marca al menos una casilla para generar tu declaración.</span></div>
+      <div class="miniprompt">
+        <button class="copy" data-copy="declOut">📋 Copiar</button>
+        <div class="promptbox" id="declOut" style="min-height:160px;border-left-color:var(--accent2);padding-top:1.8rem"><span style="color:var(--muted)">Marca al menos una casilla para generar tu declaración.</span></div>
+      </div>
     </div>
   </div>
 </section>
@@ -386,15 +442,27 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 11 · TRABAJO AUTÓNOMO -->
+<!-- 11 · ACTIVIDAD EN DIRECTO · ORDENAR ANTEPROYECTO -->
 <section class="slide">
-  <div class="spread">
-    <div class="kicker reveal">Entre la sesión 2 y la 3</div>
-    <h2 class="reveal">Tu trabajo autónomo.</h2>
-    <div class="cols c3 reveal" style="margin-top:2.2rem">
-      <div class="card"><span class="num">TAREA 01</span><h3>Completa tu biblioteca</h3><p>Hasta 5 prompts probados y calificados. Cada ficha: prompt usado, respuesta útil, qué modificaste, qué verificaste y qué descartaste.</p></div>
-      <div class="card"><span class="num">TAREA 02</span><h3>Caza una política</h3><p>Busca la política sobre IA de una revista de tu área. Resúmela en 3 líneas en el foro.</p></div>
-      <div class="card"><span class="num">TAREA 03</span><h3>Afina tu problema</h3><p>Redacta en una frase el problema que llevarás a la Sesión 3 (inicio del anteproyecto).</p></div>
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal">Actividad en directo · 20 min</div>
+    <h2 class="reveal" style="font-size:clamp(1.6rem,3.2vw,2.6rem)">Ordena las secciones<br>del <span class="em">anteproyecto</span>.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:68ch">Arrastra cada bloque del <strong style="color:var(--ink)">pool</strong> a su posición en la columna ordenada. Cuando termines, pulsa <strong style="color:var(--ink)">Verificar</strong>: las casillas correctas se pintan de verde y las mal ubicadas, de rojo.</p>
+    <div class="reveal orderzone">
+      <div>
+        <div class="mono" style="font-size:.66rem;letter-spacing:.16em;color:var(--accent2);margin-bottom:.45rem">▸ POOL · 9 BLOQUES DESORDENADOS</div>
+        <div class="orderpool" id="orderPool"></div>
+      </div>
+      <div>
+        <div class="mono" style="font-size:.66rem;letter-spacing:.16em;color:var(--accent);margin-bottom:.45rem">▸ ORDEN DEL ANTEPROYECTO</div>
+        <div class="orderslots" id="orderSlots"></div>
+        <div style="margin-top:.9rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-primary" id="orderVerify">⚲ Verificar</button>
+          <button class="btn btn-ghost" id="orderReset">↻ Reiniciar</button>
+          <span class="mono" id="orderScore" style="font-size:.78rem;color:var(--muted)">Aciertos: 0 / 9</span>
+        </div>
+        <p class="mono" style="margin-top:.7rem;font-size:.66rem;color:var(--muted);letter-spacing:.1em;line-height:1.5">▸ TIP: HACE CLIC EN UN BLOQUE COLOCADO PARA DEVOLVERLO AL POOL.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -557,6 +625,114 @@ buildDots();go(0);
     let list=chosen.length===1?chosen[0]:chosen.slice(0,-1).join(', ')+' y '+chosen.slice(-1);
     out.innerHTML='<span style="color:var(--accent)">// Declaración de uso de IA</span><br>Durante la preparación de este trabajo, los autores utilizaron herramientas de inteligencia artificial generativa para '+list+'. Tras su uso, los autores revisaron y editaron el contenido según su criterio y asumen la plena responsabilidad por la versión publicada.';
   }
+})();
+
+/* ---- botones de copia (slides 8 y 9) ---- */
+(function(){
+  function flash(btn){
+    const old=btn.innerHTML;btn.innerHTML='✓ Copiado';btn.classList.add('ok');
+    setTimeout(()=>{btn.innerHTML=old;btn.classList.remove('ok');},1600);
+  }
+  document.querySelectorAll('.miniprompt .copy').forEach(btn=>{
+    btn.onclick=()=>{
+      const id=btn.dataset.copy;
+      const src=id?document.getElementById(id):btn.nextElementSibling;
+      if(!src)return;
+      const txt=src.innerText;
+      if(navigator.clipboard){
+        navigator.clipboard.writeText(txt).then(()=>flash(btn)).catch(()=>fallback(txt,btn));
+      }else fallback(txt,btn);
+    };
+  });
+  function fallback(txt,btn){
+    const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');flash(btn);}catch(_){alert('No se pudo copiar.');}
+    document.body.removeChild(ta);
+  }
+})();
+
+/* ---- actividad: ordenar secciones del anteproyecto ---- */
+(function(){
+  const pool=document.getElementById('orderPool');
+  const slotsWrap=document.getElementById('orderSlots');
+  if(!pool||!slotsWrap)return;
+  const items=[
+    {id:1,t:'Planteamiento del problema',d:'descripción, formulación y sistematización'},
+    {id:2,t:'Justificación',d:''},
+    {id:3,t:'Objetivos',d:'general y específicos'},
+    {id:4,t:'Marco referencial',d:'antecedentes, teórico, conceptual y contextual/legal'},
+    {id:5,t:'Metodología',d:'enfoque, diseño, población, técnicas, fases, análisis'},
+    {id:6,t:'Resultados, productos e impactos',d:'tabla por tipo de producto'},
+    {id:7,t:'Cronograma',d:'tabla de actividades por mes'},
+    {id:8,t:'Presupuesto',d:'tabla por rubros con fila de total'},
+    {id:9,t:'Referencias',d:''},
+  ];
+  function chipHTML(it){return '<strong>'+it.t+'</strong>'+(it.d?' <span style="color:var(--muted);font-size:.7rem">('+it.d+')</span>':'');}
+  function shuffle(arr){return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);}
+
+  function build(){
+    pool.innerHTML='';slotsWrap.innerHTML='';
+    shuffle([...items]).forEach(it=>{
+      const c=document.createElement('div');c.className='orderchip';c.draggable=true;c.dataset.id=it.id;
+      c.innerHTML=chipHTML(it);
+      c.addEventListener('dragstart',e=>{e.dataTransfer.setData('text',String(it.id));e.dataTransfer.effectAllowed='move';});
+      pool.appendChild(c);
+    });
+    items.forEach((_,k)=>{
+      const s=document.createElement('div');s.className='orderslot';s.dataset.pos=k+1;
+      s.innerHTML='<span class="pos">'+(k+1)+'</span><div class="holder" data-empty="true">arrastra aquí</div>';
+      s.addEventListener('dragover',e=>{e.preventDefault();s.classList.add('over');});
+      s.addEventListener('dragleave',()=>s.classList.remove('over'));
+      s.addEventListener('drop',e=>{
+        e.preventDefault();s.classList.remove('over');
+        const id=+e.dataTransfer.getData('text');if(!id)return;
+        const chip=pool.querySelector('[data-id="'+id+'"]:not(.placed)');
+        const holder=s.querySelector('.holder');
+        if(!chip||holder.dataset.empty!=='true')return;
+        const it=items.find(x=>x.id===id);
+        holder.dataset.empty='false';holder.dataset.id=id;
+        holder.innerHTML=chipHTML(it);
+        chip.classList.add('placed');chip.draggable=false;
+        s.classList.remove('right','wrong');
+      });
+      // click en el holder = devolver al pool
+      s.addEventListener('click',ev=>{
+        const holder=s.querySelector('.holder');
+        if(holder.dataset.empty==='true')return;
+        const id=+holder.dataset.id;
+        const chip=pool.querySelector('[data-id="'+id+'"]');
+        if(chip){chip.classList.remove('placed');chip.draggable=true;}
+        holder.dataset.empty='true';holder.dataset.id='';
+        holder.textContent='arrastra aquí';
+        s.classList.remove('right','wrong');
+        updateScore();
+      });
+      slotsWrap.appendChild(s);
+    });
+    updateScore();
+  }
+  function updateScore(){
+    const placed=slotsWrap.querySelectorAll('.orderslot .holder[data-empty="false"]').length;
+    document.getElementById('orderScore').textContent='Colocados: '+placed+' / 9';
+  }
+  document.getElementById('orderVerify').onclick=()=>{
+    let ok=0,total=0;
+    slotsWrap.querySelectorAll('.orderslot').forEach(s=>{
+      const pos=+s.dataset.pos;
+      const holder=s.querySelector('.holder');
+      if(holder.dataset.empty==='true'){s.classList.remove('right','wrong');return;}
+      total++;
+      if(+holder.dataset.id===pos){s.classList.add('right');s.classList.remove('wrong');ok++;}
+      else{s.classList.add('wrong');s.classList.remove('right');}
+    });
+    const msg=document.getElementById('orderScore');
+    msg.textContent='Aciertos: '+ok+' / 9';
+    if(ok===9)msg.innerHTML+=' — <span style="color:var(--accent)">¡Orden correcto!</span>';
+    else if(total===9)msg.innerHTML+=' — <span style="color:var(--accent2)">Revisa los rojos y reintenta.</span>';
+  };
+  document.getElementById('orderReset').onclick=build;
+  build();
 })();
 </script>
 </body>
