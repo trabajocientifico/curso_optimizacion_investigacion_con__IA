@@ -107,8 +107,13 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 /* mono code */
 .mono{font-family:'Space Mono',monospace}
 .promptbox{background:var(--code-bg);border:1px solid var(--line);border-left:3px solid var(--accent);
-  border-radius:12px;padding:1.1rem 1.2rem;font-family:'Space Mono',monospace;font-size:.92rem;line-height:1.65;color:var(--code-ink)}
+  border-radius:12px;padding:1.1rem 1.2rem;font-family:'Space Mono',monospace;font-size:.92rem;line-height:1.65;color:var(--code-ink);position:relative}
 .promptbox .ph{color:var(--gold)}
+.copybtn{position:absolute;top:.55rem;right:.55rem;background:rgba(255,255,255,.06);border:1px solid var(--line);
+  color:var(--code-ink);font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.32rem .65rem;border-radius:6px;cursor:pointer;transition:.18s;line-height:1}
+.copybtn:hover{background:var(--accent);color:#1a0d08;border-color:var(--accent)}
+.copybtn.ok{background:var(--ok);color:#0d1117;border-color:var(--ok)}
 
 /* title slide bits */
 .hero-num{position:absolute;right:5vw;top:8vh;font-family:'Fraunces',serif;font-weight:900;
@@ -189,10 +194,10 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
     <h2 class="reveal">Hoy nace tu <span class="emg">anteproyecto</span>.</h2>
     <p class="lead reveal" style="margin-top:1rem">Traes un tema tentativo de la Sesión 1. Hoy lo conviertes en la columna vertebral de tu propuesta.</p>
     <div class="cols c2 reveal" style="margin-top:1.8rem">
-      <div class="card"><span class="num">0:10 — 0:45</span><h3>Problema vs. tema</h3><p>La diferencia que lo cambia todo. Cómo la IA ayuda a ver el vacío sin reemplazar tu juicio.</p></div>
-      <div class="card"><span class="num">0:45 — 1:25</span><h3>La pregunta investigable</h3><p>De lo vago a lo específico. Criterios de una buena pregunta y refinamiento asistido.</p></div>
-      <div class="card"><span class="num">1:35 — 2:20</span><h3>Objetivos medibles</h3><p>General y específicos, con verbos evaluables. Taller en breakout.</p></div>
-      <div class="card"><span class="num">2:20 — 3:00</span><h3>Justificación</h3><p>Por qué importa tu estudio. Redacción asistida y cierre.</p></div>
+      <div class="card"><span class="num">0:10 — 0:50</span><h3>Del tema al problema</h3><p>10 problemas posibles, elección, y árbol de causas y efectos del problema elegido.</p></div>
+      <div class="card"><span class="num">0:50 — 1:30</span><h3>La pregunta investigable</h3><p>De problema + causas + efectos a una pregunta concreta. Filtro FINER.</p></div>
+      <div class="card"><span class="num">1:40 — 2:25</span><h3>Objetivos medibles</h3><p>4 alternativas de objetivo general, verbos evaluables, específicos y taller.</p></div>
+      <div class="card"><span class="num">2:25 — 3:00</span><h3>Justificación</h3><p>Por qué importa tu estudio. Redacción asistida y cierre.</p></div>
     </div>
   </div>
 </section>
@@ -218,36 +223,92 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 4 · PROMPT DE EXPLORACIÓN -->
+<!-- 4 · PROMPT 1 · 10 PROBLEMAS POSIBLES -->
 <section class="slide">
   <div class="spread">
-    <div class="kicker reveal">Herramienta del bloque</div>
-    <h2 class="reveal">Explora el vacío,<br>no pidas citas.</h2>
-    <p class="lead reveal" style="margin-top:1rem">Para mapear el panorama conceptual de tu tema usa herramientas especializadas (Consensus, Elicit) o un conversacional con esta instrucción que <strong style="color:var(--ink)">no</strong> le pide referencias inventadas:</p>
-    <div class="reveal promptbox" style="margin-top:1.6rem">
-      <span style="color:var(--accent2)">// mapeo del estado del arte</span><br>
-      Actúa como director de tesis exigente en <span class="ph">[campo]</span>.<br>
-      Mi tema inicial es <span class="ph">[tema]</span>. Conviértelo en un problema investigable.<br>
-      Devuelve: 1 versión demasiado amplia, 1 versión específica, 1 versión<br>
-      investigable, una pregunta posible, 3 objetivos y qué sigue débil o vago.<br>
-      No inventes citas; indica qué tendría que verificar en literatura real.
+    <div class="kicker reveal">Bloque 1 · Prompt 1 / 5</div>
+    <h2 class="reveal">De un tema,<br><span class="em">10 problemas</span> posibles.</h2>
+    <p class="lead reveal" style="margin-top:1rem">No te enamores del primer problema que veas. Pide varios ángulos y elige el más fértil para ti.</p>
+    <div class="reveal promptbox" style="margin-top:1.4rem">
+      <span style="color:var(--accent2)">// generación de problemas candidatos</span><br>
+      Actúa como director de tesis exigente en <span class="ph">[campo / disciplina]</span>.<br>
+      Mi tema inicial es <span class="ph">[tema]</span>, en el contexto de <span class="ph">[región / población]</span>.<br>
+      Genera <strong style="color:#fff">10 problemas de investigación distintos</strong> a partir de ese tema. Cada uno con:<br>
+      &nbsp;&nbsp;· una tensión o vacío concreto,<br>
+      &nbsp;&nbsp;· un contexto delimitado (lugar, población, periodo),<br>
+      &nbsp;&nbsp;· una pista de por qué importa.<br>
+      Numéralos del 1 al 10, sin repetir el ángulo. No inventes citas; señala qué<br>
+      tendría que verificar yo en literatura real.
     </div>
-    <p class="lead reveal" style="margin-top:1.4rem">Luego <span class="em2">verificas</span> en Consensus o Scopus si esos vacíos son reales. La IA orienta; la literatura confirma.</p>
+    <p class="lead reveal" style="margin-top:1.2rem">Marca el que más te <mark>incomoda o intriga</mark> — suele ser el que importa. Ese pasa al siguiente prompt.</p>
   </div>
 </section>
 
-<!-- 5 · AFINADOR DE PREGUNTAS (interactivo) -->
+<!-- 5 · PROMPT 2 · ÁRBOL DEL PROBLEMA -->
 <section class="slide">
   <div class="spread">
-    <div class="kicker reveal">Bloque 2 · La pregunta investigable</div>
+    <div class="kicker reveal">Bloque 1 · Prompt 2 / 5</div>
+    <h2 class="reveal">¿Por qué pasa<br>y qué <span class="em2">provoca</span>?</h2>
+    <p class="lead reveal" style="margin-top:1rem">Antes de la pregunta, el árbol del problema: causas debajo, efectos arriba, problema en el tronco.</p>
+    <div class="cols c2 reveal" style="margin-top:1.4rem">
+      <div class="card" style="border-left:3px solid var(--accent)">
+        <h3>Árbol del problema</h3>
+        <p style="margin-top:.8rem"><span class="mono" style="color:var(--danger);font-size:.74rem;letter-spacing:.12em">EFECTOS ↑</span><br>Consecuencias visibles que ya están dañando algo o a alguien.</p>
+        <p style="margin-top:.8rem"><span class="mono" style="color:var(--accent);font-size:.74rem;letter-spacing:.12em">PROBLEMA ●</span><br>El que elegiste en el Prompt 1.</p>
+        <p style="margin-top:.8rem"><span class="mono" style="color:var(--ok);font-size:.74rem;letter-spacing:.12em">CAUSAS ↓</span><br>Raíces estructurales y causas intermedias que lo generan.</p>
+      </div>
+      <div class="promptbox">
+        <span style="color:var(--accent2)">// causas y efectos del problema</span><br>
+        Mi problema es:<br>
+        «<span class="ph">[problema elegido del Prompt 1]</span>».<br><br>
+        Devuelve una tabla con tres columnas:<br>
+        &nbsp;&nbsp;1. Causas raíz (3-5)<br>
+        &nbsp;&nbsp;2. Causas intermedias (3-5)<br>
+        &nbsp;&nbsp;3. Efectos observables (3-5)<br><br>
+        Sin citas inventadas. Marca cuáles son hipótesis y cuáles<br>
+        son hechos documentables que yo debería verificar en<br>
+        literatura.
+      </div>
+    </div>
+    <p class="lead reveal" style="margin-top:1.2rem">Este árbol es el <span class="em">esqueleto</span> de tu justificación y la fuente de tus objetivos específicos.</p>
+  </div>
+</section>
+
+<!-- 6 · PROMPT 3 · 3 OPCIONES DE PREGUNTA -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 2 · Prompt 3 / 5</div>
+    <h2 class="reveal">3 preguntas posibles<br>desde tu <span class="em2">árbol</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Con problema + causas + efectos sobre la mesa, pide preguntas concretas con ángulos distintos. Tú decides cuál es la tuya.</p>
+    <div class="reveal promptbox" style="margin-top:1.4rem">
+      <span style="color:var(--accent2)">// preguntas de investigación candidatas</span><br>
+      A partir de:<br>
+      &nbsp;&nbsp;· Problema: «<span class="ph">[problema]</span>»<br>
+      &nbsp;&nbsp;· Causas clave: <span class="ph">[del árbol]</span><br>
+      &nbsp;&nbsp;· Efectos clave: <span class="ph">[del árbol]</span><br><br>
+      Propón <strong style="color:#fff">3 preguntas de investigación distintas</strong>, cada una con un ángulo:<br>
+      &nbsp;&nbsp;1. Centrada en magnitud / descripción del problema,<br>
+      &nbsp;&nbsp;2. Centrada en relación causa → efecto,<br>
+      &nbsp;&nbsp;3. Centrada en una intervención o solución posible.<br><br>
+      Cada pregunta con variables claras, contexto y desenlace medible.<br>
+      Señala cuál es más viable y por qué. Sin citas inventadas.
+    </div>
+    <p class="lead reveal" style="margin-top:1.2rem">Elige una. En la siguiente diapositiva verás cómo se <span class="em">afina capa por capa</span>.</p>
+  </div>
+</section>
+
+<!-- 7 · AFINADOR DE PREGUNTAS (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 2 · Afina tu elección</div>
     <h2 class="reveal">Afina tu pregunta,<br>capa por capa.</h2>
-    <p class="lead reveal" style="margin-top:.8rem">Una pregunta vaga no se puede responder. Pulsa para verla evolucionar de lo genérico a lo investigable.</p>
+    <p class="lead reveal" style="margin-top:.8rem">Ya tienes 3 opciones del prompt anterior. Esta es la lógica de cómo evoluciona una pregunta de lo vago a lo investigable: úsala para verificar y mejorar la que elegiste.</p>
     <div class="qrow reveal" id="qSteps"></div>
     <button class="btn btn-primary reveal" id="qNext" style="margin-top:1.2rem;align-self:flex-start">▸ Refinar un nivel más</button>
   </div>
 </section>
 
-<!-- 6 · CRITERIOS FINER -->
+<!-- 8 · CRITERIOS FINER -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">¿Es buena tu pregunta?</div>
@@ -263,12 +324,36 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 7 · CONSTRUCTOR DE OBJETIVOS (interactivo) -->
+<!-- 9 · PROMPT 4 · 4 ALTERNATIVAS DE OBJETIVO -->
 <section class="slide">
   <div class="spread">
-    <div class="kicker reveal">Bloque 3 · Objetivos medibles</div>
-    <h2 class="reveal">Elige el verbo<br>correcto.</h2>
-    <p class="lead reveal" style="margin-top:.8rem">Un objetivo se evalúa por su verbo. Toca un verbo y obsérvalo en el objetivo: los rojos no se pueden medir.</p>
+    <div class="kicker reveal">Bloque 3 · Prompt 4 / 5</div>
+    <h2 class="reveal">4 caminos para tu<br><span class="emg">objetivo general</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Ya tienes problema, causas, efectos y pregunta. Ahora la IA propone varios objetivos y tú escoges el ángulo que mejor te sirve.</p>
+    <div class="reveal promptbox" style="margin-top:1.4rem">
+      <span style="color:var(--accent2)">// alternativas de objetivo general</span><br>
+      Tengo esta tríada:<br>
+      &nbsp;&nbsp;· Problema: «<span class="ph">[problema]</span>»<br>
+      &nbsp;&nbsp;· Causas y efectos clave: <span class="ph">[del árbol]</span><br>
+      &nbsp;&nbsp;· Pregunta de investigación: «<span class="ph">[pregunta]</span>»<br><br>
+      Propón <strong style="color:#fff">4 alternativas de objetivo general</strong>, cada una con un ángulo distinto:<br>
+      &nbsp;&nbsp;1. Descriptivo (caracterizar / cuantificar)<br>
+      &nbsp;&nbsp;2. Comparativo (comparar / contrastar)<br>
+      &nbsp;&nbsp;3. Explicativo (determinar relación / efecto)<br>
+      &nbsp;&nbsp;4. Aplicado (evaluar intervención / proponer solución)<br><br>
+      Cada uno con verbo medible, alcance realista y método implicado.<br>
+      Señala cuál es la más viable para una tesis y por qué.
+    </div>
+    <p class="lead reveal" style="margin-top:1.2rem">Elige uno. En las siguientes diapositivas verificas el verbo y derivas los específicos.</p>
+  </div>
+</section>
+
+<!-- 10 · CONSTRUCTOR DE OBJETIVOS (interactivo) -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 3 · Verbo del objetivo</div>
+    <h2 class="reveal">Verifica el verbo<br>que elegiste.</h2>
+    <p class="lead reveal" style="margin-top:.8rem">Tomaste una de las 4 alternativas del prompt anterior. Ahora confirma el verbo: toca cada uno y obsérvalo en el objetivo. Los rojos no se pueden medir.</p>
     <div class="reveal" style="margin-top:1.2rem" id="verbBank"></div>
     <div class="reveal objbuilder" style="margin-top:1.4rem">
       <p class="objline">Objetivo: <span class="slotv" id="verbSlot">_______</span> el efecto del riego intermitente sobre el rendimiento del arroz en el Piedemonte llanero.</p>
@@ -277,7 +362,31 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 8 · ESTRUCTURA DE OBJETIVOS -->
+<!-- 11 · PROMPT 5 · 3 PAQUETES DE ESPECÍFICOS -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Bloque 3 · Prompt 5 / 5</div>
+    <h2 class="reveal">3 paquetes de<br><span class="em2">específicos</span> posibles.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Ya tienes objetivo general y pregunta. Ahora pide tres rutas distintas para llegar al general. Cada paquete = 3 específicos secuenciales (9 en total).</p>
+    <div class="reveal promptbox" style="margin-top:1.4rem">
+      <span style="color:var(--accent2)">// paquetes de objetivos específicos</span><br>
+      Tengo:<br>
+      &nbsp;&nbsp;· Pregunta de investigación: «<span class="ph">[pregunta]</span>»<br>
+      &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
+      Propón <strong style="color:#fff">3 paquetes alternativos de objetivos específicos</strong> (3 por paquete = 9 en total).<br>
+      Cada paquete debe representar una RUTA distinta para alcanzar el general:<br>
+      &nbsp;&nbsp;Paquete A — ruta descriptiva / diagnóstica<br>
+      &nbsp;&nbsp;Paquete B — ruta analítica / explicativa<br>
+      &nbsp;&nbsp;Paquete C — ruta aplicada / propositiva<br><br>
+      Reglas: cada específico con verbo medible, secuencia lógica (de lo simple a lo<br>
+      complejo), sin sobrar ni faltar respecto del general. Indica qué método implica<br>
+      cada paquete y cuál es el más viable para una tesis.
+    </div>
+    <p class="lead reveal" style="margin-top:1.2rem">Elige <strong style="color:var(--ink)">un paquete completo</strong> (no mezcles). En la siguiente diapositiva verificas su jerarquía y coherencia.</p>
+  </div>
+</section>
+
+<!-- 12 · ESTRUCTURA DE OBJETIVOS -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">La jerarquía</div>
@@ -301,27 +410,27 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 9 · TALLER (breakout) -->
+<!-- 13 · TALLER (breakout) -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">Taller · Breakout rooms · 40 min</div>
     <h2 class="reveal">Tu tríada de partida.</h2>
     <div class="cols c2 reveal" style="margin-top:2rem">
       <div class="card" style="border-left:3px solid var(--accent)">
-        <h3>Consigna</h3>
-        <p style="margin-top:.8rem">1. Usa el prompt de mapeo con tu tema e identifica un vacío.<br><br>2. Formula tu <strong style="color:var(--ink)">problema</strong> en una frase con tensión y contexto.<br><br>3. Deriva tu <strong style="color:var(--ink)">pregunta</strong> y pásala por el filtro FINER.<br><br>4. Escribe 1 objetivo general + 3 específicos con verbos medibles.</p>
+        <h3>Consigna · 5 prompts encadenados</h3>
+        <p style="margin-top:.8rem">1. <strong style="color:var(--ink)">Prompt 1</strong> — Genera 10 problemas posibles desde tu tema. Elige el más fértil.<br><br>2. <strong style="color:var(--ink)">Prompt 2</strong> — Construye el árbol (causas raíz, intermedias, efectos) del problema elegido.<br><br>3. <strong style="color:var(--ink)">Prompt 3</strong> — Pide 3 preguntas posibles desde el árbol. Elige una y pásala por FINER.<br><br>4. <strong style="color:var(--ink)">Prompt 4</strong> — Pide 4 alternativas de objetivo general. Elige una y verifica su verbo.<br><br>5. <strong style="color:var(--ink)">Prompt 5</strong> — Pide 3 paquetes de específicos (3 por paquete). Elige un paquete completo.</p>
       </div>
       <div class="card" style="border-left:3px solid var(--accent2)">
         <h3>Entregable de la sala</h3>
         <p style="margin-top:.8rem">Cada docente comparte su tríada (problema · pregunta · objetivos). El grupo da una crítica constructiva:</p>
-        <p style="margin-top:.8rem">▹ ¿La pregunta es investigable?<br>▹ ¿Los objetivos suman al general?<br>▹ ¿Algún verbo no se puede medir?<br>▹ Bitácora: prompt usado, cambio aceptado, cambio rechazado y verificación pendiente.</p>
+        <p style="margin-top:.8rem">▹ ¿El problema elegido tiene tensión y contexto?<br>▹ ¿El árbol explica causas y efectos plausibles?<br>▹ ¿La pregunta es investigable y pasa FINER?<br>▹ ¿Los objetivos específicos suman al general?<br>▹ Bitácora: los 5 prompts usados, qué cambio aceptaste, qué rechazaste y qué queda por verificar en literatura.</p>
         <p style="margin-top:1rem;color:var(--accent2);font-size:.78rem" class="mono">RELATOR · 1 MIN EN PLENARIA</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 10 · JUSTIFICACIÓN (checklist interactivo) -->
+<!-- 14 · JUSTIFICACIÓN (checklist interactivo) -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">Bloque 4 · La justificación</div>
@@ -340,7 +449,7 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 11 · ENTREGABLE / TRABAJO AUTÓNOMO -->
+<!-- 15 · ENTREGABLE / TRABAJO AUTÓNOMO -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">Hacia la sesión 4</div>
@@ -354,7 +463,35 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 12 · CIERRE -->
+<!-- 16 · PROMPT BONUS · NOTEBOOKLM · PLANTEAMIENTO DEL PROBLEMA -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Trabajo autónomo · Prompt bonus</div>
+    <h2 class="reveal">Tu planteamiento,<br>con <span class="emg">NotebookLM</span>.</h2>
+    <p class="lead reveal" style="margin-top:1rem">Sube a NotebookLM artículos científicos y reportes de organizaciones reconocidas (PDFs con datos, métricas o estadísticas sobre tu problema). Después aplica este prompt:</p>
+    <div class="reveal promptbox" style="margin-top:1.4rem">
+      <span style="color:var(--accent2)">// planteamiento del problema · APA 7 · 1500-2000 palabras</span><br>
+      Actúa como redactor académico riguroso. Usando <strong style="color:#fff">únicamente las fuentes que subí</strong>,<br>
+      redacta el planteamiento del problema de mi investigación con esta información:<br>
+      &nbsp;&nbsp;· Problema central: «<span class="ph">[problema]</span>»<br>
+      &nbsp;&nbsp;· Causas (raíz e intermedias): <span class="ph">[del árbol]</span><br>
+      &nbsp;&nbsp;· Efectos clave: <span class="ph">[del árbol]</span><br>
+      &nbsp;&nbsp;· Pregunta de investigación: «<span class="ph">[pregunta]</span>»<br>
+      &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
+      Reglas:<br>
+      &nbsp;&nbsp;1. Estructura: contexto → magnitud del problema → causas → efectos → vacío de conocimiento → relevancia.<br>
+      &nbsp;&nbsp;2. Apóyate solo en mis fuentes (artículos científicos e informes de organizaciones reconocidas).<br>
+      &nbsp;&nbsp;3. Incluye <strong style="color:#fff">métricas, datos y estadísticas</strong> que den magnitud al problema.<br>
+      &nbsp;&nbsp;4. Cita dentro del texto en formato APA 7 (Autor, año).<br>
+      &nbsp;&nbsp;5. Extensión total: entre 1500 y 2000 palabras.<br>
+      &nbsp;&nbsp;6. Al final añade la sección «<strong style="color:#fff">Referencias</strong>» en APA 7, ordenadas alfabéticamente, con TODAS las fuentes citadas (preferiblemente con DOI o enlace al PDF).<br>
+      &nbsp;&nbsp;7. Si una afirmación no está sustentada en las fuentes subidas, márcala como <strong style="color:#fff">[VERIFICAR]</strong> en vez de inventar la cita.
+    </div>
+    <p class="lead reveal" style="margin-top:1.2rem">Después verifica que cada cita tenga su PDF real disponible. Lo que quede como <span class="em">[VERIFICAR]</span> es tu próxima búsqueda en literatura.</p>
+  </div>
+</section>
+
+<!-- 17 · CIERRE -->
 <section class="slide">
   <div class="spread" style="align-items:center;text-align:center">
     <div class="kicker reveal" style="justify-content:center">Cierre de la sesión 3</div>
@@ -379,7 +516,7 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   <div class="nav">
     <button id="themeToggle" aria-label="cambiar tema" title="Cambiar tema (T)"><span id="themeIcon">☾</span></button>
     <button id="prev" aria-label="anterior">‹</button>
-    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 12</span>
+    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 17</span>
     <button id="next" aria-label="siguiente">›</button>
   </div>
 </div>
@@ -478,6 +615,38 @@ buildDots();go(initSlide());
         :'<span style="color:var(--danger)">✕ Verbo interno: ¿cómo demuestras que «'+o.v.toLowerCase()+'» ocurrió? No es evaluable.</span>';
     };
     bank.appendChild(b);
+  });
+})();
+
+/* ---- COMP X: botón copiar en cada promptbox ---- */
+(function(){
+  function extractPromptText(box){
+    const clone=box.cloneNode(true);
+    clone.querySelectorAll('.copybtn').forEach(b=>b.remove());
+    let html=clone.innerHTML;
+    html=html.replace(/<br\s*\/?>/gi,'\n');
+    const tmp=document.createElement('div');tmp.innerHTML=html;
+    let text=tmp.textContent||'';
+    text=text.replace(/\u00A0/g,' ');
+    text=text.split('\n').map(l=>l.replace(/[ \t]+/g,' ').replace(/^ +| +$/g,'')).join('\n');
+    return text.replace(/\n{3,}/g,'\n\n').trim();
+  }
+  document.querySelectorAll('.promptbox').forEach(box=>{
+    const btn=document.createElement('button');btn.className='copybtn';btn.type='button';btn.textContent='Copiar';
+    btn.onclick=async(e)=>{
+      e.stopPropagation();
+      const text=extractPromptText(box);
+      try{
+        if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);}
+        else{
+          const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+          document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+        }
+        btn.textContent='✓ Copiado';btn.classList.add('ok');
+        setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('ok');},1600);
+      }catch(err){btn.textContent='Error';setTimeout(()=>btn.textContent='Copiar',1600);}
+    };
+    box.appendChild(btn);
   });
 })();
 
