@@ -463,35 +463,106 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 16 · PROMPT BONUS · NOTEBOOKLM · PLANTEAMIENTO DEL PROBLEMA -->
+<!-- 16 · PROMPT BONUS · NOTEBOOKLM · 2 PROMPTS -->
 <section class="slide">
   <div class="spread">
-    <div class="kicker reveal">Trabajo autónomo · Prompt bonus</div>
+    <div class="kicker reveal">Trabajo autónomo · 2 prompts NotebookLM</div>
     <h2 class="reveal">Tu planteamiento,<br>con <span class="emg">NotebookLM</span>.</h2>
-    <p class="lead reveal" style="margin-top:1rem">Sube a NotebookLM artículos científicos y reportes de organizaciones reconocidas (PDFs con datos, métricas o estadísticas sobre tu problema). Después aplica este prompt:</p>
-    <div class="reveal promptbox" style="margin-top:1.4rem">
-      <span style="color:var(--accent2)">// planteamiento del problema · APA 7 · 1500-2000 palabras</span><br>
-      Actúa como redactor académico riguroso. Usando <strong style="color:#fff">únicamente las fuentes que subí</strong>,<br>
-      redacta el planteamiento del problema de mi investigación con esta información:<br>
-      &nbsp;&nbsp;· Problema central: «<span class="ph">[problema]</span>»<br>
-      &nbsp;&nbsp;· Causas (raíz e intermedias): <span class="ph">[del árbol]</span><br>
-      &nbsp;&nbsp;· Efectos clave: <span class="ph">[del árbol]</span><br>
-      &nbsp;&nbsp;· Pregunta de investigación: «<span class="ph">[pregunta]</span>»<br>
-      &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
-      Reglas:<br>
-      &nbsp;&nbsp;1. Estructura: contexto → magnitud del problema → causas → efectos → vacío de conocimiento → relevancia.<br>
-      &nbsp;&nbsp;2. Apóyate solo en mis fuentes (artículos científicos e informes de organizaciones reconocidas).<br>
-      &nbsp;&nbsp;3. Incluye <strong style="color:#fff">métricas, datos y estadísticas</strong> que den magnitud al problema.<br>
-      &nbsp;&nbsp;4. Cita dentro del texto en formato APA 7 (Autor, año).<br>
-      &nbsp;&nbsp;5. Extensión total: entre 1500 y 2000 palabras.<br>
-      &nbsp;&nbsp;6. Al final añade la sección «<strong style="color:#fff">Referencias</strong>» en APA 7, ordenadas alfabéticamente, con TODAS las fuentes citadas (preferiblemente con DOI o enlace al PDF).<br>
-      &nbsp;&nbsp;7. Si una afirmación no está sustentada en las fuentes subidas, márcala como <strong style="color:#fff">[VERIFICAR]</strong> en vez de inventar la cita.
+    <p class="lead reveal" style="margin-top:.8rem">Dos pasos. Primero la búsqueda profunda para encontrar fuentes; luego, con esas fuentes cargadas, redactas el planteamiento.</p>
+
+    <div class="cols c2 reveal" style="margin-top:1.2rem;gap:1.4rem">
+      <div>
+        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent);margin-bottom:.5rem">PASO 1 · BÚSQUEDA PROFUNDA EN LA WEB</p>
+        <div class="promptbox" style="font-size:.82rem;line-height:1.55">
+          <span style="color:var(--accent2)">// fuentes con datos y estadísticas</span><br>
+          Actúa como investigador rastreador de fuentes. Realiza una <strong style="color:#fff">búsqueda profunda en la web</strong> para mi investigación:<br>
+          &nbsp;&nbsp;· Problema: «<span class="ph">[problema]</span>»<br>
+          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
+          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
+          Encuéntrame fuentes que cumplan TODAS estas condiciones:<br>
+          &nbsp;&nbsp;1. Estén disponibles como <strong style="color:#fff">PDF accesible</strong> en internet.<br>
+          &nbsp;&nbsp;2. Sean artículos científicos revisados por pares o informes de organizaciones reconocidas (OMS, FAO, BID, CEPAL, ministerios, universidades).<br>
+          &nbsp;&nbsp;3. Contengan <strong style="color:#fff">métricas, datos o estadísticas</strong> sobre magnitud del problema, causas o efectos.<br>
+          &nbsp;&nbsp;4. Publicadas preferentemente en los últimos 10 años.
+        </div>
+      </div>
+
+      <div>
+        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent2);margin-bottom:.5rem">PASO 2 · REDACTAR PLANTEAMIENTO (CON FUENTES CARGADAS)</p>
+        <div class="promptbox" style="border-left-color:var(--accent2);font-size:.82rem;line-height:1.55">
+          <span style="color:var(--accent2)">// planteamiento · APA 7 · 1500-2000 palabras</span><br>
+          Actúa como redactor académico riguroso. Usando <strong style="color:#fff">únicamente las fuentes que subí</strong>, redacta el planteamiento del problema con esta información:<br>
+          &nbsp;&nbsp;· Problema central: «<span class="ph">[problema]</span>»<br>
+          &nbsp;&nbsp;· Causas (raíz e intermedias): <span class="ph">[del árbol]</span><br>
+          &nbsp;&nbsp;· Efectos clave: <span class="ph">[del árbol]</span><br>
+          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
+          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
+          Reglas:<br>
+          &nbsp;&nbsp;1. Estructura: contexto → magnitud → causas → efectos → vacío → relevancia.<br>
+          &nbsp;&nbsp;2. Apóyate solo en mis fuentes.<br>
+          &nbsp;&nbsp;3. Incluye <strong style="color:#fff">métricas, datos y estadísticas</strong> que den magnitud al problema.<br>
+          &nbsp;&nbsp;4. Cita en el texto en APA 7 (Autor, año).<br>
+          &nbsp;&nbsp;5. Extensión: 1500 a 2000 palabras.<br>
+          &nbsp;&nbsp;6. Al final, sección «<strong style="color:#fff">Referencias</strong>» en APA 7, ordenadas alfabéticamente, con DOI o enlace al PDF.<br>
+          &nbsp;&nbsp;7. Lo que no esté en las fuentes, márcalo como <strong style="color:#fff">[VERIFICAR]</strong>; no inventes citas.
+        </div>
+      </div>
     </div>
-    <p class="lead reveal" style="margin-top:1.2rem">Después verifica que cada cita tenga su PDF real disponible. Lo que quede como <span class="em">[VERIFICAR]</span> es tu próxima búsqueda en literatura.</p>
+
+    <p class="lead reveal" style="margin-top:1rem">Verifica que cada cita tenga su PDF real. Lo que quede como <span class="em">[VERIFICAR]</span> es tu próxima búsqueda.</p>
   </div>
 </section>
 
-<!-- 17 · CIERRE -->
+<!-- 17 · PROMPT BONUS · NOTEBOOKLM · JUSTIFICACIÓN · 2 PROMPTS -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Trabajo autónomo · 2 prompts NotebookLM</div>
+    <h2 class="reveal">Tu justificación,<br>con <span class="emg">NotebookLM</span>.</h2>
+    <p class="lead reveal" style="margin-top:.8rem">Mismo flujo de dos pasos. Primero rastreas fuentes que sustenten el «por qué importa»; luego, con esas fuentes cargadas, redactas la justificación.</p>
+
+    <div class="cols c2 reveal" style="margin-top:1.2rem;gap:1.4rem">
+      <div>
+        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent);margin-bottom:.5rem">PASO 1 · BÚSQUEDA PROFUNDA PARA JUSTIFICAR</p>
+        <div class="promptbox" style="font-size:.82rem;line-height:1.55">
+          <span style="color:var(--accent2)">// fuentes sobre relevancia, impacto y vacío</span><br>
+          Actúa como investigador rastreador de fuentes. Realiza una <strong style="color:#fff">búsqueda profunda en la web</strong> para justificar mi investigación:<br>
+          &nbsp;&nbsp;· Problema: «<span class="ph">[problema]</span>»<br>
+          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
+          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
+          Encuéntrame fuentes que cumplan TODAS estas condiciones:<br>
+          &nbsp;&nbsp;1. Estén disponibles como <strong style="color:#fff">PDF accesible</strong> en internet.<br>
+          &nbsp;&nbsp;2. Sean artículos científicos revisados por pares, políticas públicas o informes de organizaciones reconocidas (OMS, FAO, BID, CEPAL, ministerios, universidades).<br>
+          &nbsp;&nbsp;3. Aporten evidencia sobre <strong style="color:#fff">vacío de conocimiento, relevancia social, beneficio práctico, novedad o pertinencia disciplinar / regional</strong>.<br>
+          &nbsp;&nbsp;4. Publicadas preferentemente en los últimos 10 años.
+        </div>
+      </div>
+
+      <div>
+        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent2);margin-bottom:.5rem">PASO 2 · REDACTAR JUSTIFICACIÓN (CON FUENTES CARGADAS)</p>
+        <div class="promptbox" style="border-left-color:var(--accent2);font-size:.82rem;line-height:1.55">
+          <span style="color:var(--accent2)">// justificación · APA 7 · 800-1200 palabras</span><br>
+          Actúa como redactor académico riguroso. Usando <strong style="color:#fff">únicamente las fuentes que subí</strong>, redacta la justificación del estudio con esta información:<br>
+          &nbsp;&nbsp;· Problema central: «<span class="ph">[problema]</span>»<br>
+          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
+          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br>
+          &nbsp;&nbsp;· Beneficiarios: <span class="ph">[grupos / sectores impactados]</span><br><br>
+          Reglas:<br>
+          &nbsp;&nbsp;1. Estructura: vacío de conocimiento → relevancia teórica → relevancia práctica / social → novedad → viabilidad → pertinencia disciplinar / regional.<br>
+          &nbsp;&nbsp;2. Apóyate solo en mis fuentes.<br>
+          &nbsp;&nbsp;3. Incluye <strong style="color:#fff">datos, métricas o evidencia</strong> que respalden cada argumento.<br>
+          &nbsp;&nbsp;4. Cita en el texto en APA 7 (Autor, año).<br>
+          &nbsp;&nbsp;5. Extensión: 800 a 1200 palabras.<br>
+          &nbsp;&nbsp;6. Al final, sección «<strong style="color:#fff">Referencias</strong>» en APA 7, ordenadas alfabéticamente, con DOI o enlace al PDF.<br>
+          &nbsp;&nbsp;7. Lo que no esté en las fuentes, márcalo como <strong style="color:#fff">[VERIFICAR]</strong>; no inventes citas.
+        </div>
+      </div>
+    </div>
+
+    <p class="lead reveal" style="margin-top:1rem">Tu justificación debe convencer al jurado de que el estudio <span class="em">vale la pena</span>. Cada afirmación, respaldada por una fuente real.</p>
+  </div>
+</section>
+
+<!-- 18 · CIERRE -->
 <section class="slide">
   <div class="spread" style="align-items:center;text-align:center">
     <div class="kicker reveal" style="justify-content:center">Cierre de la sesión 3</div>

@@ -230,20 +230,70 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 5 · PROMPT MARCO TEÓRICO -->
+<!-- 5 · MARCO TEÓRICO + ESTADO DEL ARTE · DOS RUTAS -->
 <section class="slide">
   <div class="spread">
-    <div class="kicker reveal">Herramienta del bloque</div>
-    <h2 class="reveal">Organiza, no <span class="em">inventes</span>.</h2>
-    <p class="lead reveal" style="margin-top:1rem">Dale a la IA los conceptos que TÚ identificaste y pídele estructura, no contenido nuevo. NotebookLM es ideal porque trabaja solo con tus fuentes cargadas.</p>
-    <div class="reveal promptbox" style="margin-top:1.6rem">
-      <span style="color:var(--accent2)">// estructurar el marco</span><br>
-      Estos son los conceptos clave de mi marco: <span class="ph">[lista]</span>.<br>
-      Propón una estructura jerárquica que los conecte de lo general<br>
-      a lo específico, mostrando relaciones entre ellos.<br>
-      No agregues conceptos nuevos ni inventes citas. En español.
+    <div class="kicker reveal">Herramientas · Marco teórico y estado del arte</div>
+    <h2 class="reveal">Dos rutas para tu <span class="em">marco</span>.</h2>
+    <p class="lead reveal" style="margin-top:.6rem">Mismo destino, dos caminos. Estructura primero, fundamenta después: tú eliges la combinación de herramientas.</p>
+
+    <div class="cols c2 reveal" style="margin-top:1rem;gap:1.4rem">
+      <div>
+        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent);margin-bottom:.5rem">OPCIÓN A · CHAT IA + SCISPACE</p>
+
+        <p class="mono" style="font-size:.64rem;letter-spacing:.14em;color:var(--muted);margin:.5rem 0 .3rem">PASO 1 · Claude / ChatGPT / Gemini</p>
+        <div class="promptbox" style="font-size:.74rem;line-height:1.5;padding:.85rem 1rem">
+          <span style="color:var(--accent2)">// estructura del marco con preguntas guía</span><br>
+          Actúa como director de tesis. Con base en:<br>
+          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
+          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
+          Propón una <strong style="color:#fff">estructura jerárquica de marco teórico y estado del arte</strong>. Para cada apartado entrega:<br>
+          &nbsp;&nbsp;· un subtítulo claro,<br>
+          &nbsp;&nbsp;· 2-3 preguntas precisas que deban responderse con referencias.<br>
+          No inventes citas: el contenido lo buscaré después.
+        </div>
+
+        <p class="mono" style="font-size:.64rem;letter-spacing:.14em;color:var(--muted);margin:.7rem 0 .3rem">PASO 2 · SciSpace</p>
+        <div class="promptbox" style="border-left-color:var(--gold);font-size:.74rem;line-height:1.5;padding:.85rem 1rem">
+          <span style="color:var(--accent2)">// responder cada pregunta con referencias</span><br>
+          Lleva <strong style="color:#fff">cada pregunta del paso 1</strong> a SciSpace y solicita:<br>
+          &nbsp;&nbsp;· respuesta sintética,<br>
+          &nbsp;&nbsp;· 3-5 referencias revisadas por pares que la sustenten,<br>
+          &nbsp;&nbsp;· DOI y resumen de cada artículo.<br>
+          Verifica cada referencia antes de citarla.
+        </div>
+      </div>
+
+      <div>
+        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent2);margin-bottom:.5rem">OPCIÓN B · NOTEBOOKLM + GEMINI CANVAS</p>
+
+        <p class="mono" style="font-size:.64rem;letter-spacing:.14em;color:var(--muted);margin:.5rem 0 .3rem">PASO 1 · NotebookLM · Búsqueda profunda</p>
+        <div class="promptbox" style="border-left-color:var(--accent2);font-size:.74rem;line-height:1.5;padding:.85rem 1rem">
+          <span style="color:var(--accent2)">// rastreo de fuentes para el marco</span><br>
+          Actúa como rastreador de fuentes. Búsqueda profunda en la web para:<br>
+          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
+          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
+          Encuéntrame fuentes con:<br>
+          &nbsp;&nbsp;1. PDF accesible,<br>
+          &nbsp;&nbsp;2. revisión por pares u organismos reconocidos,<br>
+          &nbsp;&nbsp;3. cobertura teórica y empírica del problema,<br>
+          &nbsp;&nbsp;4. preferentemente últimos 10 años.
+        </div>
+
+        <p class="mono" style="font-size:.64rem;letter-spacing:.14em;color:var(--muted);margin:.7rem 0 .3rem">PASO 2 · Gemini Canvas (conectado a NotebookLM)</p>
+        <div class="promptbox" style="border-left-color:var(--gold);font-size:.74rem;line-height:1.5;padding:.85rem 1rem">
+          <span style="color:var(--accent2)">// redactar marco con citas APA 7</span><br>
+          Usando <strong style="color:#fff">solo las fuentes del cuaderno de NotebookLM</strong>, redacta el marco teórico y estado del arte para:<br>
+          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
+          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
+          Reglas:<br>
+          &nbsp;&nbsp;1. Estructura jerárquica con subtítulos.<br>
+          &nbsp;&nbsp;2. Citas en el texto en <strong style="color:#fff">APA 7</strong> (Autor, año).<br>
+          &nbsp;&nbsp;3. Sección final «Referencias» en APA 7 con DOI o enlace.<br>
+          &nbsp;&nbsp;4. Lo que no esté en las fuentes, márcalo <strong style="color:#fff">[VERIFICAR]</strong>.
+        </div>
+      </div>
     </div>
-    <p class="lead reveal" style="margin-top:1.4rem">Cada conexión que sugiera la <span class="em2">verificas</span> contra tus fuentes reales en Zotero o NotebookLM.</p>
   </div>
 </section>
 
@@ -274,16 +324,77 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
       </div>
     </div>
     <p class="lead reveal" style="margin-top:1.6rem">Regla: si no podrías <mark>defender ese método ante un par</mark>, todavía no es tuyo.</p>
-    <div class="reveal promptbox" style="margin-top:1.2rem;border-left-color:var(--gold);font-size:.82rem">
-      <span style="color:var(--accent2)">// diseño metodológico con trazabilidad</span><br>
-      Actúa como metodólogo. Pregunta: «<span class="ph">[pregunta]</span>». Objetivos: <span class="ph">[objetivos]</span>.<br>
-      Propón una tabla: objetivo · dato necesario · fuente · instrumento/técnica · procedimiento · análisis · limitación.<br>
-      No inventes instrumentos. Si sugieres uno, marca “verificar validez”.
+  </div>
+</section>
+
+<!-- 8 · METODOLOGÍA · DOS RUTAS -->
+<section class="slide">
+  <div class="spread">
+    <div class="kicker reveal">Herramientas · Diseño metodológico</div>
+    <h2 class="reveal">Dos rutas para tu <span class="em2">método</span>.</h2>
+    <p class="lead reveal" style="margin-top:.6rem">El mismo principio del marco aplicado al método: primero estructura con preguntas, después fundamenta con literatura.</p>
+
+    <div class="cols c2 reveal" style="margin-top:1rem;gap:1.4rem">
+      <div>
+        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent);margin-bottom:.5rem">OPCIÓN A · CHAT IA + SCISPACE</p>
+
+        <p class="mono" style="font-size:.64rem;letter-spacing:.14em;color:var(--muted);margin:.5rem 0 .3rem">PASO 1 · Claude / ChatGPT / Gemini</p>
+        <div class="promptbox" style="font-size:.74rem;line-height:1.5;padding:.85rem 1rem">
+          <span style="color:var(--accent2)">// estructura metodológica con preguntas guía</span><br>
+          Actúa como metodólogo. Con base en:<br>
+          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
+          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br>
+          &nbsp;&nbsp;· Objetivos específicos: <span class="ph">[lista]</span><br><br>
+          Propón una <strong style="color:#fff">estructura del diseño metodológico</strong>. Para cada apartado (enfoque, diseño, población / muestra, instrumentos, procedimiento, análisis, validez / ética):<br>
+          &nbsp;&nbsp;· un subtítulo,<br>
+          &nbsp;&nbsp;· 2-3 preguntas que deban responderse con referencias metodológicas.
+        </div>
+
+        <p class="mono" style="font-size:.64rem;letter-spacing:.14em;color:var(--muted);margin:.7rem 0 .3rem">PASO 2 · SciSpace</p>
+        <div class="promptbox" style="border-left-color:var(--gold);font-size:.74rem;line-height:1.5;padding:.85rem 1rem">
+          <span style="color:var(--accent2)">// fundamentar cada decisión metodológica</span><br>
+          Para <strong style="color:#fff">cada pregunta del paso 1</strong>, consulta SciSpace y solicita:<br>
+          &nbsp;&nbsp;· respuesta sintética,<br>
+          &nbsp;&nbsp;· 3-5 referencias (manuales, estudios con métodos similares, validaciones de instrumentos),<br>
+          &nbsp;&nbsp;· DOI y resumen de cada una.<br>
+          Verifica instrumentos antes de citarlos.
+        </div>
+      </div>
+
+      <div>
+        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent2);margin-bottom:.5rem">OPCIÓN B · NOTEBOOKLM + GEMINI CANVAS</p>
+
+        <p class="mono" style="font-size:.64rem;letter-spacing:.14em;color:var(--muted);margin:.5rem 0 .3rem">PASO 1 · NotebookLM · Búsqueda profunda</p>
+        <div class="promptbox" style="border-left-color:var(--accent2);font-size:.74rem;line-height:1.5;padding:.85rem 1rem">
+          <span style="color:var(--accent2)">// rastreo de fuentes metodológicas</span><br>
+          Búsqueda profunda en la web de fuentes metodológicas para:<br>
+          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
+          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
+          Encuéntrame:<br>
+          &nbsp;&nbsp;1. manuales metodológicos en PDF,<br>
+          &nbsp;&nbsp;2. estudios con diseños y técnicas similares,<br>
+          &nbsp;&nbsp;3. validaciones de instrumentos relevantes,<br>
+          &nbsp;&nbsp;4. revisión por pares u organismos reconocidos.
+        </div>
+
+        <p class="mono" style="font-size:.64rem;letter-spacing:.14em;color:var(--muted);margin:.7rem 0 .3rem">PASO 2 · Gemini Canvas (conectado a NotebookLM)</p>
+        <div class="promptbox" style="border-left-color:var(--gold);font-size:.74rem;line-height:1.5;padding:.85rem 1rem">
+          <span style="color:var(--accent2)">// redactar metodología con citas APA 7</span><br>
+          Usando <strong style="color:#fff">solo las fuentes del cuaderno</strong>, redacta el diseño metodológico para:<br>
+          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
+          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
+          Reglas:<br>
+          &nbsp;&nbsp;1. Apartados: enfoque, diseño, población / muestra, instrumentos, procedimiento, análisis, validez / ética.<br>
+          &nbsp;&nbsp;2. Citas APA 7 en el texto.<br>
+          &nbsp;&nbsp;3. Sección «Referencias» en APA 7 con DOI o enlace.<br>
+          &nbsp;&nbsp;4. Marca <strong style="color:#fff">[VERIFICAR]</strong> lo que no esté en las fuentes.
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 8 · VERIFICADOR DE COHERENCIA (interactivo) -->
+<!-- 9 · VERIFICADOR DE COHERENCIA (interactivo) -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">El test decisivo</div>
