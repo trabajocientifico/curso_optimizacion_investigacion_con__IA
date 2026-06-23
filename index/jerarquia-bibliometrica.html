@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Quién es quién? — Editoriales, bases de datos e indicadores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15110d; --ink2:#1c1712; --surface:#241d16; --surface2:#2d2419;
+    --line:rgba(243,236,225,.10); --line2:rgba(243,236,225,.18);
+    --text:#f3ece1; --muted:#a99e8e; --faint:#7a7164;
+    --clv:#b99cf6; --clv-deep:#8a66e0;       /* Clarivate · violeta */
+    --els:#f5a524; --els-deep:#c97f12;       /* Elsevier  · ámbar  */
+    --shadow:0 18px 50px -20px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 700px at 18% -10%, rgba(138,102,224,.10), transparent 60%),
+      radial-gradient(1100px 700px at 88% -5%, rgba(201,127,18,.10), transparent 58%),
+      var(--ink);
+    color:var(--text);
+    font-family:"Inter",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100%;
+    padding:clamp(18px,3.2vw,46px);
+    overflow-x:hidden;
+  }
+  .stage{max-width:1120px;margin:0 auto}
+
+  /* ---- Header ---- */
+  .eyebrow{
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.34em;
+    text-transform:uppercase;color:var(--faint);display:flex;gap:.7em;align-items:center;
+    opacity:0;animation:rise .7s .05s ease forwards;
+  }
+  .eyebrow::before{content:"";width:30px;height:1px;background:var(--line2)}
+  h1{
+    font-family:"Fraunces",serif;font-weight:600;line-height:1.02;
+    font-size:clamp(28px,5.4vw,52px);letter-spacing:-.015em;margin:.32em 0 .2em;
+    opacity:0;animation:rise .7s .12s ease forwards;
+  }
+  h1 .clv{color:var(--clv)} h1 .els{color:var(--els)}
+  .sub{color:var(--muted);max-width:60ch;font-size:clamp(14px,1.6vw,16px);
+    opacity:0;animation:rise .7s .2s ease forwards;}
+
+  /* ---- Legend ---- */
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin:20px 0 8px;
+    opacity:0;animation:rise .7s .28s ease forwards;}
+  .lg{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);
+    font-family:"JetBrains Mono",monospace;letter-spacing:.02em;}
+  .dot{width:11px;height:11px;border-radius:3px}
+  .dot.clv{background:var(--clv)} .dot.els{background:var(--els)}
+  .dot.plat{background:transparent;border:1.5px dashed var(--els)}
+
+  /* ---- Tree layout ---- */
+  .tree{position:relative;margin-top:18px;
+    display:grid;grid-template-columns:auto 1fr 1fr;gap:0 clamp(14px,2.4vw,34px);}
+  svg.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+  .wire{fill:none;stroke-width:2;stroke-linecap:round;
+    stroke-dasharray:var(--len);stroke-dashoffset:var(--len);
+    transition:stroke-dashoffset 1s ease, opacity .35s ease, stroke-width .35s ease;}
+  .wire.clv{stroke:var(--clv-deep)} .wire.els{stroke:var(--els-deep)}
+  .wire.drawn{stroke-dashoffset:0}
+  .wire.lit{opacity:1;stroke-width:3}
+  .wire.lit.clv{stroke:var(--clv)} .wire.lit.els{stroke:var(--els)}
+  .wire.dim{opacity:.16}
+
+  .tiers{display:grid;grid-template-rows:repeat(3,1fr);position:relative;z-index:1}
+  .tlab{display:flex;align-items:center;writing-mode:vertical-rl;transform:rotate(180deg);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--faint);padding:8px 6px;white-space:nowrap;
+    border-right:1px solid var(--line);}
+  .col{display:grid;grid-template-rows:repeat(3,minmax(96px,1fr));
+    align-items:center;justify-items:center;position:relative;z-index:1;row-gap:34px}
+  .cell{display:flex;gap:14px;justify-content:center;align-items:center;width:100%}
+
+  /* ---- Node card ---- */
+  .node{
+    --accent:var(--els);
+    position:relative;width:100%;max-width:230px;text-align:left;cursor:pointer;
+    background:linear-gradient(180deg,var(--surface2),var(--surface));
+    border:1px solid var(--line);border-radius:14px;padding:13px 14px;color:var(--text);
+    font-family:inherit;box-shadow:var(--shadow);
+    transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s, opacity .3s;
+    opacity:0;transform:translateY(14px) scale(.97);
+  }
+  .node.in{opacity:1;transform:none}
+  .node.clv{--accent:var(--clv)} .node.els{--accent:var(--els)}
+  .node::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:3px;
+    border-radius:3px;background:var(--accent);opacity:.85}
+  .node.plat{border-style:dashed;border-color:color-mix(in srgb,var(--els) 45%,var(--line))}
+  .node:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+    box-shadow:0 22px 46px -22px color-mix(in srgb,var(--accent) 60%,transparent)}
+  .node:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .node.sel{border-color:var(--accent);
+    box-shadow:0 0 0 1px var(--accent),0 22px 46px -22px color-mix(in srgb,var(--accent) 70%,transparent)}
+  .node.faded{opacity:.28}
+  .node .cat{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--accent);display:block;margin-bottom:5px}
+  .node .nm{font-family:"Fraunces",serif;font-weight:600;font-size:17px;line-height:1.1;letter-spacing:-.01em}
+  .node .by{font-size:11.5px;color:var(--muted);margin-top:3px}
+
+  /* ---- Detail panel ---- */
+  .panel{margin-top:26px;background:linear-gradient(180deg,var(--ink2),rgba(28,23,18,.4));
+    border:1px solid var(--line);border-radius:16px;padding:clamp(16px,2.4vw,24px);
+    min-height:120px;opacity:0;animation:rise .7s .42s ease forwards;
+    border-left:3px solid var(--line2);transition:border-color .35s}
+  .panel.clv{border-left-color:var(--clv)} .panel.els{border-left-color:var(--els)}
+  .p-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .p-cat{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--muted)}
+  .p-cat.clv{color:var(--clv)} .p-cat.els{color:var(--els)}
+  .p-name{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(20px,3vw,28px);letter-spacing:-.01em}
+  .p-body{color:var(--text);opacity:.92;margin-top:10px;line-height:1.6;font-size:15px;max-width:72ch}
+  .p-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .chip{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.02em;
+    padding:5px 10px;border-radius:999px;border:1px solid var(--line2);color:var(--muted)}
+  .chip b{color:var(--text);font-weight:500}
+  .hint{color:var(--faint);font-style:italic;font-family:"Fraunces",serif}
+
+  .foot{margin-top:18px;color:var(--faint);font-size:12.5px;line-height:1.6;max-width:80ch;
+    opacity:0;animation:rise .7s .5s ease forwards}
+  .foot b{color:var(--muted);font-weight:600}
+
+  /* ---- Publishing band (el otro tablero) ---- */
+  .bridge{display:flex;align-items:center;gap:12px;margin:38px 0 6px;color:var(--els);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+    opacity:0;animation:rise .7s .46s ease forwards}
+  .bridge span{flex:0 0 auto}
+  .bridge::before{content:"";flex:0 0 26px;height:1px;background:var(--els-deep)}
+  .bridge::after{content:"";flex:1;height:1px;background:var(--line)}
+  .band h2{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(20px,3.4vw,30px);
+    letter-spacing:-.01em;margin:.16em 0 .25em;opacity:0;animation:rise .7s .5s ease forwards}
+  .band .bsub{color:var(--muted);max-width:66ch;font-size:14px;margin-bottom:16px;line-height:1.55;
+    opacity:0;animation:rise .7s .54s ease forwards}
+  .anchor{display:inline-flex;flex-direction:column;gap:2px;
+    background:linear-gradient(180deg,var(--surface2),var(--surface));
+    border:1px solid color-mix(in srgb,var(--els) 40%,var(--line));border-left:3px solid var(--els);
+    border-radius:12px;padding:11px 14px;margin-bottom:16px;box-shadow:var(--shadow);
+    opacity:0;animation:rise .7s .58s ease forwards}
+  .anchor .t{font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--els)}
+  .anchor .n{font-family:"Fraunces",serif;font-weight:600;font-size:16px}
+  .anchor .h{font-size:11.5px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(184px,1fr));gap:12px}
+  .node.pub{--accent:#bcae90;max-width:none}
+  .aggwrap{margin-top:20px}
+  .agglab{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--faint);margin-bottom:9px}
+  .aggrow{display:flex;flex-wrap:wrap;gap:10px}
+  .node.agg{max-width:none;flex:1 1 160px}
+  .node.agg.pub{border-style:dashed;
+    border-color:color-mix(in srgb,#bcae90 45%,var(--line))}
+  .panel.pub{border-left-color:#bcae90}
+  .p-cat.pub{color:#d6cab0}
+
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  /* ---- Mobile ---- */
+  @media (max-width:760px){
+    .tree{grid-template-columns:1fr 1fr;gap:0 12px}
+    .tiers{display:none}
+    svg.wires{display:none}
+    .col{row-gap:14px;grid-template-rows:none}
+    .cell{flex-direction:column;gap:14px}
+    .node{max-width:none}
+    .node::after{content:attr(data-tier);position:absolute;right:10px;top:11px;
+      font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.12em;color:var(--faint)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001s!important;transition-duration:.001s!important}
+    .node{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="eyebrow">Ecosistemas de la información científica</div>
+  <h1>¿Quién es quién?<br><span class="clv">Clarivate</span> frente a <span class="els">Elsevier</span></h1>
+  <p class="sub">Dos imperios paralelos y competidores. Cada uno tiene su empresa matriz, su base de datos de citas y sus indicadores de impacto. Toca cualquier tarjeta para trazar su linaje completo.</p>
+
+  <div class="legend">
+    <span class="lg"><span class="dot clv"></span>Ecosistema Clarivate</span>
+    <span class="lg"><span class="dot els"></span>Ecosistema Elsevier</span>
+    <span class="lg"><span class="dot plat"></span>Plataforma (no es base de citas)</span>
+  </div>
+
+  <div class="tree" id="tree">
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
+
+    <div class="tiers">
+      <div class="tlab">Empresa matriz</div>
+      <div class="tlab">Acceso a la literatura</div>
+      <div class="tlab">Indicadores de impacto</div>
+    </div>
+
+    <!-- Columna Clarivate -->
+    <div class="col">
+      <div class="cell">
+        <button class="node clv" data-id="clarivate" data-tier="Empresa">
+          <span class="cat">Empresa matriz</span><span class="nm">Clarivate</span>
+          <span class="by">EE. UU. · análisis e información</span>
+        </button>
+      </div>
+      <div class="cell">
+        <button class="node clv" data-id="wos" data-tier="Base de datos">
+          <span class="cat">Base de datos de citas</span><span class="nm">Web of Science</span>
+          <span class="by">selectiva · SCIE · SSCI · A&amp;HCI · ESCI</span>
+        </button>
+      </div>
+      <div class="cell">
+        <button class="node clv" data-id="jcr" data-tier="Indicador">
+          <span class="cat">Indicador</span><span class="nm">JCR · Factor de Impacto</span>
+          <span class="by">JIF · cuartiles Q1–Q4</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Columna Elsevier -->
+    <div class="col">
+      <div class="cell">
+        <button class="node els" data-id="elsevier" data-tier="Empresa">
+          <span class="cat">Empresa matriz</span><span class="nm">Elsevier · RELX</span>
+          <span class="by">editorial científica</span>
+        </button>
+      </div>
+      <div class="cell">
+        <button class="node els" data-id="scopus" data-tier="Base de datos">
+          <span class="cat">Base de datos de citas</span><span class="nm">Scopus</span>
+          <span class="by">amplia cobertura · resúmenes y citas</span>
+        </button>
+        <button class="node els plat" data-id="scidir" data-tier="Plataforma">
+          <span class="cat">Plataforma · texto completo</span><span class="nm">ScienceDirect</span>
+          <span class="by">leer y descargar · no mide impacto</span>
+        </button>
+      </div>
+      <div class="cell">
+        <button class="node els" data-id="sjr" data-tier="Indicador">
+          <span class="cat">Indicador</span><span class="nm">SJR · SCImago</span>
+          <span class="by">prestigio ponderado · cuartiles</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bridge"><span>El otro tablero · editoriales</span></div>
+  <div class="band">
+    <h2>Aquí Clarivate <em>no</em> juega: es terreno de editoriales</h2>
+    <p class="bsub">En la medición (arriba) solo compiten Clarivate y Elsevier. Pero como <strong>editorial</strong>, Elsevier es una más entre varias, y cada una tiene su propia plataforma de texto completo —el homólogo de ScienceDirect—. Ninguna de estas plataformas produce indicadores de impacto.</p>
+
+    <div class="anchor">
+      <span class="t">Punto de partida · ya está arriba</span>
+      <span class="n">Elsevier · ScienceDirect</span>
+      <span class="h">la misma empresa, ahora compitiendo como editorial ↓</span>
+    </div>
+
+    <div class="grid">
+      <button class="node pub" data-id="springer" data-tier="Editorial">
+        <span class="cat">Editorial · plataforma</span><span class="nm">Springer Nature</span>
+        <span class="by">SpringerLink</span>
+      </button>
+      <button class="node pub" data-id="wiley" data-tier="Editorial">
+        <span class="cat">Editorial · plataforma</span><span class="nm">Wiley</span>
+        <span class="by">Wiley Online Library</span>
+      </button>
+      <button class="node pub" data-id="tf" data-tier="Editorial">
+        <span class="cat">Editorial · plataforma</span><span class="nm">Taylor &amp; Francis</span>
+        <span class="by">Taylor &amp; Francis Online</span>
+      </button>
+      <button class="node pub" data-id="sage" data-tier="Editorial">
+        <span class="cat">Editorial · plataforma</span><span class="nm">SAGE</span>
+        <span class="by">SAGE Journals</span>
+      </button>
+      <button class="node pub" data-id="oup" data-tier="Editorial">
+        <span class="cat">Editorial · plataforma</span><span class="nm">Oxford University Press</span>
+        <span class="by">Oxford Academic</span>
+      </button>
+    </div>
+
+    <div class="aggwrap">
+      <div class="agglab">Aparte · agregadores multi-editorial (acceso vía bibliotecas)</div>
+      <div class="aggrow">
+        <button class="node pub agg" data-id="jstor" data-tier="Agregador">
+          <span class="cat">Agregador</span><span class="nm">JSTOR</span><span class="by">ITHAKA · archivo histórico</span>
+        </button>
+        <button class="node pub agg" data-id="ebsco" data-tier="Agregador">
+          <span class="cat">Agregador</span><span class="nm">EBSCO</span><span class="by">bases para bibliotecas</span>
+        </button>
+        <button class="node pub agg" data-id="proquest" data-tier="Agregador">
+          <span class="cat">Agregador</span><span class="nm">ProQuest</span><span class="by">tesis, periódicos, archivos</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel">
+    <div class="p-head"><span class="p-cat" id="pcat">Empieza aquí</span></div>
+    <p class="p-body hint" id="pbody">Selecciona una tarjeta del esquema. Verás qué es, quién la posee y de dónde toma sus datos —y se iluminará toda su cadena de origen.</p>
+    <div class="p-meta" id="pmeta"></div>
+  </div>
+
+  <p class="foot">
+    <b>La clave para no confundirlos:</b> una <b>empresa</b> es dueña; una <b>base de datos</b> indexa citas; una <b>plataforma</b> solo da acceso al texto; un <b>indicador</b> mide. Cada métrica bebe de su propia base: el Factor de Impacto sale de Web of Science, mientras que SJR y CiteScore salen de Scopus. ScienceDirect no entra en este juego: es la librería de Elsevier, no una métrica.
+  </p>
+</div>
+
+<script>
+const DATA = {
+  clarivate:{eco:"clv",cat:"Empresa matriz",name:"Clarivate",chain:["clarivate"],
+    body:"Compañía estadounidense de análisis e información científica. Es la propietaria de Web of Science y de los indicadores de impacto basados en citas (JCR / Factor de Impacto). Compite de forma directa con Elsevier por el mercado de la bibliometría.",
+    meta:[["Tipo","Empresa"],["Posee","Web of Science · JCR"],["Origen","Antes Thomson Reuters"]]},
+  elsevier:{eco:"els",cat:"Empresa matriz",name:"Elsevier · RELX",chain:["elsevier"],
+    body:"Gran editorial científica del grupo RELX (Países Bajos / Reino Unido). Publica miles de revistas y es dueña tanto de la base de datos Scopus como de la plataforma de texto completo ScienceDirect.",
+    meta:[["Tipo","Empresa / editorial"],["Posee","Scopus · ScienceDirect"],["Grupo","RELX"]]},
+  wos:{eco:"clv",cat:"Base de datos de citas",name:"Web of Science",chain:["clarivate","wos"],
+    body:"Índice de citas selectivo y curado de Clarivate. Se organiza en colecciones (SCIE, SSCI, A&HCI, ESCI). Tiende a ser más restrictiva que Scopus, y es la única fuente de datos del JCR / Factor de Impacto.",
+    meta:[["Tipo","Base de datos"],["Dueño","Clarivate"],["Alimenta","JCR · JIF"]]},
+  scopus:{eco:"els",cat:"Base de datos de citas",name:"Scopus",chain:["elsevier","scopus"],
+    body:"Base de datos de resúmenes y citas de Elsevier, con una cobertura más amplia que Web of Science. Es la fuente de datos de CiteScore y, a través del grupo SCImago, también del SJR.",
+    meta:[["Tipo","Base de datos"],["Dueño","Elsevier"],["Alimenta","SJR · CiteScore"]]},
+  scidir:{eco:"els",cat:"Plataforma · texto completo",name:"ScienceDirect",chain:["elsevier","scidir"],
+    body:"No es una base de datos de citas: es la plataforma donde se lee y descarga el texto completo de los artículos y libros publicados por Elsevier. Sirve para acceder al contenido, no para medir el impacto de las revistas.",
+    meta:[["Tipo","Plataforma"],["Dueño","Elsevier"],["Función","Acceso al texto completo"]]},
+  jcr:{eco:"clv",cat:"Indicador de impacto",name:"JCR · Factor de Impacto",chain:["clarivate","wos","jcr"],
+    body:"Journal Citation Reports es el informe anual de Clarivate construido sobre Web of Science. Calcula el Factor de Impacto (JIF) y ubica las revistas en cuartiles Q1–Q4 dentro de cada categoría temática.",
+    meta:[["Tipo","Indicador"],["Datos de","Web of Science"],["Produce","JIF · cuartiles"]]},
+  sjr:{eco:"els",cat:"Indicador de impacto",name:"SJR · SCImago Journal Rank",chain:["elsevier","scopus","sjr"],
+    body:"Indicador desarrollado por el grupo SCImago a partir de los datos de Scopus. No cuenta todas las citas por igual: las pondera según el prestigio de la fuente que cita, y asigna cuartiles Q1–Q4.",
+    meta:[["Tipo","Indicador"],["Datos de","Scopus (vía SCImago)"],["Produce","SJR · cuartiles"]]},
+
+  springer:{eco:"pub",cat:"Editorial · plataforma de texto completo",name:"Springer Nature",chain:["springer"],
+    body:"Una de las mayores editoriales científicas del mundo (reúne a Springer, Nature y BMC). Su plataforma de texto completo es SpringerLink. Compite con Elsevier en la publicación de revistas, no en métricas: no produce indicadores de impacto.",
+    meta:[["Tipo","Editorial"],["Plataforma","SpringerLink"],["Homólogo de","ScienceDirect"]]},
+  wiley:{eco:"pub",cat:"Editorial · plataforma de texto completo",name:"Wiley",chain:["wiley"],
+    body:"Editorial estadounidense con un catálogo muy amplio en ciencias, ingeniería, medicina y negocios. Aloja su contenido en Wiley Online Library. Es competidora editorial de Elsevier.",
+    meta:[["Tipo","Editorial"],["Plataforma","Wiley Online Library"],["Homólogo de","ScienceDirect"]]},
+  tf:{eco:"pub",cat:"Editorial · plataforma de texto completo",name:"Taylor & Francis",chain:["tf"],
+    body:"Editorial británica del grupo Informa, especialmente fuerte en ciencias sociales y humanidades. Su plataforma es Taylor & Francis Online (tandfonline).",
+    meta:[["Tipo","Editorial"],["Plataforma","T&F Online"],["Grupo","Informa"]]},
+  sage:{eco:"pub",cat:"Editorial · plataforma de texto completo",name:"SAGE",chain:["sage"],
+    body:"Editorial independiente con fuerte presencia en ciencias sociales y del comportamiento. Su plataforma de texto completo es SAGE Journals.",
+    meta:[["Tipo","Editorial"],["Plataforma","SAGE Journals"],["Foco","Ciencias sociales"]]},
+  oup:{eco:"pub",cat:"Editorial · plataforma de texto completo",name:"Oxford University Press",chain:["oup"],
+    body:"Editorial universitaria de la Universidad de Oxford (una de las university presses más grandes). Su plataforma es Oxford Academic.",
+    meta:[["Tipo","Editorial universitaria"],["Plataforma","Oxford Academic"],["Origen","Univ. de Oxford"]]},
+  jstor:{eco:"pub",cat:"Agregador multi-editorial",name:"JSTOR",chain:["jstor"],
+    body:"No es una editorial: es un agregador (de la organización ITHAKA) que reúne contenido de muchas editoriales, con énfasis en el archivo histórico de revistas. Se accede sobre todo por suscripción de bibliotecas.",
+    meta:[["Tipo","Agregador"],["Operado por","ITHAKA"],["Fuerte en","Archivo histórico"]]},
+  ebsco:{eco:"pub",cat:"Agregador multi-editorial",name:"EBSCO",chain:["ebsco"],
+    body:"Proveedor de bases de datos y contenido para bibliotecas. Agrega y da acceso a material de múltiples editoriales; no publica revistas propias ni mide impacto.",
+    meta:[["Tipo","Agregador"],["Cliente típico","Bibliotecas"],["Publica revistas","No"]]},
+  proquest:{eco:"pub",cat:"Agregador multi-editorial",name:"ProQuest",chain:["proquest"],
+    body:"Agregador de tesis, periódicos, bases de datos y archivos para bibliotecas. Dato curioso que cierra el círculo: ProQuest pertenece a Clarivate (lo adquirió en 2021), así que Clarivate —que no publica revistas— sí participa en el acceso al contenido por esta vía.",
+    meta:[["Tipo","Agregador"],["Dueño","Clarivate (2021)"],["Fuerte en","Tesis y archivos"]]},
+};
+const EDGES = [
+  ["clarivate","wos","clv"],["wos","jcr","clv"],
+  ["elsevier","scopus","els"],["elsevier","scidir","els"],
+  ["scopus","sjr","els"],
+];
+
+const tree=document.getElementById('tree'), svg=document.getElementById('wires');
+const nodes=[...document.querySelectorAll('.node')];
+const nodeById=id=>document.querySelector(`.node[data-id="${id}"]`);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* draw connector wires */
+function center(el){
+  const r=el.getBoundingClientRect(), t=tree.getBoundingClientRect();
+  return {x:r.left-t.left+r.width/2, y:r.top-t.top, b:r.top-t.top+r.height, w:r.width};
+}
+let wireEls=[];
+function drawWires(){
+  svg.innerHTML='';wireEls=[];
+  const t=tree.getBoundingClientRect();
+  svg.setAttribute('viewBox',`0 0 ${t.width} ${t.height}`);
+  EDGES.forEach(([from,to,eco])=>{
+    const a=nodeById(from), b=nodeById(to);
+    if(!a||!b) return;
+    const pa=center(a), pb=center(b);
+    const sx=pa.x, sy=pa.b, ex=pb.x, ey=pb.y, dy=ey-sy;
+    const d=`M ${sx} ${sy} C ${sx} ${sy+dy*.5}, ${ex} ${ey-dy*.5}, ${ex} ${ey}`;
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',d); p.setAttribute('class',`wire ${eco}`);
+    p.dataset.from=from; p.dataset.to=to;
+    svg.appendChild(p);
+    const len=p.getTotalLength();
+    p.style.setProperty('--len',len);
+    if(reduce){p.classList.add('drawn');}
+    wireEls.push(p);
+  });
+}
+
+/* entrance */
+function enter(){
+  drawWires();
+  if(reduce){nodes.forEach(n=>n.classList.add('in'));return;}
+  const order=["clarivate","elsevier","wos","scopus","scidir","jcr","sjr"];
+  order.forEach((id,i)=>{const n=nodeById(id);if(n)setTimeout(()=>n.classList.add('in'),250+i*110);});
+  const pubOrder=["springer","wiley","tf","sage","oup","jstor","ebsco","proquest"];
+  pubOrder.forEach((id,i)=>{const n=nodeById(id);if(n)setTimeout(()=>n.classList.add('in'),1100+i*80);});
+  setTimeout(()=>wireEls.forEach((w,i)=>setTimeout(()=>w.classList.add('drawn'),i*140)),650);
+}
+
+/* selection + lineage */
+const panel=document.getElementById('panel'),pcat=document.getElementById('pcat'),
+      pbody=document.getElementById('pbody'),pmeta=document.getElementById('pmeta');
+function descendants(id){
+  let out=[],stack=[id];
+  while(stack.length){const cur=stack.pop();
+    EDGES.forEach(([f,to])=>{if(f===cur){out.push(to);stack.push(to);}});}
+  return out;
+}
+function select(id){
+  const d=DATA[id]; if(!d) return;
+  const chain=new Set([...d.chain,...descendants(id)]);
+  nodes.forEach(n=>{const on=chain.has(n.dataset.id);
+    n.classList.toggle('faded',!on);
+    n.classList.toggle('sel',n.dataset.id===id);});
+  wireEls.forEach(w=>{const on=chain.has(w.dataset.from)&&chain.has(w.dataset.to);
+    w.classList.toggle('lit',on);w.classList.toggle('dim',!on);});
+  panel.className='panel '+d.eco;
+  pcat.className='p-cat '+d.eco; pcat.textContent=d.cat;
+  pbody.className='p-body'; pbody.textContent=d.body;
+  // rebuild head name
+  let nm=panel.querySelector('.p-name'); if(!nm){nm=document.createElement('span');nm.className='p-name';pcat.after(nm);}
+  nm.textContent=d.name;
+  pmeta.innerHTML=d.meta.map(([k,v])=>`<span class="chip">${k}: <b>${v}</b></span>`).join('');
+}
+nodes.forEach(n=>n.addEventListener('click',()=>select(n.dataset.id)));
+
+window.addEventListener('load',enter);
+let to; window.addEventListener('resize',()=>{clearTimeout(to);to=setTimeout(()=>{
+  drawWires(); if(!reduce) wireEls.forEach(w=>w.classList.add('drawn'));
+  // keep current lit state
+  const sel=document.querySelector('.node.sel'); if(sel) select(sel.dataset.id);
+},160);});
+</script>
+</body>
+</html>
