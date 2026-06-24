@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de prompts · Optimización de la investigación con IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117; --bg2:#121a26; --ink:#eef2f7; --muted:#8b97a8;
+  --accent:#ff6b3d; --accent2:#3dd6c4; --gold:#e8b04b;
+  --line:rgba(255,255,255,.1); --card:rgba(255,255,255,.04);
+  --code-bg:#0a0e14; --code-ink:#cdd6e3;
+  --mesh-a:rgba(255,107,61,.16); --mesh-b:rgba(61,214,196,.13); --mesh-c:rgba(232,176,75,.06);
+  --grain-op:.05; --grid-op:.4;
+}
+:root[data-theme="light"]{
+  --bg:#f7f4ee; --bg2:#ece8df; --ink:#1a1f29; --muted:#5a6878;
+  --accent:#d4501c; --accent2:#0e8a7c; --gold:#b8842e;
+  --line:rgba(0,0,0,.12); --card:rgba(0,0,0,.03);
+  --code-bg:#1a1f29; --code-ink:#cdd6e3;
+  --mesh-a:rgba(212,80,28,.10); --mesh-b:rgba(14,138,124,.08); --mesh-c:rgba(184,132,46,.06);
+  --grain-op:.035; --grid-op:.5;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Sora',sans-serif; overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color .35s ease, color .35s ease;
+}
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60vw 60vw at 78% 12%, var(--mesh-a), transparent 60%),
+    radial-gradient(50vw 50vw at 12% 88%, var(--mesh-b), transparent 60%),
+    radial-gradient(40vw 40vw at 50% 50%, var(--mesh-c), transparent 70%);
+  animation:meshfloat 18s ease-in-out infinite alternate;}
+@keyframes meshfloat{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-2%,2%,0) scale(1.08)}}
+.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:var(--grain-op);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:var(--grid-op);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%);}
+
+.deck{position:relative;z-index:2;height:100vh;width:100vw}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;
+  padding:4.5vh 5vw 8vh;opacity:0;transition:opacity .4s ease}
+.slide.active{display:flex;opacity:1}
+.slide.active .reveal{animation:rise .55s cubic-bezier(.2,.7,.2,1) both}
+.reveal:nth-child(1){animation-delay:.04s}.reveal:nth-child(2){animation-delay:.12s}
+.reveal:nth-child(3){animation-delay:.2s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+.kicker{font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--accent2);margin-bottom:1.2rem;display:flex;gap:.8rem;align-items:center}
+.kicker::before{content:"";width:34px;height:1px;background:var(--accent2)}
+h1{font-family:'Fraunces',serif;font-weight:900;line-height:.98;letter-spacing:-.02em;
+  font-size:clamp(2.4rem,5.4vw,4.8rem)}
+h2{font-family:'Fraunces',serif;font-weight:600;line-height:1.04;
+  font-size:clamp(1.6rem,3.2vw,2.6rem);letter-spacing:-.01em}
+.lead{font-size:clamp(1.02rem,1.4vw,1.22rem);color:var(--muted);max-width:60ch;line-height:1.6;font-weight:300}
+.em{color:var(--accent)}.em2{color:var(--accent2)}
+
+.spread{flex:1;display:flex;flex-direction:column;justify-content:center;gap:1.4rem;min-height:0}
+
+/* topbar / hud */
+.topbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:30;background:rgba(127,127,127,.15)}
+.topbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .4s}
+.hud{position:fixed;bottom:1.6vh;left:5vw;right:5vw;z-index:30;display:flex;justify-content:space-between;align-items:center;
+  font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.nav{display:flex;gap:.5rem;align-items:center}
+.nav button{background:var(--card);border:1px solid var(--line);color:var(--ink);width:36px;height:36px;border-radius:50%;
+  cursor:pointer;font-size:1rem;transition:.2s;display:grid;place-items:center}
+.nav button:hover{background:var(--accent);border-color:var(--accent);color:#1a0d08;transform:translateY(-2px)}
+.brand{font-family:'Fraunces',serif;font-style:italic;font-weight:600;color:var(--ink)}
+.dots{position:fixed;right:1.5vw;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:.4rem;max-height:88vh;overflow:hidden}
+.dots i{width:7px;height:7px;border-radius:50%;background:rgba(127,127,127,.3);cursor:pointer;transition:.25s;display:block}
+.dots i.on{background:var(--accent);height:18px;border-radius:5px}
+
+/* portada */
+.hero-num{position:absolute;right:5vw;top:7vh;font-family:'Fraunces',serif;font-weight:900;
+  font-size:22vw;line-height:.8;color:var(--line);z-index:-1;pointer-events:none}
+.meta-row{display:flex;gap:2.4rem;flex-wrap:wrap;margin-top:1.8rem}
+.meta-row div .mono{font-family:'Space Mono',monospace;color:var(--accent2);font-size:.72rem;letter-spacing:.2em}
+.meta-row div p{font-size:1.05rem;margin-top:.2rem}
+
+/* TOC */
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.9rem;margin-top:1.4rem;
+  max-height:62vh;overflow-y:auto;padding-right:.3rem}
+.toc-grid::-webkit-scrollbar{width:6px}
+.toc-grid::-webkit-scrollbar-thumb{background:rgba(127,127,127,.3);border-radius:4px}
+.toc-card{display:flex;flex-direction:column;gap:.35rem;text-decoration:none;color:var(--ink);
+  background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem;
+  cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.toc-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--accent));transition:.2s}
+.toc-card:hover{transform:translateY(-2px);border-color:var(--c,var(--accent))}
+.toc-card:hover::before{width:5px}
+.toc-card .t-num{font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+  color:var(--c,var(--accent));text-transform:uppercase;font-weight:700}
+.toc-card .t-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.02rem;line-height:1.25}
+.toc-card .t-count{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+
+/* tool slide */
+.ptop{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap;
+  padding-bottom:.9rem;border-bottom:1px solid var(--line)}
+.ptop .sbadge{font-family:'Space Mono',monospace;font-size:.74rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--c,var(--accent));font-weight:700;
+  padding:.32rem .7rem;border:1px solid var(--c,var(--accent));border-radius:999px}
+.ptop .sname{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.05rem,1.7vw,1.4rem);color:var(--ink)}
+
+.tool-stack{flex:1;display:flex;flex-direction:column;gap:1rem;min-height:0}
+.tool-grid{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:1.1rem;min-height:0}
+
+.form-pane,.preview-pane{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  display:flex;flex-direction:column;min-height:0;overflow:hidden
+}
+.preview-pane{background:var(--code-bg);border-left:4px solid var(--c,var(--accent))}
+
+.pane-head{
+  padding:.7rem 1rem;border-bottom:1px solid var(--line);
+  font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);font-weight:700;
+  display:flex;justify-content:space-between;align-items:center;gap:.5rem
+}
+.pane-head .pane-hint{color:var(--c,var(--accent2));font-size:.64rem;letter-spacing:.16em}
+
+.form-body{flex:1;overflow-y:auto;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.85rem}
+.form-body::-webkit-scrollbar{width:6px}
+.form-body::-webkit-scrollbar-thumb{background:rgba(127,127,127,.3);border-radius:4px}
+
+.field-block{display:flex;flex-direction:column;gap:.3rem}
+.field-block label{font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--c,var(--accent));font-weight:700}
+.field-block textarea{
+  background:var(--code-bg);border:1px solid var(--line);border-radius:8px;
+  padding:.55rem .75rem;color:var(--code-ink);font-family:'Space Mono',monospace;
+  font-size:.86rem;line-height:1.5;resize:vertical;min-height:2.2rem;width:100%;
+  transition:border-color .2s
+}
+.field-block textarea:focus{outline:none;border-color:var(--c,var(--accent));box-shadow:0 0 0 2px rgba(255,107,61,.12)}
+.field-block textarea::placeholder{color:rgba(127,127,127,.6);font-style:italic}
+
+.form-actions{padding:.75rem 1rem;border-top:1px solid var(--line);display:flex;gap:.5rem;justify-content:flex-end}
+.btn{
+  background:transparent;border:1px solid var(--line);color:var(--ink);
+  font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.12em;
+  padding:.45rem .85rem;border-radius:999px;cursor:pointer;text-transform:uppercase;
+  font-weight:700;transition:.2s
+}
+.btn:hover{border-color:var(--c,var(--accent));color:var(--c,var(--accent))}
+.btn.primary{background:var(--c,var(--accent));color:#0a0e14;border-color:var(--c,var(--accent))}
+.btn.primary:hover{filter:brightness(1.08);color:#0a0e14;transform:translateY(-1px)}
+.btn.ok{background:var(--accent2);color:#0a0e14;border-color:var(--accent2)}
+
+.preview-body{flex:1;overflow-y:auto;padding:1.1rem 1.3rem;
+  font-family:'Space Mono',monospace;font-size:clamp(.84rem,.96vw,.96rem);line-height:1.7;
+  color:var(--code-ink);white-space:pre-wrap;word-break:break-word}
+.preview-body::-webkit-scrollbar{width:6px}
+.preview-body::-webkit-scrollbar-thumb{background:rgba(127,127,127,.3);border-radius:4px}
+.preview-body .ph-empty{
+  color:var(--gold);background:rgba(232,176,75,.12);
+  padding:0 .25em;border-radius:4px;font-weight:700;
+  border:1px dashed rgba(232,176,75,.3)
+}
+.preview-body .ph-filled{
+  color:var(--accent2);background:rgba(61,214,196,.07);
+  padding:0 .15em;border-radius:3px
+}
+.preview-actions{padding:.75rem 1rem;border-top:1px solid var(--line);
+  display:flex;gap:.5rem;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.preview-actions .status{margin-right:auto;font-family:'Space Mono',monospace;
+  font-size:.66rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+
+.shared-badge{font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.1em;
+  color:var(--accent2);background:rgba(61,214,196,.1);padding:.1rem .4rem;
+  border-radius:4px;text-transform:uppercase;font-weight:700;margin-left:.4rem}
+
+@media(max-width:980px){
+  .tool-grid{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+  .dots{display:none}
+  .ptop{flex-direction:column;align-items:flex-start;gap:.4rem}
+}
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="bg-grain"></div>
+<div class="topbar"><div class="fill" id="progress"></div></div>
+<div class="dots" id="dots"></div>
+
+<div class="deck" id="deck">
+
+<!-- 1 · PORTADA -->
+<section class="slide active">
+  <div class="hero-num">G</div>
+  <div class="spread" style="max-width:62%">
+    <div class="kicker reveal">Herramienta de prompts adaptables</div>
+    <h1 class="reveal"><span class="em">Genera</span> tus prompts con un par de clics.</h1>
+    <p class="lead reveal" style="margin-top:1.4rem">Una colección de prompts plantilla. Escribe la información de tu investigación en los campos de la izquierda y obtén el prompt completo, listo para copiar, a la derecha. Las variables compartidas (problema, pregunta, objetivo general) se sincronizan entre prompts automáticamente.</p>
+    <div class="meta-row reveal">
+      <div><span class="mono">PROMPTS</span><p>12</p></div>
+      <div><span class="mono">MÓDULOS</span><p>9</p></div>
+      <div><span class="mono">USO</span><p>Rellena · ajusta · copia</p></div>
+    </div>
+    <p class="reveal" style="margin-top:1.8rem;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase">→ Avanza con flechas · T tema · I índice · R limpiar todo</p>
+  </div>
+</section>
+
+<!-- 2 · ÍNDICE -->
+<section class="slide">
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal">Salto rápido</div>
+    <h2 class="reveal">Elige un <span class="em">módulo</span>.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.92rem;margin-top:.4rem;max-width:60ch">
+      Haz clic en un módulo para abrir su primer generador. Lo que escribas se guarda automáticamente en tu navegador.
+    </p>
+    <div class="toc-grid reveal" id="tocGrid"></div>
+  </div>
+</section>
+
+<!-- tool slides se insertan dinámicamente -->
+
+</div><!-- /deck -->
+
+<div class="hud">
+  <div class="brand">Trabajo Científico · Generador de prompts</div>
+  <div class="nav">
+    <button id="themeToggle" aria-label="cambiar tema" title="Cambiar tema (T)"><span id="themeIcon">☾</span></button>
+    <button id="resetAll" aria-label="limpiar todo" title="Limpiar todos los campos (R)">⟳</button>
+    <button id="home" aria-label="índice" title="Ir al índice (I)">⌂</button>
+    <button id="prev" aria-label="anterior">‹</button>
+    <span id="counter" style="display:grid;place-items:center;min-width:74px">01 / NN</span>
+    <button id="next" aria-label="siguiente">›</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATOS · prompts y campos
+   Cada prompt declara: módulo, color, campos y plantilla.
+   Las plantillas usan [clave] como marcador.
+   Claves iguales entre prompts se sincronizan automáticamente.
+============================================================ */
+const PROMPTS = [
+  /* MÓDULO 01 · Línea de investigación */
+  {
+    moduleId:'linea', moduleLabel:'Línea de investigación', moduleNum:'01',
+    promptNum:'01', promptTotal:'02',
+    title:'Asesor de investigación · líneas posibles',
+    color:'#ff6b3d',
+    fields:[
+      {key:'campo', label:'Campo', placeholder:'ej. educación rural', rows:1},
+      {key:'tema', label:'Tema', placeholder:'ej. uso de IA en aula', rows:2}
+    ],
+    template:`Actúa como asesor de investigación en [campo]. Estoy explorando [tema]. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. No inventes citas.`
+  },
+  {
+    moduleId:'linea', moduleLabel:'Línea de investigación', moduleNum:'01',
+    promptNum:'02', promptTotal:'02',
+    title:'Director de tesis · 10 problemas',
+    color:'#ff6b3d',
+    fields:[
+      {key:'campo', label:'Campo / disciplina', placeholder:'ej. ingeniería ambiental', rows:1},
+      {key:'tema', label:'Tema inicial', placeholder:'ej. gestión de residuos sólidos', rows:2},
+      {key:'contexto', label:'Región / población', placeholder:'ej. Bogotá, hogares estrato 2', rows:1}
+    ],
+    template:`Actúa como director de tesis exigente en [campo].
+Mi tema inicial es [tema], en el contexto de [contexto].
+Genera 10 problemas de investigación distintos a partir de ese tema. Cada uno con:
+  · una tensión o vacío concreto,
+  · un contexto delimitado (lugar, población, periodo),
+  · una pista de por qué importa.
+Numéralos del 1 al 10, sin repetir el ángulo. No inventes citas; señala qué
+tendría que verificar yo en literatura real.`
+  },
+
+  /* MÓDULO 02 · Árbol de problema */
+  {
+    moduleId:'arbol', moduleLabel:'Árbol de problema', moduleNum:'02',
+    promptNum:'01', promptTotal:'01',
+    title:'Causas raíz · intermedias · efectos',
+    color:'#3dd6c4',
+    fields:[
+      {key:'problema', label:'Problema elegido', placeholder:'pega aquí el problema seleccionado del prompt anterior', rows:4}
+    ],
+    template:`Mi problema es:
+«[problema]».
+
+Devuelve una tabla con tres columnas:
+  1. Causas raíz (3-5)
+  2. Causas intermedias (3-5)
+  3. Efectos observables (3-5)
+
+Sin citas inventadas. Marca cuáles son hipótesis y cuáles
+son hechos documentables que yo debería verificar en
+literatura.`
+  },
+
+  /* MÓDULO 03 · Preguntas */
+  {
+    moduleId:'preguntas', moduleLabel:'Preguntas de investigación', moduleNum:'03',
+    promptNum:'01', promptTotal:'01',
+    title:'3 preguntas desde el árbol',
+    color:'#e8b04b',
+    fields:[
+      {key:'problema', label:'Problema', placeholder:'pega el problema', rows:3},
+      {key:'causas', label:'Causas clave (del árbol)', placeholder:'lista de causas clave del árbol', rows:3},
+      {key:'efectos', label:'Efectos clave (del árbol)', placeholder:'lista de efectos clave del árbol', rows:3}
+    ],
+    template:`A partir de:
+  · Problema: «[problema]»
+  · Causas clave: [causas]
+  · Efectos clave: [efectos]
+
+Propón 3 preguntas de investigación distintas, cada una con un ángulo:
+  1. Centrada en magnitud / descripción del problema,
+  2. Centrada en relación causa → efecto,
+  3. Centrada en una intervención o solución posible.
+
+Cada pregunta con variables claras, contexto y desenlace medible.
+Señala cuál es más viable y por qué. Sin citas inventadas.`
+  },
+
+  /* MÓDULO 04 · Objetivo general */
+  {
+    moduleId:'general', moduleLabel:'Objetivo general', moduleNum:'04',
+    promptNum:'01', promptTotal:'01',
+    title:'4 alternativas de objetivo general',
+    color:'#8a7dff',
+    fields:[
+      {key:'problema', label:'Problema', placeholder:'pega el problema', rows:3},
+      {key:'causasEfectos', label:'Causas y efectos clave', placeholder:'resumen del árbol', rows:3},
+      {key:'pregunta', label:'Pregunta de investigación', placeholder:'pega la pregunta elegida', rows:2}
+    ],
+    template:`Tengo esta tríada:
+  · Problema: «[problema]»
+  · Causas y efectos clave: [causasEfectos]
+  · Pregunta de investigación: «[pregunta]»
+
+Propón 4 alternativas de objetivo general, cada una con un ángulo distinto:
+  1. Descriptivo (caracterizar / cuantificar)
+  2. Comparativo (comparar / contrastar)
+  3. Explicativo (determinar relación / efecto)
+  4. Aplicado (evaluar intervención / proponer solución)
+
+Cada uno con verbo medible, alcance realista y método implicado.
+Señala cuál es la más viable para una tesis y por qué.`
+  },
+
+  /* MÓDULO 05 · Objetivos específicos */
+  {
+    moduleId:'especificos', moduleLabel:'Objetivos específicos', moduleNum:'05',
+    promptNum:'01', promptTotal:'01',
+    title:'3 paquetes alternativos de específicos',
+    color:'#36b3f0',
+    fields:[
+      {key:'pregunta', label:'Pregunta de investigación', placeholder:'pega la pregunta', rows:2},
+      {key:'general', label:'Objetivo general', placeholder:'pega el objetivo general elegido', rows:2}
+    ],
+    template:`Tengo:
+  · Pregunta de investigación: «[pregunta]»
+  · Objetivo general: «[general]»
+
+Propón 3 paquetes alternativos de objetivos específicos (3 por paquete = 9 en total).
+Cada paquete debe representar una RUTA distinta para alcanzar el general:
+  Paquete A — ruta descriptiva / diagnóstica
+  Paquete B — ruta analítica / explicativa
+  Paquete C — ruta aplicada / propositiva
+
+Reglas: cada específico con verbo medible, secuencia lógica (de lo simple a lo
+complejo), sin sobrar ni faltar respecto del general. Indica qué método implica
+cada paquete y cuál es el más viable para una tesis.`
+  },
+
+  /* MÓDULO 06 · Planteamiento */
+  {
+    moduleId:'planteamiento', moduleLabel:'Planteamiento del problema', moduleNum:'06',
+    promptNum:'01', promptTotal:'02',
+    title:'Fuentes con datos y estadísticas',
+    color:'#3ddc97',
+    fields:[
+      {key:'problema', label:'Problema', placeholder:'pega el problema', rows:3},
+      {key:'pregunta', label:'Pregunta', placeholder:'pega la pregunta', rows:2},
+      {key:'general', label:'Objetivo general', placeholder:'pega el objetivo general', rows:2}
+    ],
+    template:`// fuentes con datos y estadísticas
+
+Actúa como investigador rastreador de fuentes. Realiza una búsqueda profunda en la web para mi investigación:
+· Problema: «[problema]»
+· Pregunta: «[pregunta]»
+· Objetivo general: «[general]»
+
+Encuéntrame fuentes que cumplan TODAS estas condiciones:
+1. Estén disponibles como PDF accesible en internet.
+2. Sean artículos científicos revisados por pares o informes de organizaciones reconocidas (OMS, FAO, BID, CEPAL, ministerios, universidades).
+3. Contengan métricas, datos o estadísticas sobre magnitud del problema, causas o efectos.
+4. Publicadas preferentemente en los últimos 10 años.`
+  },
+  {
+    moduleId:'planteamiento', moduleLabel:'Planteamiento del problema', moduleNum:'06',
+    promptNum:'02', promptTotal:'02',
+    title:'Redacción · APA 7 · 1500-2000 palabras',
+    color:'#3ddc97',
+    fields:[
+      {key:'problema', label:'Problema central', placeholder:'pega el problema', rows:3},
+      {key:'causas', label:'Causas (raíz e intermedias)', placeholder:'lista de causas del árbol', rows:3},
+      {key:'efectos', label:'Efectos clave', placeholder:'lista de efectos del árbol', rows:3},
+      {key:'pregunta', label:'Pregunta', placeholder:'pega la pregunta', rows:2},
+      {key:'general', label:'Objetivo general', placeholder:'pega el objetivo general', rows:2}
+    ],
+    template:`// planteamiento · APA 7 · 1500-2000 palabras
+
+Actúa como redactor académico riguroso. Usando únicamente las fuentes que subí, redacta el planteamiento del problema con esta información:
+· Problema central: «[problema]»
+· Causas (raíz e intermedias): [causas]
+· Efectos clave: [efectos]
+· Pregunta: «[pregunta]»
+· Objetivo general: «[general]»
+
+Reglas:
+1. Estructura: contexto → magnitud → causas → efectos → vacío → relevancia.
+2. Apóyate solo en mis fuentes.
+3. Incluye métricas, datos y estadísticas que den magnitud al problema.
+4. Cita en el texto en APA 7 (Autor, año).
+5. Extensión: 1500 a 2000 palabras.
+6. Al final, sección «Referencias» en APA 7, ordenadas alfabéticamente, con DOI o enlace al PDF.
+7. Lo que no esté en las fuentes, márcalo como [VERIFICAR]; no inventes citas.`
+  },
+
+  /* MÓDULO 07 · Justificación */
+  {
+    moduleId:'justificacion', moduleLabel:'Justificación', moduleNum:'07',
+    promptNum:'01', promptTotal:'02',
+    title:'Fuentes para justificar',
+    color:'#ff7e5f',
+    fields:[
+      {key:'problema', label:'Problema', placeholder:'pega el problema', rows:3},
+      {key:'pregunta', label:'Pregunta', placeholder:'pega la pregunta', rows:2},
+      {key:'general', label:'Objetivo general', placeholder:'pega el objetivo general', rows:2}
+    ],
+    template:`Actúa como investigador rastreador de fuentes. Realiza una búsqueda profunda en la web para justificar mi investigación:
+  · Problema: «[problema]»
+  · Pregunta: «[pregunta]»
+  · Objetivo general: «[general]»
+
+Encuéntrame fuentes que cumplan TODAS estas condiciones:
+  1. Estén disponibles como PDF accesible en internet.
+  2. Sean artículos científicos revisados por pares, políticas públicas o informes de organizaciones reconocidas (OMS, FAO, BID, CEPAL, ministerios, universidades).
+  3. Aporten evidencia sobre vacío de conocimiento, relevancia social, beneficio práctico, novedad o pertinencia disciplinar / regional.
+  4. Publicadas preferentemente en los últimos 10 años.`
+  },
+  {
+    moduleId:'justificacion', moduleLabel:'Justificación', moduleNum:'07',
+    promptNum:'02', promptTotal:'02',
+    title:'Redacción · APA 7 · 800-1200 palabras',
+    color:'#ff7e5f',
+    fields:[
+      {key:'problema', label:'Problema central', placeholder:'pega el problema', rows:3},
+      {key:'pregunta', label:'Pregunta', placeholder:'pega la pregunta', rows:2},
+      {key:'general', label:'Objetivo general', placeholder:'pega el objetivo general', rows:2},
+      {key:'beneficiarios', label:'Beneficiarios', placeholder:'grupos / sectores impactados', rows:2}
+    ],
+    template:`Actúa como redactor académico riguroso. Usando únicamente las fuentes que subí, redacta la justificación del estudio con esta información:
+  · Problema central: «[problema]»
+  · Pregunta: «[pregunta]»
+  · Objetivo general: «[general]»
+  · Beneficiarios: [beneficiarios]
+
+Reglas:
+  1. Estructura: vacío de conocimiento → relevancia teórica → relevancia práctica / social → novedad → viabilidad → pertinencia disciplinar / regional.
+  2. Apóyate solo en mis fuentes.
+  3. Incluye datos, métricas o evidencia que respalden cada argumento.
+  4. Cita en el texto en APA 7 (Autor, año).
+  5. Extensión: 800 a 1200 palabras.
+  6. Al final, sección «Referencias» en APA 7, ordenadas alfabéticamente, con DOI o enlace al PDF.
+  7. Lo que no esté en las fuentes, márcalo como [VERIFICAR]; no inventes citas.`
+  },
+
+  /* MÓDULO 08 · Marco teórico */
+  {
+    moduleId:'marco', moduleLabel:'Marco teórico', moduleNum:'08',
+    promptNum:'01', promptTotal:'01',
+    title:'Estado del arte · mapeo de literatura',
+    color:'#7c8cff',
+    fields:[
+      {key:'campo', label:'Campo disciplinar', placeholder:'ej. ingeniería ambiental', rows:1},
+      {key:'problematica', label:'Problemática (lo conocido)', placeholder:'lo que sí se sabe del fenómeno', rows:2},
+      {key:'causal', label:'Lo que no está claro (vacío)', placeholder:'qué causa o mecanismo falta esclarecer', rows:2},
+      {key:'consecuencia', label:'Por qué importa', placeholder:'consecuencia o relevancia', rows:2},
+      {key:'general', label:'Objetivo general', placeholder:'objetivo general de la investigación', rows:2},
+      {key:'concepto', label:'Concepto central', placeholder:'núcleo conceptual a mapear', rows:1},
+      {key:'variableInteres', label:'Variable de interés', placeholder:'la variable que reportan los estudios', rows:1},
+      {key:'objetoEstudio', label:'Objeto de estudio', placeholder:'qué se estudia (sistema, especie, proceso...)', rows:1},
+      {key:'paisRegion', label:'País o región', placeholder:'ej. Colombia, Andes tropicales', rows:1},
+      {key:'institucion1', label:'Institución 1', placeholder:'ej. Minambiente, IDEAM', rows:1},
+      {key:'institucion2', label:'Institución 2', placeholder:'ej. Universidad Nacional', rows:1},
+      {key:'resultados', label:'Resultados / fenómeno medido', placeholder:'qué se cuantifica', rows:1},
+      {key:'variableResultado', label:'Variable de resultado', placeholder:'la variable de salida o impacto', rows:1},
+      {key:'contextoLocal', label:'Contexto local', placeholder:'tu zona / contexto de estudio', rows:1},
+      {key:'contextoComparado', label:'Contexto comparado', placeholder:'países / zonas frente a las que comparas', rows:1},
+      {key:'tema', label:'Tema (vacío)', placeholder:'tema del vacío de investigación', rows:1},
+      {key:'condiciones', label:'Condiciones específicas', placeholder:'restricciones de tu caso', rows:1},
+      {key:'anioCorte', label:'Año de corte', placeholder:'ej. 2015', rows:1},
+      {key:'organismo', label:'Organismo rector', placeholder:'ej. ONU, CEPAL, FAO', rows:1},
+      {key:'variable', label:'Variable (tabla comparativa)', placeholder:'la variable que cruzarás en la tabla', rows:1}
+    ],
+    template:`Actúa como investigador experto en [campo]. Necesito un estado del arte riguroso y un mapeo de literatura para sustentar el marco teórico de una investigación.
+
+Problema de investigación: [problematica], pero no está claro [causal]. Esto importa porque [consecuencia].
+
+Objetivo de la investigación: [general].
+
+Lo que necesito que investigues y sintetices:
+1. Marco conceptual de [concepto]: definiciones y métodos. Señala diferencias metodológicas que afecten la comparabilidad de resultados.
+2. Valores reportados de [variableInteres] para [objetoEstudio] en [paisRegion], priorizando publicaciones de [institucion1], [institucion2] y literatura científica revisada por pares. Reporta rangos numéricos con su fuente, año y zona de estudio.
+3. Evidencia sobre [resultados]: cuantificación del beneficio reportado y su efecto en [variableResultado]. Distingue explícitamente qué estudios se han realizado en [contextoLocal] frente a [contextoComparado]. Si no hay estudios aplicados específicamente en [contextoLocal], dilo de forma directa: esto es un hallazgo clave.
+4. Vacíos de investigación: qué falta por estudiar sobre [tema] en [condiciones].
+
+Tip: El eje 3 es el más poderoso — pedir que diferencie contextos y reconozca vacíos convierte la respuesta en argumento de novedad para tu investigación.
+
+Alcance y prioridad de fuentes: Prioriza fuentes de [anioCorte] en adelante (salvo trabajos seminales del método). Favorece artículos revisados por pares, informes técnicos de [institucion1] / [institucion2] / [organismo] y tesis de posgrado verificables. Indica explícitamente cuando una afirmación provenga de literatura gris o no revisada por pares.
+
+Formato de salida: Organiza el informe por los cuatro ejes anteriores. Para cada hallazgo numérico, incluye la cita con autor, año y fuente verificable. Al final, entrega: (a) una tabla comparativa de [variable] reportados con sus zonas y años, y (b) una lista de referencias en formato APA 7. Marca claramente cualquier dato del que no estés seguro o cuya fuente no pudiste confirmar plenamente.`
+  },
+
+  /* MÓDULO 09 · Metodología */
+  {
+    moduleId:'metodologia', moduleLabel:'Metodología', moduleNum:'09',
+    promptNum:'01', promptTotal:'01',
+    title:'Diseño metodológico por objetivo específico',
+    color:'#19c2a8',
+    fields:[
+      {key:'problema', label:'Problema', placeholder:'pega el problema', rows:3},
+      {key:'pregunta', label:'Pregunta', placeholder:'pega la pregunta', rows:2},
+      {key:'general', label:'Objetivo general', placeholder:'pega el objetivo general', rows:2},
+      {key:'esp1', label:'Objetivo específico 1', placeholder:'primer específico', rows:2},
+      {key:'esp2', label:'Objetivo específico 2', placeholder:'segundo específico', rows:2},
+      {key:'esp3', label:'Objetivo específico 3', placeholder:'tercer específico', rows:2},
+      {key:'contexto', label:'Contexto / población', placeholder:'región, grupo, periodo', rows:2},
+      {key:'recursos', label:'Recursos', placeholder:'tiempo, presupuesto, acceso a datos o personas', rows:2},
+      {key:'etica', label:'Restricciones éticas / legales', placeholder:'si aplican; si no, escribe «no aplican»', rows:2},
+      {key:'enfoque', label:'Enfoque preferido', placeholder:'cuanti / cuali / mixto o sin preferencia', rows:1}
+    ],
+    template:`// diseño metodológico por objetivo específico
+
+Actúa como metodólogo de tesis. Diseña la metodología para mi investigación con TODA esta información:
+
+· Problema: «[problema]»
+· Pregunta: «[pregunta]»
+· Objetivo general: «[general]»
+· Objetivos específicos:
+  1. [esp1]
+  2. [esp2]
+  3. [esp3]
+· Contexto / población: [contexto]
+· Recursos: [recursos]
+· Restricciones éticas / legales: [etica]
+· Enfoque preferido: [enfoque]
+
+Para CADA objetivo específico, propón la metodología que lo responda directamente:
+· enfoque y justificación,
+· diseño concreto,
+· población / muestra y criterio de selección,
+· técnica o instrumento (marca «verificar validez» si lo propones),
+· procedimiento paso a paso,
+· técnica de análisis,
+· validez / fiabilidad / consideraciones éticas,
+· limitaciones reconocidas.
+
+Cierra con una tabla de coherencia: objetivo específico ↔ método ↔ resultado esperado. No inventes instrumentos ni cites referencias inexistentes.`
+  }
+];
+
+/* claves que se sincronizan entre prompts */
+const SHARED_KEYS = new Set([
+  'campo','tema','contexto','problema','pregunta','general','causas','efectos',
+  'causasEfectos','beneficiarios'
+]);
+
+/* ============================================================
+   RENDER · slides de herramienta + TOC dinámico
+============================================================ */
+const deck = document.getElementById('deck');
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderToolSlides(){
+  PROMPTS.forEach((p, idx)=>{
+    const slide = document.createElement('section');
+    slide.className = 'slide';
+    slide.dataset.tool = idx;
+    slide.style.setProperty('--c', p.color);
+
+    const fieldsHtml = p.fields.map(f=>{
+      const shared = SHARED_KEYS.has(f.key) ? '<span class="shared-badge" title="Se sincroniza entre prompts">↔ compartido</span>' : '';
+      return `
+      <div class="field-block">
+        <label for="t${idx}_${f.key}">${f.label}${shared}</label>
+        <textarea id="t${idx}_${f.key}" data-key="${f.key}" data-tool="${idx}"
+                  rows="${f.rows||2}" placeholder="${f.placeholder}"></textarea>
+      </div>`;
+    }).join('');
+
+    slide.innerHTML = `
+      <div class="tool-stack">
+        <div class="ptop reveal">
+          <span class="sbadge">Módulo ${p.moduleNum} · Prompt ${p.promptNum}/${p.promptTotal}</span>
+          <span class="sname">${p.moduleLabel} · ${p.title}</span>
+        </div>
+        <div class="tool-grid reveal">
+          <div class="form-pane">
+            <div class="pane-head">
+              <span>Tus datos</span>
+              <span class="pane-hint">se guardan en tu navegador</span>
+            </div>
+            <div class="form-body">${fieldsHtml}</div>
+            <div class="form-actions">
+              <button class="btn reset-tool" data-tool="${idx}">Limpiar este prompt</button>
+            </div>
+          </div>
+          <div class="preview-pane">
+            <div class="pane-head">
+              <span>Prompt generado</span>
+              <span class="pane-hint">vista previa en vivo</span>
+            </div>
+            <div class="preview-body" id="preview_${idx}"></div>
+            <div class="preview-actions">
+              <span class="status" id="status_${idx}">Sin completar</span>
+              <button class="btn copy-raw" data-tool="${idx}">Plantilla</button>
+              <button class="btn primary copy-filled" data-tool="${idx}">📋 Copiar prompt</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    deck.appendChild(slide);
+  });
+}
+
+function renderTOC(){
+  const grid = document.getElementById('tocGrid');
+  const seen = new Set();
+  const modules = [];
+  PROMPTS.forEach((p, idx)=>{
+    if(seen.has(p.moduleId)) return;
+    seen.add(p.moduleId);
+    const count = PROMPTS.filter(q=>q.moduleId===p.moduleId).length;
+    modules.push({...p, count, firstIdx:idx});
+  });
+  grid.innerHTML = modules.map(m=>`
+    <a class="toc-card" data-jump="${3 + m.firstIdx}" style="--c:${m.color}">
+      <span class="t-num">Módulo ${m.moduleNum}</span>
+      <span class="t-title">${m.moduleLabel}</span>
+      <span class="t-count">${m.count} prompt${m.count>1?'s':''}</span>
+    </a>`).join('');
+  grid.querySelectorAll('.toc-card').forEach(c=>{
+    c.addEventListener('click',()=>{
+      const j = parseInt(c.dataset.jump,10);
+      if(!Number.isNaN(j)) go(j-1);
+    });
+  });
+}
+
+/* ============================================================
+   LÓGICA · preview, copiar, sincronización, persistencia
+============================================================ */
+const STORE_KEY = 'genPromts_v1';
+
+function loadStore(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }
+  catch(e){ return {}; }
+}
+function saveStore(data){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }catch(e){}
+}
+
+function getToolValues(idx){
+  const p = PROMPTS[idx];
+  const values = {};
+  p.fields.forEach(f=>{
+    const ta = document.querySelector(`textarea[data-tool="${idx}"][data-key="${CSS.escape(f.key)}"]`);
+    values[f.key] = ta ? ta.value : '';
+  });
+  return values;
+}
+
+function fillTemplate(p, values){
+  let out = p.template;
+  p.fields.forEach(f=>{
+    const v = (values[f.key]||'').trim();
+    const re = new RegExp('\\['+f.key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\]','g');
+    out = out.replace(re, v || ('['+f.key+']'));
+  });
+  return out;
+}
+
+function updatePreview(idx){
+  const p = PROMPTS[idx];
+  const values = getToolValues(idx);
+  const preview = document.getElementById('preview_'+idx);
+  if(!preview) return;
+
+  /* highlight placeholders: empty=gold, filled=accent2 */
+  let html = escapeHtml(p.template);
+  let filled = 0, total = p.fields.length;
+  p.fields.forEach(f=>{
+    const v = (values[f.key]||'').trim();
+    const re = new RegExp('\\['+f.key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\]','g');
+    if(v){
+      filled++;
+      html = html.replace(re, '<span class="ph-filled">'+escapeHtml(v)+'</span>');
+    } else {
+      html = html.replace(re, '<span class="ph-empty">['+f.key+']</span>');
+    }
+  });
+  preview.innerHTML = html;
+
+  const status = document.getElementById('status_'+idx);
+  if(status){
+    if(filled===0) status.textContent = 'Sin completar';
+    else if(filled<total) status.textContent = filled+' de '+total+' campos';
+    else status.textContent = '✓ Listo para copiar';
+  }
+}
+
+function syncValueAcrossSlides(key, value){
+  document.querySelectorAll(`textarea[data-key="${CSS.escape(key)}"]`).forEach(ta=>{
+    if(ta.value !== value) ta.value = value;
+  });
+  PROMPTS.forEach((p,i)=>{
+    if(p.fields.some(f=>f.key===key)) updatePreview(i);
+  });
+}
+
+function persistValue(key, value){
+  const store = loadStore();
+  store[key] = value;
+  saveStore(store);
+}
+
+function restoreValues(){
+  const store = loadStore();
+  Object.keys(store).forEach(key=>{
+    document.querySelectorAll(`textarea[data-key="${CSS.escape(key)}"]`).forEach(ta=>{
+      ta.value = store[key];
+    });
+  });
+  PROMPTS.forEach((_,i)=>updatePreview(i));
+}
+
+function bindToolEvents(){
+  document.querySelectorAll('textarea[data-tool]').forEach(ta=>{
+    ta.addEventListener('input', ()=>{
+      const idx = parseInt(ta.dataset.tool,10);
+      const key = ta.dataset.key;
+      const value = ta.value;
+
+      if(SHARED_KEYS.has(key)){
+        syncValueAcrossSlides(key, value);
+        persistValue(key, value);
+      } else {
+        /* clave no-compartida: guardamos por (idx,key) */
+        const store = loadStore();
+        store['_t'+idx+'_'+key] = value;
+        saveStore(store);
+        updatePreview(idx);
+      }
+    });
+  });
+
+  document.querySelectorAll('button.copy-filled').forEach(btn=>{
+    btn.addEventListener('click', async()=>{
+      const idx = parseInt(btn.dataset.tool,10);
+      const text = fillTemplate(PROMPTS[idx], getToolValues(idx));
+      await copyText(text);
+      flashBtn(btn, '✓ Copiado');
+    });
+  });
+  document.querySelectorAll('button.copy-raw').forEach(btn=>{
+    btn.addEventListener('click', async()=>{
+      const idx = parseInt(btn.dataset.tool,10);
+      await copyText(PROMPTS[idx].template);
+      flashBtn(btn, '✓ Plantilla');
+    });
+  });
+  document.querySelectorAll('button.reset-tool').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.tool,10);
+      const p = PROMPTS[idx];
+      p.fields.forEach(f=>{
+        const ta = document.querySelector(`textarea[data-tool="${idx}"][data-key="${CSS.escape(f.key)}"]`);
+        if(ta){
+          ta.value = '';
+          if(SHARED_KEYS.has(f.key)){
+            syncValueAcrossSlides(f.key, '');
+            persistValue(f.key, '');
+          } else {
+            const store = loadStore();
+            delete store['_t'+idx+'_'+f.key];
+            saveStore(store);
+          }
+        }
+      });
+      updatePreview(idx);
+    });
+  });
+}
+
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(e){
+    const tmp = document.createElement('textarea');
+    tmp.value = text; document.body.appendChild(tmp);
+    tmp.select(); document.execCommand('copy'); tmp.remove();
+  }
+}
+
+function flashBtn(btn, text){
+  const orig = btn.textContent;
+  btn.textContent = text;
+  btn.classList.add('ok');
+  setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('ok'); }, 1500);
+}
+
+/* restaurar valores no-compartidos por tool */
+function restoreToolSpecific(){
+  const store = loadStore();
+  Object.keys(store).forEach(k=>{
+    const m = k.match(/^_t(\d+)_(.+)$/);
+    if(!m) return;
+    const idx = parseInt(m[1],10);
+    const key = m[2];
+    const ta = document.querySelector(`textarea[data-tool="${idx}"][data-key="${CSS.escape(key)}"]`);
+    if(ta) ta.value = store[k];
+  });
+}
+
+function resetAll(){
+  if(!confirm('¿Borrar todos los campos de todos los prompts?')) return;
+  localStorage.removeItem(STORE_KEY);
+  document.querySelectorAll('textarea[data-tool]').forEach(ta=>ta.value='');
+  PROMPTS.forEach((_,i)=>updatePreview(i));
+}
+
+/* ============================================================
+   NAVEGACIÓN · slides, dots, progress
+============================================================ */
+let slides = [];
+let i = 0;
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+const dotsWrap = document.getElementById('dots');
+
+function buildDots(){
+  dotsWrap.innerHTML = '';
+  slides.forEach((_,k)=>{
+    const d = document.createElement('i');
+    d.onclick = ()=>go(k);
+    dotsWrap.appendChild(d);
+  });
+}
+
+function go(n){
+  i = Math.max(0, Math.min(slides.length-1, n));
+  slides.forEach((s,k)=>s.classList.toggle('active', k===i));
+  progress.style.width = ((i+1)/slides.length*100)+'%';
+  counter.textContent = String(i+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  [...dotsWrap.children].forEach((d,k)=>d.classList.toggle('on', k===i));
+}
+
+function next(){ go(i+1); }
+function prev(){ go(i-1); }
+
+/* tema */
+const themeIcon = document.getElementById('themeIcon');
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  themeIcon.textContent = t==='light' ? '☀' : '☾';
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
+  const next = cur==='light'?'dark':'light';
+  applyTheme(next);
+  try{ localStorage.setItem('genPromtsTheme', next); }catch(e){}
+}
+(function initTheme(){
+  let saved = 'dark';
+  try{ saved = localStorage.getItem('genPromtsTheme') || 'dark'; }catch(e){}
+  applyTheme(saved);
+})();
+
+/* ============================================================
+   INIT
+============================================================ */
+renderToolSlides();
+renderTOC();
+slides = [...deck.querySelectorAll('.slide')];
+buildDots();
+bindToolEvents();
+restoreValues();
+restoreToolSpecific();
+PROMPTS.forEach((_,k)=>updatePreview(k));
+go(0);
+
+document.getElementById('next').onclick = next;
+document.getElementById('prev').onclick = prev;
+document.getElementById('home').onclick = ()=>go(1);
+document.getElementById('themeToggle').onclick = toggleTheme;
+document.getElementById('resetAll').onclick = resetAll;
+
+addEventListener('keydown', e=>{
+  const t = e.target.tagName;
+  if(t==='INPUT'||t==='TEXTAREA') return;
+  if(e.key==='ArrowRight'||e.key===' ') next();
+  if(e.key==='ArrowLeft') prev();
+  if(e.key==='f'){ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+  if(e.key==='t'||e.key==='T') toggleTheme();
+  if(e.key==='i'||e.key==='I') go(1);
+  if(e.key==='r'||e.key==='R') resetAll();
+});
+</script>
+</body>
+</html>

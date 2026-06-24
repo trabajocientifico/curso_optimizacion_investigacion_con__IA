@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(awk '/<section class=\"slide/{start=NR} /<\\\\/div><!-- \\\\/deck -->/{print \"Last section line:\", start; exit}' \"I:/Mi unidad/GITHUB/trabajocientifico/curso_optimizacion_investigacion_con__IA/index/Sesion2_Presentacion_Interactiva.html\")"
+      "Bash(awk 'NR>=120 && /volver|index.html|back|Mapa|home/I {print NR\": \"$0}' \"I:\\\\Mi unidad\\\\GITHUB\\\\trabajocientifico\\\\curso_optimizacion_investigacion_con__IA\\\\index\\\\Sesion6_Presentacion_Interactiva.html\")",
+      "WebSearch"
     ]
   }
 }

@@ -1,0 +1,16 @@
+# Punteros de Google Drive (archivos "solo en la nube", no tienen contenido real en disco)
+*.gsheet
+*.gdoc
+*.gslides
+*.gdraw
+*.gform
+*.gmap
+*.gsite
+
+# Archivos temporales y de sistema (Windows / Google Drive)
+desktop.ini
+Thumbs.db
+.DS_Store
+
+# Archivos temporales de Microsoft Office (los que empiezan por ~$)
+~$*
