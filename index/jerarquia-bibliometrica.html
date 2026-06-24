@@ -161,6 +161,15 @@
 
   @keyframes rise{to{opacity:1;transform:none}}
 
+  /* ---- Back-home ---- */
+  .back-home{position:fixed;top:14px;left:14px;z-index:50;display:inline-flex;align-items:center;gap:.45em;
+    background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line2);color:var(--text);
+    text-decoration:none;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;
+    text-transform:uppercase;padding:.5em .85em;border-radius:999px;box-shadow:var(--shadow);transition:.2s;
+    opacity:0;animation:rise .7s .04s ease forwards}
+  .back-home:hover{border-color:var(--els);color:var(--els);transform:translateY(-1px)}
+  .back-home span{font-size:13px;line-height:1}
+
   /* ---- Mobile ---- */
   @media (max-width:760px){
     .tree{grid-template-columns:1fr 1fr;gap:0 12px}
@@ -179,6 +188,7 @@
 </style>
 </head>
 <body>
+<a href="../index.html" class="back-home" title="Volver al mapa del curso"><span aria-hidden="true">&#x21A9;</span> Inicio</a>
 <div class="stage">
   <div class="eyebrow">Ecosistemas de la información científica</div>
   <h1>¿Quién es quién?<br><span class="clv">Clarivate</span> frente a <span class="els">Elsevier</span></h1>

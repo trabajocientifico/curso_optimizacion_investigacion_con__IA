@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tres tipos de artículo de revisión · Sistemática · Bibliométrica · Meta-análisis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117; --bg2:#121a26; --ink:#eef2f7; --muted:#8b97a8;
+  --accent:#3dd6c4; --accent2:#7c8cff; --gold:#e8b04b;
+  --line:rgba(255,255,255,.1); --card:rgba(255,255,255,.04);
+  --danger:#ff5a5f; --ok:#3ddc97;
+  --code-bg:#0a0e14; --code-ink:#cdd6e3;
+  --sys:#3dd6c4; --bib:#7c8cff; --meta:#ff6b3d;
+  --mesh-a:rgba(61,214,196,.14); --mesh-b:rgba(124,140,255,.12); --mesh-c:rgba(255,107,61,.07);
+  --grain-op:.05; --grid-op:.4;
+}
+:root[data-theme="light"]{
+  --bg:#f7f4ee; --bg2:#ece8df; --ink:#1a1f29; --muted:#5a6878;
+  --accent:#0e8a7c; --accent2:#5b54e0; --gold:#b8842e;
+  --line:rgba(0,0,0,.12); --card:rgba(0,0,0,.03);
+  --code-bg:#1a1f29; --code-ink:#cdd6e3;
+  --sys:#0e8a7c; --bib:#5b54e0; --meta:#d4501c;
+  --mesh-a:rgba(14,138,124,.10); --mesh-b:rgba(91,84,224,.08); --mesh-c:rgba(212,80,28,.06);
+  --grain-op:.035; --grid-op:.5;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Sora',sans-serif; overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color .35s ease, color .35s ease;
+}
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60vw 60vw at 78% 12%, var(--mesh-a), transparent 60%),
+    radial-gradient(50vw 50vw at 12% 88%, var(--mesh-b), transparent 60%),
+    radial-gradient(40vw 40vw at 50% 50%, var(--mesh-c), transparent 70%);
+  animation:meshfloat 18s ease-in-out infinite alternate;}
+@keyframes meshfloat{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-2%,2%,0) scale(1.08)}}
+.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:var(--grain-op);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:var(--grid-op);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%);}
+
+/* deck */
+.deck{position:relative;z-index:2;height:100vh;width:100vw}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;
+  padding:5.5vh 6vw 8vh;opacity:0;transition:opacity .5s ease}
+.slide.active{display:flex;opacity:1}
+.slide.active .reveal{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+.reveal:nth-child(1){animation-delay:.05s}.reveal:nth-child(2){animation-delay:.15s}
+.reveal:nth-child(3){animation-delay:.25s}.reveal:nth-child(4){animation-delay:.35s}
+.reveal:nth-child(5){animation-delay:.45s}.reveal:nth-child(6){animation-delay:.55s}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+/* tipografía */
+.kicker{font-family:'Space Mono',monospace;font-size:.78rem;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--accent2);margin-bottom:1.2rem;display:flex;gap:.8rem;align-items:center}
+.kicker::before{content:"";width:34px;height:1px;background:var(--accent2)}
+h1{font-family:'Fraunces',serif;font-weight:900;line-height:.98;letter-spacing:-.02em;
+  font-size:clamp(2.6rem,6.2vw,5.6rem)}
+h2{font-family:'Fraunces',serif;font-weight:600;line-height:1.04;
+  font-size:clamp(1.9rem,4vw,3.3rem);letter-spacing:-.01em}
+h3{font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.1rem,1.7vw,1.5rem)}
+.lead{font-size:clamp(1.05rem,1.5vw,1.35rem);color:var(--muted);max-width:54ch;line-height:1.6;font-weight:300}
+.em{color:var(--accent)}.em2{color:var(--accent2)}.emg{color:var(--gold)}
+mark{background:linear-gradient(transparent 55%,rgba(61,214,196,.35) 0);color:inherit;padding:0 .1em}
+
+/* layout helpers */
+.spread{flex:1;display:flex;flex-direction:column;justify-content:center}
+.cols{display:grid;gap:2rem;align-items:start}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:1.6rem 1.7rem;backdrop-filter:blur(6px);position:relative;overflow:hidden}
+.card .num{font-family:'Space Mono',monospace;color:var(--accent);font-size:.85rem;letter-spacing:.2em}
+.card h3{margin:.5rem 0 .6rem}
+.card p{color:var(--muted);font-size:.98rem;line-height:1.55;font-weight:300}
+.tag{display:inline-block;font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+  text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem;color:var(--muted)}
+
+/* chrome */
+.topbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:30;background:rgba(255,255,255,.06)}
+.topbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--meta));transition:width .4s}
+.hud{position:fixed;bottom:2.2vh;left:6vw;right:6vw;z-index:30;display:flex;justify-content:space-between;align-items:center;
+  font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.nav{display:flex;gap:.6rem}
+.nav button{background:var(--card);border:1px solid var(--line);color:var(--ink);width:38px;height:38px;border-radius:50%;
+  cursor:pointer;font-size:1rem;transition:.2s;display:grid;place-items:center}
+.nav button:hover{background:var(--accent);border-color:var(--accent);transform:translateY(-2px)}
+.brand{font-family:'Fraunces',serif;font-style:italic;font-weight:600;color:var(--ink)}
+
+/* dot nav */
+.dots{position:fixed;right:2vw;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:.7rem}
+.dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:.25s;display:block}
+.dots i.on{background:var(--accent);height:22px;border-radius:6px}
+
+/* botones */
+.btn{font-family:'Sora';font-weight:600;font-size:.92rem;border:none;cursor:pointer;border-radius:12px;
+  padding:.8rem 1.3rem;transition:.2s;display:inline-flex;gap:.5rem;align-items:center}
+.btn-primary{background:var(--accent);color:#0d1117}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn-ghost:hover{border-color:var(--accent)}
+
+/* mono code */
+.mono{font-family:'Space Mono',monospace}
+
+/* title slide bits */
+.hero-num{position:absolute;right:5vw;top:8vh;font-family:'Fraunces',serif;font-weight:900;
+  font-size:24vw;line-height:.8;color:rgba(255,255,255,.03);z-index:-1;pointer-events:none}
+.meta-row{display:flex;gap:2.4rem;flex-wrap:wrap;margin-top:2.4rem}
+.meta-row div .mono{color:var(--accent2);font-size:.75rem;letter-spacing:.2em}
+.meta-row div p{font-size:1.05rem;margin-top:.2rem}
+
+/* back-home */
+.back-home{position:fixed;top:14px;left:14px;z-index:40;display:inline-flex;align-items:center;gap:.4rem;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--ink);text-decoration:none;
+  font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:.45rem .8rem;border-radius:999px;backdrop-filter:blur(6px);transition:.2s}
+.back-home:hover{background:var(--accent);border-color:var(--accent);color:#0d1117}
+.back-home span{font-size:1rem;line-height:1}
+
+/* ---- estilos propios: tipos de revisión ---- */
+/* tres familias en portada / intro */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-top:1.8rem}
+.tcard{border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.4rem;background:var(--card);
+  position:relative;overflow:hidden;transition:.25s;cursor:default}
+.tcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.tcard:hover{transform:translateY(-3px);border-color:var(--c)}
+.tcard .tnum{font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.2em;color:var(--c);text-transform:uppercase}
+.tcard h3{font-family:'Fraunces',serif;font-weight:700;font-size:1.35rem;margin:.45rem 0 .55rem;line-height:1.05}
+.tcard .q{font-size:.88rem;color:var(--ink);font-weight:500;line-height:1.4}
+.tcard .sub{font-size:.82rem;color:var(--muted);line-height:1.45;margin-top:.55rem}
+.tcard .pill{display:inline-block;margin-top:.8rem;font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.1em;
+  text-transform:uppercase;border:1px solid var(--c);color:var(--c);border-radius:999px;padding:.22rem .6rem}
+
+/* deep-dive layout */
+.dd{display:grid;grid-template-columns:1fr 1fr;gap:1.8rem;align-items:start;margin-top:1.3rem}
+.ddleft .oneline{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.2rem,1.9vw,1.7rem);
+  line-height:1.25;color:var(--ink);border-left:3px solid var(--c);padding-left:1rem;margin-bottom:1rem}
+.ddleft .desc{color:var(--muted);font-size:.95rem;line-height:1.6}
+.feat{display:flex;flex-direction:column;gap:.55rem;margin-top:.2rem}
+.featrow{display:grid;grid-template-columns:auto 1fr;gap:.8rem;align-items:start;
+  border:1px solid var(--line);border-radius:11px;padding:.7rem .85rem;background:rgba(255,255,255,.02)}
+.featrow .fk{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--c);font-weight:700;min-width:88px;padding-top:.15rem}
+.featrow .fv{font-size:.88rem;line-height:1.4;color:var(--ink)}
+.featrow .fv b{color:var(--c)}
+
+/* ejemplo real / cita */
+.cite{border:1px solid var(--c);border-radius:14px;padding:1.1rem 1.2rem;background:linear-gradient(155deg,rgba(255,255,255,.04),transparent);
+  margin-top:1rem;position:relative;overflow:hidden}
+.cite .ctag{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--c);
+  font-weight:700;display:flex;align-items:center;gap:.5rem}
+.cite .ctag::before{content:"★";font-size:.8rem}
+.cite .ctitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.02rem;line-height:1.3;margin:.5rem 0 .4rem;color:var(--ink)}
+.cite .cmeta{font-size:.78rem;color:var(--muted);line-height:1.5}
+.cite .cmeta b{color:var(--ink)}
+.cite .jrnl{display:inline-block;margin-top:.55rem;font-family:'Space Mono',monospace;font-size:.64rem;letter-spacing:.1em;
+  background:var(--c);color:#0d1117;border-radius:6px;padding:.2rem .5rem;font-weight:700}
+.cite a.doi{display:inline-flex;align-items:center;gap:.35rem;margin-top:.6rem;font-family:'Space Mono',monospace;
+  font-size:.7rem;letter-spacing:.06em;color:var(--c);text-decoration:none;border-bottom:1px solid transparent;transition:.2s}
+.cite a.doi:hover{border-bottom-color:var(--c)}
+
+/* tabla comparativa */
+.cmp{margin-top:1.1rem;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:.8rem}
+.cmprow{display:grid;grid-template-columns:1.05fr 1.3fr 1.3fr 1.3fr;border-bottom:1px solid var(--line)}
+.cmprow:last-child{border-bottom:none}
+.cmpcell{padding:.7rem .8rem;border-right:1px solid var(--line);line-height:1.4}
+.cmpcell:last-child{border-right:none}
+.cmphead .cmpcell{font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.cmphead .dim-k{color:var(--muted)}
+.cmphead .h-sys{color:var(--sys)}.cmphead .h-bib{color:var(--bib)}.cmphead .h-meta{color:var(--meta)}
+.cmprow .rk{font-family:'Space Mono',monospace;font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cmpcell.col-sys{background:rgba(61,214,196,.05)}
+.cmpcell.col-bib{background:rgba(124,140,255,.05)}
+.cmpcell.col-meta{background:rgba(255,107,61,.05)}
+.cmp.focus-sys .col-bib,.cmp.focus-sys .col-meta,
+.cmp.focus-bib .col-sys,.cmp.focus-bib .col-meta,
+.cmp.focus-meta .col-sys,.cmp.focus-meta .col-bib{opacity:.28;filter:grayscale(.5)}
+.cmpcell{transition:opacity .25s,filter .25s}
+.colbtns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+.colbtn{font-family:'Space Mono',monospace;font-size:.72rem;border:1px solid var(--line);border-radius:8px;padding:.4rem .8rem;
+  cursor:pointer;transition:.18s;color:var(--muted);background:rgba(255,255,255,.02)}
+.colbtn[data-t="sys"].on{border-color:var(--sys);color:var(--sys);background:rgba(61,214,196,.08)}
+.colbtn[data-t="bib"].on{border-color:var(--bib);color:var(--bib);background:rgba(124,140,255,.08)}
+.colbtn[data-t="meta"].on{border-color:var(--meta);color:var(--meta);background:rgba(255,107,61,.08)}
+.colbtn[data-t="all"].on{border-color:var(--ink);color:var(--ink)}
+
+/* árbol de decisión */
+.dtree{display:flex;flex-direction:column;gap:.8rem;margin-top:1.4rem;max-width:62ch}
+.dnode{display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:center;
+  border:1px solid var(--line);border-radius:13px;padding:.9rem 1.1rem;background:var(--card);transition:.2s}
+.dnode:hover{border-color:var(--c);transform:translateX(4px)}
+.dnode .qmark{font-family:'Fraunces',serif;font-weight:900;font-size:1.6rem;color:var(--c);line-height:1}
+.dnode .dq{font-size:.92rem;color:var(--ink);line-height:1.4}
+.dnode .dq b{color:var(--c)}
+.dnode .dq .res{display:block;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--c);margin-top:.35rem;font-weight:700}
+
+/* slide cierre fuentes */
+.srcgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.4rem}
+.srccard{border:1px solid var(--line);border-radius:14px;padding:1.1rem;background:var(--card);position:relative;overflow:hidden}
+.srccard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.srccard .st{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:700}
+.srccard h4{font-family:'Fraunces',serif;font-weight:600;font-size:.98rem;line-height:1.25;margin:.5rem 0 .4rem}
+.srccard p{font-size:.76rem;color:var(--muted);line-height:1.45}
+.srccard a{display:inline-block;margin-top:.6rem;font-family:'Space Mono',monospace;font-size:.66rem;color:var(--c);text-decoration:none;border-bottom:1px solid transparent}
+.srccard a:hover{border-bottom-color:var(--c)}
+
+@media(max-width:980px){
+  .trio,.srcgrid{grid-template-columns:1fr}
+  .dd{grid-template-columns:1fr}
+  .cmp{font-size:.72rem}
+  .cmprow{grid-template-columns:1fr 1fr 1fr 1fr}
+}
+@media(max-width:820px){
+  .c2,.c3{grid-template-columns:1fr}
+  .slide{padding:5vh 7vw 9vh}
+  .dots{display:none}
+}
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-home" title="Volver al mapa del curso"><span aria-hidden="true">&#x21A9;</span> Inicio</a>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="bg-grain"></div>
+<div class="topbar"><div class="fill" id="progress"></div></div>
+<div class="dots" id="dots"></div>
+
+<div class="deck" id="deck">
+
+<!-- 1 · PORTADA -->
+<section class="slide active">
+  <div class="hero-num">3</div>
+  <div class="spread" style="max-width:72%">
+    <div class="kicker reveal">Módulo 3 · Revisión de literatura para publicar</div>
+    <h1 class="reveal">No toda revisión<br>es <span class="em">igual</span>.</h1>
+    <p class="lead reveal" style="margin-top:1.4rem">Tres familias de artículo de revisión dominan las revistas indexadas. Comparten el rigor, pero responden preguntas distintas, con materia prima y métodos distintos. Saber cuál escribes decide tu título, tu método y tu revista.</p>
+    <div class="trio reveal">
+      <div class="tcard" style="--c:var(--sys)">
+        <span class="tnum">Tipo 01</span>
+        <h3>Revisión sistemática</h3>
+        <p class="q">¿Qué dice <b>toda</b> la evidencia sobre una pregunta?</p>
+        <p class="sub">Síntesis exhaustiva y reproducible de los estudios que responden una pregunta acotada.</p>
+        <span class="pill">Cualitativa · narrativa</span>
+      </div>
+      <div class="tcard" style="--c:var(--bib)">
+        <span class="tnum">Tipo 02</span>
+        <h3>Revisión bibliométrica</h3>
+        <p class="q">¿Cómo <b>evoluciona</b> y se estructura un campo?</p>
+        <p class="sub">Análisis cuantitativo de miles de metadatos: autores, citas, palabras, redes.</p>
+        <span class="pill">Métricas · mapas</span>
+      </div>
+      <div class="tcard" style="--c:var(--meta)">
+        <span class="tnum">Tipo 03</span>
+        <h3>Meta-análisis</h3>
+        <p class="q">¿Cuál es el <b>efecto combinado</b> y cuán fuerte?</p>
+        <p class="sub">Integración estadística de los resultados numéricos de estudios comparables.</p>
+        <span class="pill">Estadística · efecto</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · EL ESPECTRO -->
+<section class="slide">
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal">El criterio para distinguirlas</div>
+    <h2 class="reveal">Tres preguntas, <span class="em">un</span> origen.</h2>
+    <p class="lead reveal" style="margin-top:1rem;max-width:70ch">Las tres parten de una <mark>búsqueda en la literatura</mark>, pero divergen en <b>qué convierten en dato</b>. Ahí está la diferencia que confunde a todo el mundo:</p>
+    <div class="cols c3 reveal" style="margin-top:1.6rem">
+      <div class="card" style="border-color:var(--sys)">
+        <span class="num" style="color:var(--sys)">EL DATO ES…</span>
+        <h3 style="color:var(--sys)">El contenido</h3>
+        <p>La <b>sistemática</b> lee los estudios y sintetiza qué encontraron. La unidad de análisis es el hallazgo de cada artículo.</p>
+      </div>
+      <div class="card" style="border-color:var(--bib)">
+        <span class="num" style="color:var(--bib)">EL DATO ES…</span>
+        <h3 style="color:var(--bib)">Los metadatos</h3>
+        <p>La <b>bibliométrica</b> no lee los textos: analiza autores, citas, revistas y palabras clave de miles de registros.</p>
+      </div>
+      <div class="card" style="border-color:var(--meta)">
+        <span class="num" style="color:var(--meta)">EL DATO ES…</span>
+        <h3 style="color:var(--meta)">Los números</h3>
+        <p>El <b>meta-análisis</b> extrae el resultado cuantitativo de cada estudio y lo combina en un solo efecto estadístico.</p>
+      </div>
+    </div>
+    <p class="reveal" style="margin-top:1.6rem;font-size:.95rem;color:var(--muted);max-width:74ch">
+      Una pista práctica: <span class="em2">sistemática y meta-análisis suelen ir juntos</span> en un mismo paper (la sistemática selecciona los estudios; el meta-análisis los pondera). La bibliométrica es un proyecto distinto, con su propio software y su propia revista objetivo.
+    </p>
+  </div>
+</section>
+
+<!-- 3 · REVISIÓN SISTEMÁTICA -->
+<section class="slide" style="--c:var(--sys)">
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal" style="color:var(--sys)">Tipo 01 · Revisión sistemática</div>
+    <h2 class="reveal">La <span style="color:var(--sys)">evidencia</span>, sin sesgos de selección.</h2>
+    <div class="dd reveal">
+      <div class="ddleft">
+        <p class="oneline">Responde una pregunta acotada reuniendo <b>todos</b> los estudios relevantes con un método explícito y reproducible.</p>
+        <p class="desc">Su sello es el <b>protocolo registrado de antemano</b>: criterios de inclusión/exclusión, cadenas de búsqueda y bases consultadas se declaran antes de empezar, para que cualquiera pueda replicar y auditar el proceso. El diagrama de flujo PRISMA muestra cuántos registros entraron, se descartaron y quedaron. La síntesis suele ser <b>narrativa o tabular</b> (no necesariamente estadística).</p>
+      </div>
+      <div class="ddright">
+        <div class="feat">
+          <div class="featrow"><span class="fk">Pregunta</span><span class="fv">Acotada y estructurada (p. ej. formato <b>PICO</b>)</span></div>
+          <div class="featrow"><span class="fk">Materia prima</span><span class="fv">El <b>contenido</b> de los estudios primarios seleccionados</span></div>
+          <div class="featrow"><span class="fk">Resultado</span><span class="fv">Síntesis cualitativa, tablas de evidencia, un <b>modelo o conclusión</b></span></div>
+          <div class="featrow"><span class="fk">Herramientas</span><span class="fv">Rayyan, Covidence, diagrama <b>PRISMA</b>, gestores de referencia</span></div>
+          <div class="featrow"><span class="fk">Estándar</span><span class="fv">Guía de reporte <b>PRISMA 2020</b> · protocolo en PROSPERO</span></div>
+        </div>
+        <div class="cite" style="--c:var(--sys)">
+          <span class="ctag">Ejemplo en revista de alto impacto</span>
+          <p class="ctitle">«Diffusion of innovations in service organizations: systematic review and recommendations»</p>
+          <p class="cmeta">Greenhalgh, T., Robert, G., Macfarlane, F., Bate, P. &amp; Kyriakidou, O. (2004). <b>The Milbank Quarterly</b>, 82(4), 581–629.</p>
+          <span class="jrnl">Síntesis narrativa · sin pooling estadístico</span>
+          <br><a class="doi" href="https://doi.org/10.1111/j.0887-378X.2004.00325.x" target="_blank" rel="noopener">doi.org/10.1111/j.0887-378X.2004.00325.x ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · REVISIÓN BIBLIOMÉTRICA -->
+<section class="slide" style="--c:var(--bib)">
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal" style="color:var(--bib)">Tipo 02 · Revisión bibliométrica</div>
+    <h2 class="reveal">El <span style="color:var(--bib)">mapa</span> de un campo, no su contenido.</h2>
+    <div class="dd reveal">
+      <div class="ddleft">
+        <p class="oneline">Mide y visualiza la <b>estructura y evolución</b> de un campo a partir de los metadatos de su producción científica.</p>
+        <p class="desc">No le interesa qué dice cada paper, sino las <b>regularidades del conjunto</b>: qué autores y países lideran, qué revistas concentran la conversación, qué temas emergen o decaen, y cómo se citan entre sí. Trabaja con descargas masivas de <b>Scopus o Web of Science</b> y produce <b>mapas de redes</b> (co-citación, co-ocurrencia de palabras, co-autoría). Es la mejor entrada a un campo amplio o muy nuevo.</p>
+      </div>
+      <div class="ddright">
+        <div class="feat">
+          <div class="featrow"><span class="fk">Pregunta</span><span class="fv">Amplia: <b>¿cómo se ha desarrollado</b> y estructurado este dominio?</span></div>
+          <div class="featrow"><span class="fk">Materia prima</span><span class="fv"><b>Metadatos</b> de cientos o miles de registros (citas, autores, keywords)</span></div>
+          <div class="featrow"><span class="fk">Resultado</span><span class="fv">Mapas de redes, <b>análisis de tendencias</b>, frentes de investigación</span></div>
+          <div class="featrow"><span class="fk">Herramientas</span><span class="fv"><b>VOSviewer</b>, Bibliometrix (R), CiteSpace, SciMAT</span></div>
+          <div class="featrow"><span class="fk">Estándar</span><span class="fv">Guías de Donthu et al. (2021) · flujo <b>tipo PRISMA</b> para la muestra</span></div>
+        </div>
+        <div class="cite" style="--c:var(--bib)">
+          <span class="ctag">Ejemplo en revista de alto impacto</span>
+          <p class="ctitle">«Forty-five years of Journal of Business Research: A bibliometric analysis»</p>
+          <p class="cmeta">Donthu, N., Kumar, S. &amp; Pattnaik, D. (2020). <b>Journal of Business Research</b>, 109, 1–14. <br><span style="color:var(--bib)">Guía metodológica de referencia:</span> Donthu et al. (2021), <i>JBR</i>, 133, 285–296 (+8.000 citas).</p>
+          <span class="jrnl">Redes de co-citación · mapas de keywords</span>
+          <br><a class="doi" href="https://doi.org/10.1016/j.jbusres.2019.10.039" target="_blank" rel="noopener">doi.org/10.1016/j.jbusres.2019.10.039 ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · META-ANÁLISIS -->
+<section class="slide" style="--c:var(--meta)">
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal" style="color:var(--meta)">Tipo 03 · Meta-análisis</div>
+    <h2 class="reveal">Muchos estudios, <span style="color:var(--meta)">un</span> número.</h2>
+    <div class="dd reveal">
+      <div class="ddleft">
+        <p class="oneline">Combina <b>estadísticamente</b> los resultados de estudios comparables para estimar un efecto global más preciso.</p>
+        <p class="desc">Es el escalón cuantitativo que suele construirse <b>sobre</b> una revisión sistemática: una vez seleccionados los estudios, se extrae de cada uno su tamaño del efecto y se ponderan (los más grandes y precisos pesan más). El producto estrella es el <b>forest plot</b>; se cuantifica la <b>heterogeneidad</b> (I²) entre estudios y se revisa el <b>sesgo de publicación</b> (funnel plot). Da la evidencia más fuerte de la pirámide.</p>
+      </div>
+      <div class="ddright">
+        <div class="feat">
+          <div class="featrow"><span class="fk">Pregunta</span><span class="fv">Cuantitativa: <b>¿de qué tamaño</b> es el efecto y con qué certeza?</span></div>
+          <div class="featrow"><span class="fk">Materia prima</span><span class="fv">Los <b>datos numéricos</b> (efectos, varianzas) de estudios homogéneos</span></div>
+          <div class="featrow"><span class="fk">Resultado</span><span class="fv"><b>Efecto combinado</b> + IC, forest plot, I², funnel plot</span></div>
+          <div class="featrow"><span class="fk">Herramientas</span><span class="fv">RevMan, R (<b>metafor</b>), Stata, CMA</span></div>
+          <div class="featrow"><span class="fk">Estándar</span><span class="fv"><b>PRISMA</b> + Cochrane Handbook · MOOSE (observacionales)</span></div>
+        </div>
+        <div class="cite" style="--c:var(--meta)">
+          <span class="ctag">Ejemplo en revista de alto impacto</span>
+          <p class="ctitle">«Comparative efficacy and acceptability of 21 antidepressant drugs… : a systematic review and network meta-analysis»</p>
+          <p class="cmeta">Cipriani, A., Furukawa, T. A., Salanti, G. et al. (2018). <b>The Lancet</b>, 391(10128), 1357–1366.</p>
+          <span class="jrnl">Network meta-analysis · compara 21 fármacos</span>
+          <br><a class="doi" href="https://doi.org/10.1016/S0140-6736(17)32802-7" target="_blank" rel="noopener">doi.org/10.1016/S0140-6736(17)32802-7 ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · TABLA COMPARATIVA -->
+<section class="slide">
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal">Lado a lado · cómo se diferencian</div>
+    <h2 class="reveal" style="font-size:clamp(1.6rem,3.2vw,2.6rem)">La diferencia, en una tabla.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:64ch">Resalta una familia para verla aislada del resto.</p>
+    <div class="colbtns reveal">
+      <button class="colbtn on" data-t="all">Ver las tres</button>
+      <button class="colbtn" data-t="sys">Sistemática</button>
+      <button class="colbtn" data-t="bib">Bibliométrica</button>
+      <button class="colbtn" data-t="meta">Meta-análisis</button>
+    </div>
+    <div class="cmp reveal" id="cmp">
+      <div class="cmprow cmphead">
+        <div class="cmpcell dim-k">Dimensión</div>
+        <div class="cmpcell h-sys">Sistemática</div>
+        <div class="cmpcell h-bib">Bibliométrica</div>
+        <div class="cmpcell h-meta">Meta-análisis</div>
+      </div>
+      <div class="cmprow">
+        <div class="cmpcell rk">Pregunta</div>
+        <div class="cmpcell col-sys">¿Qué dice la evidencia sobre X?</div>
+        <div class="cmpcell col-bib">¿Cómo se estructura el campo X?</div>
+        <div class="cmpcell col-meta">¿Cuán grande es el efecto de X?</div>
+      </div>
+      <div class="cmprow">
+        <div class="cmpcell rk">Unidad de análisis</div>
+        <div class="cmpcell col-sys">El hallazgo de cada estudio</div>
+        <div class="cmpcell col-bib">El metadato (cita, autor, keyword)</div>
+        <div class="cmpcell col-meta">El tamaño del efecto numérico</div>
+      </div>
+      <div class="cmprow">
+        <div class="cmpcell rk">Naturaleza</div>
+        <div class="cmpcell col-sys">Cualitativa / narrativa</div>
+        <div class="cmpcell col-bib">Cuantitativa descriptiva</div>
+        <div class="cmpcell col-meta">Cuantitativa inferencial</div>
+      </div>
+      <div class="cmprow">
+        <div class="cmpcell rk">N.º de estudios</div>
+        <div class="cmpcell col-sys">Decenas (acotado)</div>
+        <div class="cmpcell col-bib">Cientos a miles</div>
+        <div class="cmpcell col-meta">Pocos, muy homogéneos</div>
+      </div>
+      <div class="cmprow">
+        <div class="cmpcell rk">Resultado estrella</div>
+        <div class="cmpcell col-sys">Tablas de evidencia + modelo</div>
+        <div class="cmpcell col-bib">Mapas de redes / tendencias</div>
+        <div class="cmpcell col-meta">Forest plot + efecto combinado</div>
+      </div>
+      <div class="cmprow">
+        <div class="cmpcell rk">Herramienta típica</div>
+        <div class="cmpcell col-sys">Rayyan · Covidence</div>
+        <div class="cmpcell col-bib">VOSviewer · Bibliometrix</div>
+        <div class="cmpcell col-meta">RevMan · R (metafor)</div>
+      </div>
+      <div class="cmprow">
+        <div class="cmpcell rk">Estándar de reporte</div>
+        <div class="cmpcell col-sys">PRISMA 2020</div>
+        <div class="cmpcell col-bib">Donthu et al. · SPAR-4-SLR</div>
+        <div class="cmpcell col-meta">PRISMA + Cochrane / MOOSE</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · ¿CUÁL ELIJO? -->
+<section class="slide">
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal">Decisión práctica para tu equipo</div>
+    <h2 class="reveal">¿Cuál <span class="em">escribes</span> tú?</h2>
+    <p class="lead reveal" style="margin-top:.9rem;max-width:66ch">Deja que la pregunta y tus datos decidan. Responde de arriba abajo:</p>
+    <div class="dtree reveal">
+      <div class="dnode" style="--c:var(--meta)">
+        <span class="qmark">1</span>
+        <span class="dq">¿Tienes varios estudios que midieron <b>lo mismo con números comparables</b> (mismo efecto, misma escala)?
+          <span class="res">→ Sí: Meta-análisis (sobre una base sistemática)</span></span>
+      </div>
+      <div class="dnode" style="--c:var(--sys)">
+        <span class="qmark">2</span>
+        <span class="dq">¿Tu pregunta es <b>acotada</b> y quieres sintetizar qué encontró la evidencia, sin pooling estadístico?
+          <span class="res">→ Sí: Revisión sistemática (síntesis narrativa)</span></span>
+      </div>
+      <div class="dnode" style="--c:var(--bib)">
+        <span class="qmark">3</span>
+        <span class="dq">¿Tu campo es <b>amplio o muy nuevo</b> y quieres mapear autores, tendencias y estructura?
+          <span class="res">→ Sí: Revisión bibliométrica</span></span>
+      </div>
+    </div>
+    <p class="reveal" style="margin-top:1.5rem;font-size:.92rem;color:var(--muted);max-width:72ch">
+      Para los equipos del curso <b>sin datos propios</b>, la revisión sistemática o bibliométrica es el producto 2 ideal: se construye solo con literatura. El meta-análisis exige estudios cuantitativos muy homogéneos; valóralo solo si tu pregunta lo permite.
+    </p>
+  </div>
+</section>
+
+<!-- 8 · CIERRE + FUENTES -->
+<section class="slide">
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal">Para llevar · ejemplos reales</div>
+    <h2 class="reveal">Tres papers <span class="em2">modelo</span>.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.95rem;margin-top:.5rem;max-width:64ch">Ábrelos y observa cómo el <i>título</i>, los <i>métodos</i> y las <i>figuras</i> delatan de qué tipo de revisión se trata.</p>
+    <div class="srcgrid reveal">
+      <div class="srccard" style="--c:var(--sys)">
+        <span class="st">Sistemática · Milbank Q.</span>
+        <h4>Greenhalgh et al. (2004) — Diffusion of innovations</h4>
+        <p>Síntesis meta-narrativa de cientos de fuentes, sin estadística agregada.</p>
+        <a href="https://doi.org/10.1111/j.0887-378X.2004.00325.x" target="_blank" rel="noopener">Abrir DOI ↗</a>
+      </div>
+      <div class="srccard" style="--c:var(--bib)">
+        <span class="st">Bibliométrica · J. Bus. Res.</span>
+        <h4>Donthu, Kumar &amp; Pattnaik (2020) — 45 años de JBR</h4>
+        <p>Mapas de co-citación y keywords; guía metodológica en Donthu et al. (2021).</p>
+        <a href="https://doi.org/10.1016/j.jbusres.2019.10.039" target="_blank" rel="noopener">Abrir DOI ↗</a>
+      </div>
+      <div class="srccard" style="--c:var(--meta)">
+        <span class="st">Meta-análisis · The Lancet</span>
+        <h4>Cipriani et al. (2018) — 21 antidepresivos</h4>
+        <p>Network meta-analysis; forest plots y ranking de eficacia comparada.</p>
+        <a href="https://doi.org/10.1016/S0140-6736(17)32802-7" target="_blank" rel="noopener">Abrir DOI ↗</a>
+      </div>
+    </div>
+    <div class="reveal" style="margin-top:1.8rem;display:flex;gap:.8rem;flex-wrap:wrap;align-items:center">
+      <a class="btn btn-ghost" href="Sesion6_Presentacion_Interactiva.html" style="text-decoration:none">
+        <span class="mono" style="font-size:.72rem;letter-spacing:.16em;text-transform:uppercase">Siguiente: síntesis de literatura</span><span aria-hidden="true">→</span>
+      </a>
+      <a class="btn btn-primary" href="../index.html" style="text-decoration:none">
+        <span class="mono" style="font-size:.72rem;letter-spacing:.16em;text-transform:uppercase">Volver al mapa del curso</span><span aria-hidden="true">↩</span>
+      </a>
+    </div>
+    <p class="reveal brand" style="margin-top:1.8rem;font-size:1.2rem">La IA propone, el investigador decide.</p>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<div class="hud">
+  <div class="brand">Trabajo Científico</div>
+  <div class="nav">
+    <button id="themeToggle" aria-label="cambiar tema" title="Cambiar tema (T)"><span id="themeIcon">☾</span></button>
+    <button id="prev" aria-label="anterior">‹</button>
+    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 08</span>
+    <button id="next" aria-label="siguiente">›</button>
+  </div>
+</div>
+<script>
+const deck=document.getElementById('deck');
+let slides=[...deck.querySelectorAll('.slide')];
+let i=0;
+const progress=document.getElementById('progress');
+const counter=document.getElementById('counter');
+const dotsWrap=document.getElementById('dots');
+function buildDots(){dotsWrap.innerHTML='';slides.forEach((_,k)=>{const d=document.createElement('i');d.onclick=()=>go(k);dotsWrap.appendChild(d);});}
+function go(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  progress.style.width=((i+1)/slides.length*100)+'%';
+  counter.textContent=String(i+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  [...dotsWrap.children].forEach((d,k)=>d.classList.toggle('on',k===i));
+}
+function next(){go(i+1)} function prev(){go(i-1)}
+document.getElementById('next').onclick=next;
+document.getElementById('prev').onclick=prev;
+addEventListener('keydown',e=>{
+  const t=e.target.tagName; if(t==='INPUT'||t==='TEXTAREA')return;
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+  if(e.key==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+  if(e.key==='t'||e.key==='T')toggleTheme();
+});
+
+/* ---- tema claro / oscuro ---- */
+const themeIcon=document.getElementById('themeIcon');
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  if(themeIcon)themeIcon.textContent = t==='light' ? '☀' : '☾';
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
+  const next=cur==='light'?'dark':'light';
+  applyTheme(next);
+  try{localStorage.setItem('mapaTheme',next)}catch(e){}
+}
+(function initTheme(){
+  let saved='dark';
+  try{saved=localStorage.getItem('mapaTheme')||'dark'}catch(e){}
+  applyTheme(saved);
+})();
+const _tt=document.getElementById('themeToggle');if(_tt)_tt.onclick=toggleTheme;
+function initSlide(){
+  const h=(location.hash||'').replace('#','').toLowerCase();
+  if(h==='last') return slides.length-1;
+  const n=parseInt(h,10);
+  if(!isNaN(n)&&n>=1&&n<=slides.length) return n-1;
+  return 0;
+}
+buildDots();go(initSlide());
+
+/* ---- tabla comparativa: resaltar una familia ---- */
+(function(){
+  const cmp=document.getElementById('cmp');if(!cmp)return;
+  const btns=[...document.querySelectorAll('.colbtn')];
+  btns.forEach(b=>b.onclick=()=>{
+    btns.forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    cmp.classList.remove('focus-sys','focus-bib','focus-meta');
+    const t=b.dataset.t;
+    if(t!=='all')cmp.classList.add('focus-'+t);
+  });
+})();
+</script>
+</body>
+</html>
