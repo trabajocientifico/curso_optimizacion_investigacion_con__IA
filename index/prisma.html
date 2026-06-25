@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El método PRISMA · Revisión sistemática de huella hídrica en cultivos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Spline+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --abismo:#0A1F2E;        /* fondo profundo */
+    --tinta:#102B3E;         /* panel */
+    --tinta2:#16384F;        /* panel claro */
+    --agua:#3FBFD4;          /* primario, azul agua */
+    --ambar:#E9A23B;         /* acento */
+    --espuma:#EAF2F4;        /* texto claro */
+    --bruma:#84A2B2;         /* texto secundario */
+    --excluido:#D9694A;      /* registros excluidos */
+    --verde:#74C28A;         /* huella verde / bajo riesgo */
+    --gris-h:#9AA7AE;        /* huella gris */
+    --linea:rgba(63,191,212,.18);
+    --r:16px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 700px at 80% -10%, rgba(63,191,212,.10), transparent 60%),
+      radial-gradient(900px 600px at -10% 110%, rgba(233,162,59,.08), transparent 55%),
+      var(--abismo);
+    color:var(--espuma);
+    font-family:"Spline Sans",system-ui,sans-serif;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Carrusel ---------- */
+  .deck{height:100dvh;width:100vw;overflow:hidden;position:relative}
+  .track{display:flex;height:100%;transition:transform .7s cubic-bezier(.7,0,.2,1)}
+  .slide{
+    flex:0 0 100vw;height:100%;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(20px,5vw,70px);
+    overflow-y:auto;
+  }
+  .inner{max-width:1080px;width:100%;margin:0 auto}
+
+  .eyebrow{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.74rem;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--agua);display:flex;align-items:center;gap:12px;margin-bottom:18px;
+  }
+  .eyebrow::before{content:"";width:30px;height:1px;background:var(--agua);display:inline-block}
+
+  h1{font-family:"Fraunces",serif;font-weight:900;line-height:.98;letter-spacing:-.01em;
+     font-size:clamp(2.6rem,7vw,5.4rem)}
+  h2{font-family:"Fraunces",serif;font-weight:600;line-height:1.02;letter-spacing:-.01em;
+     font-size:clamp(1.9rem,4.4vw,3.1rem);margin-bottom:.5em}
+  p.lead{font-size:clamp(1rem,1.7vw,1.25rem);color:var(--bruma);max-width:64ch;line-height:1.55}
+  p.tagline{font-family:"Fraunces",serif;font-style:italic;font-weight:500;
+    font-size:clamp(1.2rem,2.7vw,2rem);line-height:1.18;color:var(--espuma);margin-top:18px}
+
+  .grad{
+    background:linear-gradient(100deg,var(--agua),#7fe0ef 40%,var(--ambar));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+
+  /* animación de entrada por slide activo */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .slide.active .reveal{opacity:1;transform:none}
+  .slide.active .reveal.d1{transition-delay:.08s}
+  .slide.active .reveal.d2{transition-delay:.18s}
+  .slide.active .reveal.d3{transition-delay:.28s}
+  .slide.active .reveal.d4{transition-delay:.38s}
+
+  /* ---------- Portada ---------- */
+  .hero{position:relative}
+  .hero .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+  .chip{font-family:"JetBrains Mono",monospace;font-size:.76rem;
+    border:1px solid var(--linea);border-radius:999px;padding:8px 15px;color:var(--bruma);
+    background:rgba(255,255,255,.02)}
+  .chip b{color:var(--espuma);font-weight:500}
+  .drops{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:-1}
+  .drop{position:absolute;width:7px;height:7px;border-radius:50% 50% 50% 0;
+    background:rgba(63,191,212,.4);transform:rotate(45deg);animation:fall linear infinite}
+  @keyframes fall{0%{transform:translateY(-12vh) rotate(45deg);opacity:0}
+    15%{opacity:.7}100%{transform:translateY(112vh) rotate(45deg);opacity:0}}
+
+  /* ---------- Tarjetas de fases / genéricas ---------- */
+  .phases{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
+  .phase{background:var(--tinta);border:1px solid var(--linea);border-radius:var(--r);
+    padding:20px 18px;position:relative;overflow:hidden}
+  .phase .num{font-family:"JetBrains Mono",monospace;color:var(--ambar);font-size:.8rem;letter-spacing:.1em}
+  .phase h3{font-family:"Fraunces",serif;font-weight:600;font-size:1.18rem;margin:8px 0 6px}
+  .phase p{font-size:.88rem;color:var(--bruma);line-height:1.48}
+  .phase::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;
+    background:linear-gradient(90deg,var(--agua),transparent)}
+
+  .why{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  .why .wcard{background:rgba(63,191,212,.05);border:1px solid var(--linea);border-radius:12px;padding:16px 16px}
+  .why .wcard b{font-family:"Fraunces",serif;font-weight:600;font-size:1rem;color:var(--espuma)}
+  .why .wcard p{font-size:.84rem;color:var(--bruma);line-height:1.45;margin-top:4px}
+
+  /* ---------- PECO / protocolo ---------- */
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start;margin-top:24px}
+  .peco{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pe{background:var(--tinta);border:1px solid var(--linea);border-radius:12px;padding:16px}
+  .pe .k{font-family:"JetBrains Mono",monospace;color:var(--ambar);font-size:1.4rem;font-weight:700;line-height:1}
+  .pe .t{font-family:"Fraunces",serif;font-weight:600;font-size:1rem;margin:6px 0 2px}
+  .pe .d{font-size:.82rem;color:var(--bruma);line-height:1.4}
+  .rqbox{background:rgba(63,191,212,.07);border:1px solid var(--linea);border-left:3px solid var(--ambar);
+    border-radius:14px;padding:18px 22px;margin:20px 0 4px}
+  .rqbox .rql{font-family:"JetBrains Mono",monospace;font-size:.68rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--agua);margin-bottom:8px}
+  .rqbox .rq{font-family:"Fraunces",serif;font-style:italic;font-weight:500;
+    font-size:clamp(1.1rem,2.1vw,1.45rem);line-height:1.3;color:var(--espuma)}
+  .panel{background:var(--tinta);border:1px solid var(--linea);border-radius:var(--r);padding:22px}
+  .panel h4{font-family:"Fraunces",serif;font-weight:600;font-size:1.15rem;margin-bottom:12px}
+  .ielist{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .ielist li{display:flex;gap:10px;font-size:.9rem;color:var(--espuma);line-height:1.4;align-items:flex-start}
+  .ielist li .mk{font-family:"JetBrains Mono",monospace;flex:none;font-weight:700}
+  .ielist li.inc .mk{color:var(--verde)}
+  .ielist li.exc .mk{color:var(--excluido)}
+  .ielist li span:last-child{color:var(--bruma)}
+  .protocol{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+
+  /* ---------- Búsqueda ---------- */
+  .searchbox{background:var(--tinta);border:1px solid var(--linea);border-radius:var(--r);
+    padding:22px 24px;margin-top:22px}
+  .searchbox .eq{font-family:"JetBrains Mono",monospace;font-size:.92rem;color:var(--espuma);
+    line-height:1.7;background:rgba(0,0,0,.22);border:1px solid var(--linea);border-radius:12px;
+    padding:16px 18px;word-break:break-word}
+  .searchbox .eq .op{color:var(--ambar);font-weight:700}
+  .searchmeta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+  .smeta{border:1px solid var(--linea);border-radius:12px;padding:13px 15px;background:rgba(255,255,255,.02)}
+  .smeta .l{font-family:"JetBrains Mono",monospace;font-size:.68rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--agua);margin-bottom:5px}
+  .smeta .v{font-size:.92rem;color:var(--espuma);line-height:1.35}
+
+  /* ---------- Identificación + criterios ---------- */
+  .cols{display:grid;grid-template-columns:1.05fr 1fr;gap:34px;align-items:start;margin-top:24px}
+  .srcgroup{margin-bottom:16px}
+  .srcgroup .gh{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--bruma);margin-bottom:10px;display:flex;justify-content:space-between}
+  .srcgroup .gh b{color:var(--espuma)}
+  .sources{display:flex;flex-direction:column;gap:12px}
+  .source{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:14px}
+  .source .name{font-family:"JetBrains Mono",monospace;font-size:.84rem;color:var(--espuma)}
+  .bar{height:12px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
+  .bar > span{display:block;height:100%;width:0;border-radius:999px;
+    background:linear-gradient(90deg,var(--agua),#7fe0ef);transition:width 1.1s cubic-bezier(.6,0,.2,1)}
+  .bar > span.amb{background:linear-gradient(90deg,var(--ambar),#f2c179)}
+  .source .val{font-family:"JetBrains Mono",monospace;color:var(--bruma);font-size:.84rem;min-width:46px;text-align:right}
+  .prenote{font-size:.86rem;color:var(--bruma);line-height:1.5;margin-top:14px;
+    border-left:2px solid var(--excluido);padding-left:12px}
+
+  .filterbox{background:var(--tinta);border:1px solid var(--linea);border-radius:var(--r);padding:24px}
+  .filterbox h4{font-family:"Fraunces",serif;font-weight:600;font-size:1.18rem;margin-bottom:4px}
+  .filterbox .hint{font-size:.8rem;color:var(--bruma);margin-bottom:16px;line-height:1.45}
+  .crit{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;
+    transition:background .2s;user-select:none}
+  .crit:hover{background:rgba(63,191,212,.07)}
+  .crit input{appearance:none;width:38px;height:21px;border-radius:999px;background:rgba(255,255,255,.12);
+    position:relative;cursor:pointer;flex:none;transition:background .25s}
+  .crit input::after{content:"";position:absolute;top:3px;left:3px;width:15px;height:15px;border-radius:50%;
+    background:var(--espuma);transition:transform .25s}
+  .crit input:checked{background:var(--agua)}
+  .crit input:checked::after{transform:translateX(17px)}
+  .crit .lbl{font-size:.9rem;flex:1}
+  .crit .minus{font-family:"JetBrains Mono",monospace;font-size:.76rem;color:var(--excluido)}
+  .counter{margin-top:18px;padding-top:16px;border-top:1px solid var(--linea);
+    display:flex;align-items:baseline;justify-content:space-between}
+  .counter .big{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:2.4rem;color:var(--ambar)}
+  .counter .cap{font-size:.82rem;color:var(--bruma)}
+
+  /* ---------- Diagrama PRISMA 2020 ---------- */
+  .flowwrap{margin-top:14px}
+  .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  .btn{font-family:"Spline Sans",sans-serif;font-weight:600;font-size:.92rem;cursor:pointer;
+    border:none;border-radius:999px;padding:12px 22px;color:var(--abismo);
+    background:linear-gradient(95deg,var(--agua),#7fe0ef);transition:transform .15s,filter .2s,box-shadow .2s;
+    box-shadow:0 8px 24px rgba(63,191,212,.25)}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.07)}
+  .btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+  .btn.ghost{background:transparent;color:var(--espuma);border:1px solid var(--linea);box-shadow:none}
+  .stepinfo{font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--bruma)}
+
+  .p20{display:grid;grid-template-columns:1fr;gap:14px 20px;align-items:start}
+  .p20col{display:flex;flex-direction:column;gap:0}
+  .prow{display:grid;grid-template-columns:1fr 230px;gap:14px;align-items:center;
+    opacity:.18;filter:blur(.4px);transition:opacity .5s ease,filter .5s ease}
+  .prow.show,.p20incl.show{opacity:1;filter:none}
+  .node{background:var(--tinta);border:1px solid var(--linea);border-radius:14px;
+    padding:14px 16px;position:relative}
+  .node.cur{border-color:var(--ambar);box-shadow:0 0 0 1px var(--ambar),0 12px 32px rgba(0,0,0,.35)}
+  .node .ph{font-family:"JetBrains Mono",monospace;font-size:.66rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--agua)}
+  .node .title{font-family:"Fraunces",serif;font-size:1rem;margin:4px 0 2px;line-height:1.15}
+  .node .count{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:1.5rem;color:var(--espuma)}
+  .node .count small{font-size:.72rem;color:var(--bruma);font-weight:400}
+  .node .sub{font-size:.74rem;color:var(--bruma);margin-top:4px;line-height:1.4}
+
+  .excl{background:rgba(217,105,74,.07);border:1px dashed rgba(217,105,74,.5);border-radius:12px;
+    padding:12px 14px}
+  .excl .ehead{font-family:"JetBrains Mono",monospace;font-size:.68rem;color:var(--excluido);
+    text-transform:uppercase;letter-spacing:.1em;display:flex;justify-content:space-between;
+    gap:8px;margin-bottom:8px}
+  .excl .ehead b{font-weight:700}
+  .excl ul{list-style:none;display:flex;flex-direction:column;gap:5px}
+  .excl li{display:flex;justify-content:space-between;gap:10px;font-size:.74rem;color:var(--bruma)}
+  .excl li span:last-child{font-family:"JetBrains Mono",monospace;color:var(--espuma)}
+
+  .pconn{height:18px;width:2px;background:linear-gradient(var(--agua),transparent);
+    margin-left:calc(50% - 125px)}
+  .pconn.flow{background-image:repeating-linear-gradient(var(--agua) 0 5px,transparent 5px 10px);
+    animation:drain 1s linear infinite}
+  @keyframes drain{to{background-position:0 10px}}
+  .p20incl{grid-column:1 / -1;margin-top:6px;opacity:.18;filter:blur(.4px);
+    transition:opacity .5s ease,filter .5s ease}
+  .p20incl .node{border-color:var(--verde);background:rgba(116,194,138,.07)}
+  .p20incl .node .ph{color:var(--verde)}
+  .p20incl .node .count{font-size:2rem;color:var(--verde)}
+
+  /* ---------- Síntesis ---------- */
+  .synth{display:grid;grid-template-columns:1fr 1.1fr;gap:36px;align-items:center;margin-top:24px}
+  .donut{position:relative;width:min(320px,72vw);aspect-ratio:1;margin:0 auto}
+  .donut svg{transform:rotate(-90deg)}
+  .donut .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .donut .ctr .n{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:2.6rem}
+  .donut .ctr .l{font-size:.8rem;color:var(--bruma)}
+  .legend{display:flex;flex-direction:column;gap:16px}
+  .leg{display:flex;align-items:center;gap:14px}
+  .leg .sw{width:14px;height:14px;border-radius:4px;flex:none}
+  .leg .tx b{font-family:"Fraunces",serif;font-weight:600;font-size:1.05rem}
+  .leg .tx p{font-size:.85rem;color:var(--bruma);line-height:1.4}
+  .leg .pc{margin-left:auto;font-family:"JetBrains Mono",monospace;color:var(--espuma)}
+
+  /* ---------- Checklist 27 ítems ---------- */
+  .cl27{columns:3;column-gap:16px;margin-top:20px}
+  .clsec{break-inside:avoid;background:var(--tinta);border:1px solid var(--linea);border-radius:12px;
+    padding:13px 15px;margin-bottom:16px}
+  .clsec .sh{display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px solid var(--linea);padding-bottom:7px;margin-bottom:8px}
+  .clsec .sh span{font-family:"Fraunces",serif;font-weight:600;font-size:1.02rem;color:var(--espuma)}
+  .clsec .sh b{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.82rem;color:var(--ambar)}
+  .clsec ol{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .clsec li{display:flex;gap:9px;font-size:.8rem;color:var(--bruma);line-height:1.32}
+  .clsec li i{font-family:"JetBrains Mono",monospace;font-style:normal;color:var(--agua);
+    font-weight:700;flex:none;min-width:18px}
+
+  /* ---------- Cierre ---------- */
+  .takeaways{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}
+  .take{background:var(--tinta);border:1px solid var(--linea);border-radius:var(--r);padding:22px}
+  .take .ic{font-family:"JetBrains Mono",monospace;color:var(--ambar);font-size:1.6rem;font-weight:700}
+  .take h4{font-family:"Fraunces",serif;font-weight:600;margin:10px 0 6px;font-size:1.1rem}
+  .take p{font-size:.88rem;color:var(--bruma);line-height:1.5}
+  .brand{margin-top:36px;display:flex;align-items:center;gap:14px;color:var(--bruma);font-size:.9rem}
+  .brand .dot{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--agua),var(--ambar));color:var(--abismo);
+    font-family:"Fraunces",serif;font-weight:900}
+
+  /* ---------- Navegación ---------- */
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;
+    display:flex;align-items:center;justify-content:center;gap:20px;
+    padding:16px;background:linear-gradient(transparent,rgba(10,31,46,.85))}
+  .dots{display:flex;gap:9px}
+  .dot-nav{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.2);border:none;cursor:pointer;
+    transition:all .3s;padding:0}
+  .dot-nav.active{background:var(--agua);width:26px;border-radius:6px}
+  .arrows{display:flex;gap:8px}
+  .arrow{width:42px;height:42px;border-radius:50%;border:1px solid var(--linea);background:var(--tinta);
+    color:var(--espuma);cursor:pointer;font-size:1.1rem;display:grid;place-items:center;transition:all .2s}
+  .arrow:hover:not(:disabled){border-color:var(--agua);color:var(--agua)}
+  .arrow:disabled{opacity:.3;cursor:not-allowed}
+  .pageno{position:fixed;top:18px;right:22px;z-index:30;font-family:"JetBrains Mono",monospace;
+    font-size:.78rem;color:var(--bruma)}
+  .pageno b{color:var(--espuma)}
+  .keyhint{position:fixed;top:20px;left:150px;z-index:30;font-family:"JetBrains Mono",monospace;
+    font-size:.72rem;color:var(--bruma);opacity:.7}
+  .back-home{position:fixed;top:14px;left:18px;z-index:40;display:inline-flex;align-items:center;gap:.45em;
+    background:var(--tinta);border:1px solid var(--linea);color:var(--espuma);text-decoration:none;
+    font-family:"JetBrains Mono",monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    padding:.5em .85em;border-radius:999px;transition:.2s}
+  .back-home:hover{border-color:var(--agua);color:var(--agua);transform:translateY(-1px)}
+  .back-home span{font-size:.95rem;line-height:1}
+
+  @media (max-width:920px){
+    .phases{grid-template-columns:repeat(2,1fr)}
+    .why,.searchmeta{grid-template-columns:1fr 1fr}
+    .cols,.synth,.twocol{grid-template-columns:1fr}
+    .prow{grid-template-columns:1fr}
+    .pconn{margin-left:24px}
+    .cl27{columns:1}
+    .takeaways{grid-template-columns:1fr}
+    .peco{grid-template-columns:1fr 1fr}
+    .keyhint{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:opacity .2s linear!important}
+    .track{transition:none!important}
+    .reveal{opacity:1!important;transform:none!important}
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-home" title="Volver al mapa del curso"><span aria-hidden="true">&#x21A9;</span> Inicio</a>
+<div class="keyhint">← → para navegar</div>
+<div class="pageno"><b id="cur">1</b> / <span id="tot">10</span></div>
+
+<div class="deck">
+  <div class="track" id="track">
+
+    <!-- 1 · PORTADA -->
+    <section class="slide" data-anim="drops">
+      <div class="drops" id="drops"></div>
+      <div class="inner hero">
+        <div class="eyebrow reveal d1">Cómo hacer una revisión sistemática · Guía 2020</div>
+        <h1 class="reveal d2">El método<br><span class="grad">PRISMA</span></h1>
+        <p class="tagline reveal d3">Filtrar el océano de la literatura<br>hasta la evidencia.</p>
+        <p class="lead reveal d3" style="margin-top:20px">
+          Una demostración interactiva del <b style="color:var(--espuma)">método PRISMA</b> para construir
+          una revisión sistemática sobre <b style="color:var(--espuma)">huella hídrica en cultivos</b>,
+          desde la pregunta de investigación hasta la síntesis. Datos simulados con estructura real.
+        </p>
+        <div class="meta reveal d4">
+          <span class="chip"><b>1.099</b> registros identificados</span>
+          <span class="chip"><b>27</b> ítems de la lista PRISMA</span>
+          <span class="chip"><b>48</b> estudios incluidos</span>
+          <span class="chip">Demo educativa · datos simulados</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · QUÉ ES Y POR QUÉ -->
+    <section class="slide">
+      <div class="inner">
+        <div class="eyebrow reveal d1">El marco · qué y por qué</div>
+        <h2 class="reveal d1">¿Qué es PRISMA y por qué importa?</h2>
+        <p class="lead reveal d2">PRISMA 2020 (<i>Preferred Reporting Items for Systematic reviews and Meta-Analyses</i>)
+          no te dice qué encontrar, sino <em>cómo reportarlo</em>. Son dos piezas: una
+          <b style="color:var(--espuma)">lista de 27 ítems</b> y un <b style="color:var(--espuma)">diagrama de flujo</b>
+          que documenta cómo pasaste de miles de registros a un puñado de estudios. Su columna vertebral son cuatro fases.</p>
+        <div class="phases">
+          <div class="phase reveal d2"><div class="num">FASE 01</div><h3>Identificación</h3>
+            <p>Reúnes registros desde las bases de datos elegidas. Eliminas duplicados y registros marcados antes del tamizaje.</p></div>
+          <div class="phase reveal d2"><div class="num">FASE 02</div><h3>Tamizaje</h3>
+            <p>Revisas título y resumen contra los criterios de elegibilidad y descartas lo no pertinente.</p></div>
+          <div class="phase reveal d3"><div class="num">FASE 03</div><h3>Elegibilidad</h3>
+            <p>Lees el texto completo de los informes recuperados y excluyes <b>registrando la razón</b>.</p></div>
+          <div class="phase reveal d3"><div class="num">FASE 04</div><h3>Inclusión</h3>
+            <p>Quedan los estudios que alimentan la síntesis y, si procede, el meta-análisis.</p></div>
+        </div>
+        <div class="why">
+          <div class="wcard reveal d4"><b>Transparencia</b><p>Cualquiera puede ver cada decisión y rehacer tu embudo.</p></div>
+          <div class="wcard reveal d4"><b>Menos sesgo</b><p>Criterios y razones explícitas evitan elegir a conveniencia.</p></div>
+          <div class="wcard reveal d4"><b>Estándar exigido</b><p>Revistas y financiadores piden el diagrama y la lista PRISMA.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · ANTES DE EMPEZAR: PECO + PROTOCOLO -->
+    <section class="slide">
+      <div class="inner">
+        <div class="eyebrow reveal d1">Antes de buscar nada</div>
+        <h2 class="reveal d1">La pregunta y el protocolo</h2>
+        <p class="lead reveal d2">Una revisión sistemática empieza por una pregunta estructurada y un protocolo
+          <b style="color:var(--espuma)">registrado antes de buscar</b>. La pregunta, desglosada en PECO, fija sin ambigüedad los criterios de elegibilidad.</p>
+        <div class="rqbox reveal d2">
+          <div class="rql">Pregunta de investigación</div>
+          <p class="rq">¿Cuál es la huella hídrica —verde, azul y gris— de los principales cultivos agrícolas
+            y cómo varía entre sistemas productivos y regiones (2010–2025)?</p>
+        </div>
+        <div class="twocol">
+          <div class="reveal d2">
+            <div class="peco">
+              <div class="pe"><div class="k">P</div><div class="t">Población</div><div class="d">Cultivos agrícolas (cereales, frutales, hortalizas).</div></div>
+              <div class="pe"><div class="k">E</div><div class="t">Exposición</div><div class="d">Producción y riego bajo distintos regímenes hídricos.</div></div>
+              <div class="pe"><div class="k">C</div><div class="t">Comparador</div><div class="d">Sistemas, regiones o años con disponibilidad de agua distinta.</div></div>
+              <div class="pe"><div class="k">O</div><div class="t">Resultado</div><div class="d">Huella hídrica cuantificada (verde, azul y/o gris).</div></div>
+            </div>
+            <div class="protocol">
+              <span class="chip"><b>Protocolo</b> PROSPERO CRD42025418802</span>
+              <span class="chip"><b>Registro</b> 02 feb 2025</span>
+            </div>
+          </div>
+          <div class="panel reveal d3">
+            <h4>Criterios de elegibilidad</h4>
+            <ul class="ielist">
+              <li class="inc"><span class="mk">+</span><span>Estudios empíricos que <b style="color:var(--espuma)">cuantifican</b> la huella hídrica de un cultivo</span></li>
+              <li class="inc"><span class="mk">+</span><span>Artículos o revisiones revisados por pares, 2010–2025</span></li>
+              <li class="inc"><span class="mk">+</span><span>Idioma español o inglés</span></li>
+              <li class="exc"><span class="mk">−</span><span>Trabajos teóricos o de modelado sin datos primarios</span></li>
+              <li class="exc"><span class="mk">−</span><span>Huella hídrica de ganadería, industria o ciudades</span></li>
+              <li class="exc"><span class="mk">−</span><span>Resúmenes de congreso, tesis y literatura gris no revisada</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · ESTRATEGIA DE BÚSQUEDA -->
+    <section class="slide">
+      <div class="inner">
+        <div class="eyebrow reveal d1">Fase 01 · Identificación</div>
+        <h2 class="reveal d1">Estrategia de búsqueda reproducible</h2>
+        <p class="lead reveal d2">Para que otro equipo obtenga tus mismos resultados, la búsqueda se documenta entera:
+          ecuación, bases, fecha y límites.</p>
+        <div class="searchbox reveal d2">
+          <div class="eq">
+            (&quot;water footprint&quot; <span class="op">OR</span> &quot;huella hídrica&quot;)
+            <span class="op">AND</span> (crop* <span class="op">OR</span> cultivo* <span class="op">OR</span> &quot;agricultural water&quot;)
+            <span class="op">AND</span> (green <span class="op">OR</span> blue <span class="op">OR</span> grey <span class="op">OR</span> gray <span class="op">OR</span> verde <span class="op">OR</span> azul <span class="op">OR</span> gris)
+          </div>
+          <div class="searchmeta">
+            <div class="smeta reveal d3"><div class="l">Bases</div><div class="v">Scopus · WoS Core Collection</div></div>
+            <div class="smeta reveal d3"><div class="l">Fecha de búsqueda</div><div class="v">15 marzo 2025</div></div>
+            <div class="smeta reveal d3"><div class="l">Límites</div><div class="v">2010–2025 · artículo/revisión · ES/EN</div></div>
+            <div class="smeta reveal d3"><div class="l">Gestores</div><div class="v">Zotero (deduplicación) · Rayyan (cribado ciego)</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · IDENTIFICACIÓN + CRITERIOS INTERACTIVOS -->
+    <section class="slide" data-anim="sources">
+      <div class="inner">
+        <div class="eyebrow reveal d1">Fase 01 → Fase 02 · del hallazgo al tamizaje</div>
+        <h2 class="reveal d1">Lo identificado y cómo se tamiza</h2>
+        <div class="cols">
+          <div class="reveal d2">
+            <div class="srcgroup">
+              <div class="gh"><span>Registros de bases de datos</span><b>1.099</b></div>
+              <div class="sources" id="sources">
+                <div class="source"><span class="name">Scopus</span><div class="bar"><span data-w="100"></span></div><span class="val" data-v="612">0</span></div>
+                <div class="source"><span class="name">Web of Science</span><div class="bar"><span data-w="80"></span></div><span class="val" data-v="487">0</span></div>
+              </div>
+            </div>
+            <p class="prenote">
+              Antes del tamizaje se retiran <b style="color:var(--excluido)">286 duplicados</b> y
+              <b style="color:var(--excluido)">81 registros</b> marcados por filtros automáticos
+              (fuera de 2010–2025 o tipo de documento no elegible). Quedan
+              <b style="color:var(--agua)">732 registros</b> para tamizar.</p>
+          </div>
+
+          <div class="filterbox reveal d3">
+            <h4>Tamizaje por título y resumen</h4>
+            <p class="hint">Estos criterios se aplican a los <b>732 registros</b> tamizados. Actívalos o desactívalos y observa cuántos pasan a evaluación de texto completo. (Demostración aditiva simplificada.)</p>
+            <label class="crit"><input type="checkbox" data-cut="268" checked><span class="lbl">El tema central no es huella hídrica</span><span class="minus">−268</span></label>
+            <label class="crit"><input type="checkbox" data-cut="124" checked><span class="lbl">No trata de cultivos agrícolas</span><span class="minus">−124</span></label>
+            <label class="crit"><input type="checkbox" data-cut="76" checked><span class="lbl">Estudio teórico / sin datos primarios</span><span class="minus">−76</span></label>
+            <label class="crit"><input type="checkbox" data-cut="48" checked><span class="lbl">Resumen de congreso / literatura gris</span><span class="minus">−48</span></label>
+            <div class="counter">
+              <span class="cap">Informes que pasan a texto completo</span>
+              <span class="big" id="critCount">216</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · DIAGRAMA DE FLUJO PRISMA 2020 -->
+    <section class="slide" data-anim="flow">
+      <div class="inner">
+        <div class="eyebrow reveal d1">El corazón del método</div>
+        <h2 class="reveal d1">Diagrama de flujo PRISMA 2020</h2>
+        <div class="flowwrap reveal d2">
+          <div class="controls">
+            <button class="btn" id="advance">Avanzar fase ▸</button>
+            <button class="btn ghost" id="reset">Reiniciar</button>
+            <span class="stepinfo" id="stepinfo">Fase 1 de 4</span>
+          </div>
+
+          <div class="p20" id="p20">
+            <!-- Columna principal: bases de datos -->
+            <div class="p20col">
+              <!-- Fase 1 -->
+              <div class="prow" data-phase="1">
+                <div class="node">
+                  <div class="ph">Identificación · bases de datos</div>
+                  <div class="title">Registros identificados</div>
+                  <div class="count" data-c="1099"><span class="cv">0</span> <small>registros</small></div>
+                  <div class="sub">Scopus 612 · WoS 487</div>
+                </div>
+                <div class="excl">
+                  <div class="ehead"><span>Eliminados antes del tamizaje</span><b>−367</b></div>
+                  <ul>
+                    <li><span>Duplicados</span><span>286</span></li>
+                    <li><span>Marcados por automatización</span><span>81</span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="pconn" data-phase="2"></div>
+              <!-- Fase 2 -->
+              <div class="prow" data-phase="2">
+                <div class="node">
+                  <div class="ph">Tamizaje</div>
+                  <div class="title">Registros tamizados</div>
+                  <div class="count" data-c="732"><span class="cv">0</span> <small>registros</small></div>
+                  <div class="sub">Cribado de título y resumen</div>
+                </div>
+                <div class="excl">
+                  <div class="ehead"><span>Excluidos en tamizaje</span><b>−516</b></div>
+                  <ul>
+                    <li><span>Tema no es huella hídrica</span><span>268</span></li>
+                    <li><span>No son cultivos</span><span>124</span></li>
+                    <li><span>Teórico / sin datos</span><span>76</span></li>
+                    <li><span>Resumen de congreso</span><span>48</span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="pconn" data-phase="3"></div>
+              <!-- Fase 3a: recuperación -->
+              <div class="prow" data-phase="3">
+                <div class="node">
+                  <div class="ph">Recuperación</div>
+                  <div class="title">Informes buscados para recuperación</div>
+                  <div class="count" data-c="216"><span class="cv">0</span> <small>informes</small></div>
+                  <div class="sub">Solicitud de texto completo</div>
+                </div>
+                <div class="excl">
+                  <div class="ehead"><span>No recuperados</span><b>−16</b></div>
+                  <ul>
+                    <li><span>Texto completo no disponible</span><span>16</span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="pconn" data-phase="3"></div>
+              <!-- Fase 3b: elegibilidad -->
+              <div class="prow" data-phase="3">
+                <div class="node">
+                  <div class="ph">Elegibilidad</div>
+                  <div class="title">Informes evaluados a texto completo</div>
+                  <div class="count" data-c="200"><span class="cv">0</span> <small>informes</small></div>
+                  <div class="sub">Lectura completa frente a los criterios</div>
+                </div>
+                <div class="excl">
+                  <div class="ehead"><span>Excluidos con razón</span><b>−152</b></div>
+                  <ul>
+                    <li><span>No cuantifica huella hídrica</span><span>60</span></li>
+                    <li><span>Sin datos cuantitativos extraíbles</span><span>34</span></li>
+                    <li><span>Componente de huella no especificado</span><span>24</span></li>
+                    <li><span>Población/cultivo no agrícola</span><span>20</span></li>
+                    <li><span>No revisado por pares</span><span>14</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Inclusión (full width) -->
+            <div class="p20incl" data-phase="4">
+              <div class="node">
+                <div class="ph">Inclusión</div>
+                <div class="title">Estudios incluidos en la revisión</div>
+                <div class="count" data-c="48"><span class="cv">0</span> <small>estudios incluidos</small></div>
+                <div class="sub">En 52 informes · 31 estudios aportan datos para el meta-análisis</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · SÍNTESIS -->
+    <section class="slide" data-anim="donut">
+      <div class="inner">
+        <div class="eyebrow reveal d1">Fase 04 · Síntesis</div>
+        <h2 class="reveal d1">Lo que revelan los 48 estudios</h2>
+        <p class="lead reveal d2">Clasificamos cada estudio incluido según el componente de huella hídrica que cuantifica.
+          Así de tangible se vuelve la evidencia tras el filtrado.</p>
+        <div class="synth">
+          <div class="donut reveal d3">
+            <svg viewBox="0 0 120 120" width="100%" height="100%">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="16"/>
+              <circle id="arcVerde" cx="60" cy="60" r="50" fill="none" stroke="var(--verde)" stroke-width="16" stroke-linecap="round" stroke-dasharray="0 999"/>
+              <circle id="arcAzul" cx="60" cy="60" r="50" fill="none" stroke="var(--agua)" stroke-width="16" stroke-linecap="round" stroke-dasharray="0 999"/>
+              <circle id="arcGris" cx="60" cy="60" r="50" fill="none" stroke="var(--gris-h)" stroke-width="16" stroke-linecap="round" stroke-dasharray="0 999"/>
+            </svg>
+            <div class="ctr"><span class="n" id="totIncl">48</span><span class="l">estudios incluidos</span></div>
+          </div>
+          <div class="legend reveal d3">
+            <div class="leg"><span class="sw" style="background:var(--verde)"></span>
+              <div class="tx"><b>Huella verde</b><p>Agua de lluvia consumida por el cultivo</p></div><span class="pc">23</span></div>
+            <div class="leg"><span class="sw" style="background:var(--agua)"></span>
+              <div class="tx"><b>Huella azul</b><p>Riego: agua superficial y subterránea</p></div><span class="pc">17</span></div>
+            <div class="leg"><span class="sw" style="background:var(--gris-h)"></span>
+              <div class="tx"><b>Huella gris</b><p>Agua para diluir la contaminación</p></div><span class="pc">8</span></div>
+            <p class="lead" style="font-size:.86rem;margin-top:6px">De los 48, <b style="color:var(--ambar)">31</b> aportan datos suficientes para el meta-análisis.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · CHECKLIST 27 ÍTEMS -->
+    <section class="slide">
+      <div class="inner">
+        <div class="eyebrow reveal d1">La otra mitad de PRISMA</div>
+        <h2 class="reveal d1">La lista de verificación de 27 ítems</h2>
+        <p class="lead reveal d2">El diagrama muestra el embudo; esta <b style="color:var(--espuma)">lista de 27 ítems</b> garantiza que
+          el manuscrito reporte todo lo necesario para reproducirlo. Estos son los ítems, agrupados en sus 7 secciones:</p>
+        <div class="cl27 reveal d3">
+          <div class="clsec">
+            <div class="sh"><span>Título</span><b>1</b></div>
+            <ol><li><i>1</i><span>Título: identifica el informe como revisión sistemática</span></li></ol>
+          </div>
+          <div class="clsec">
+            <div class="sh"><span>Resumen</span><b>1</b></div>
+            <ol><li><i>2</i><span>Resumen estructurado</span></li></ol>
+          </div>
+          <div class="clsec">
+            <div class="sh"><span>Introducción</span><b>2</b></div>
+            <ol>
+              <li><i>3</i><span>Justificación</span></li>
+              <li><i>4</i><span>Objetivos</span></li>
+            </ol>
+          </div>
+          <div class="clsec">
+            <div class="sh"><span>Métodos</span><b>11</b></div>
+            <ol>
+              <li><i>5</i><span>Criterios de elegibilidad</span></li>
+              <li><i>6</i><span>Fuentes de información</span></li>
+              <li><i>7</i><span>Estrategia de búsqueda</span></li>
+              <li><i>8</i><span>Proceso de selección</span></li>
+              <li><i>9</i><span>Proceso de extracción de datos</span></li>
+              <li><i>10</i><span>Variables / datos recopilados</span></li>
+              <li><i>11</i><span>Evaluación del riesgo de sesgo</span></li>
+              <li><i>12</i><span>Medidas del efecto</span></li>
+              <li><i>13</i><span>Métodos de síntesis</span></li>
+              <li><i>14</i><span>Evaluación de sesgos de reporte</span></li>
+              <li><i>15</i><span>Evaluación de la certeza (GRADE)</span></li>
+            </ol>
+          </div>
+          <div class="clsec">
+            <div class="sh"><span>Resultados</span><b>7</b></div>
+            <ol>
+              <li><i>16</i><span>Selección de estudios</span></li>
+              <li><i>17</i><span>Características de los estudios</span></li>
+              <li><i>18</i><span>Riesgo de sesgo en los estudios</span></li>
+              <li><i>19</i><span>Resultados de estudios individuales</span></li>
+              <li><i>20</i><span>Resultados de las síntesis</span></li>
+              <li><i>21</i><span>Sesgos de reporte</span></li>
+              <li><i>22</i><span>Certeza de la evidencia</span></li>
+            </ol>
+          </div>
+          <div class="clsec">
+            <div class="sh"><span>Discusión</span><b>1</b></div>
+            <ol><li><i>23</i><span>Discusión: interpretación, limitaciones e implicaciones</span></li></ol>
+          </div>
+          <div class="clsec">
+            <div class="sh"><span>Otra información</span><b>4</b></div>
+            <ol>
+              <li><i>24</i><span>Registro y protocolo</span></li>
+              <li><i>25</i><span>Apoyo / financiación</span></li>
+              <li><i>26</i><span>Conflictos de interés</span></li>
+              <li><i>27</i><span>Disponibilidad de datos, código y materiales</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · CIERRE -->
+    <section class="slide">
+      <div class="inner">
+        <div class="eyebrow reveal d1">Para llevar</div>
+        <h2 class="reveal d1">PRISMA, en una idea</h2>
+        <p class="lead reveal d2">No es burocracia: es hacer tu revisión <em>reproducible</em>. Cualquiera debería poder
+          rehacer tu embudo, con tus criterios, y llegar a los mismos 48 estudios.</p>
+        <div class="takeaways">
+          <div class="take reveal d2"><div class="ic">01</div><h4>Planifica antes de buscar</h4>
+            <p>Pregunta PICO/PECO, protocolo registrado y criterios de elegibilidad fijados de antemano.</p></div>
+          <div class="take reveal d3"><div class="ic">02</div><h4>Documenta cada número y su razón</h4>
+            <p>Cuántos identificaste, duplicados, no recuperados y cada exclusión a texto completo con su motivo.</p></div>
+          <div class="take reveal d3"><div class="ic">03</div><h4>Diagrama + lista = la prueba</h4>
+            <p>El flujo valida el proceso; la lista de 27 ítems garantiza que el reporte sea completo.</p></div>
+        </div>
+        <div class="brand reveal d4">
+          <span class="dot">T</span>
+          <div>Trabajo Científico · <b style="color:var(--espuma)">@TCientifico</b> — Democratizando la ciencia de datos</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="nav">
+  <button class="arrow" id="prev" aria-label="Anterior">‹</button>
+  <div class="dots" id="dots"></div>
+  <button class="arrow" id="next" aria-label="Siguiente">›</button>
+</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+const TOTAL = slides.length;
+let idx = 0;
+const track = document.getElementById('track');
+const dotsWrap = document.getElementById('dots');
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.getElementById('tot').textContent = TOTAL;
+
+// dots
+slides.forEach((_,i)=>{
+  const b=document.createElement('button');
+  b.className='dot-nav'+(i===0?' active':'');
+  b.setAttribute('aria-label','Ir a la diapositiva '+(i+1));
+  b.onclick=()=>go(i);
+  dotsWrap.appendChild(b);
+});
+const dots=[...dotsWrap.children];
+
+function go(n){
+  idx=Math.max(0,Math.min(TOTAL-1,n));
+  track.style.transform=`translateX(-${idx*100}vw)`;
+  slides.forEach((s,i)=>s.classList.toggle('active',i===idx));
+  dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
+  document.getElementById('cur').textContent=idx+1;
+  document.getElementById('prev').disabled=idx===0;
+  document.getElementById('next').disabled=idx===TOTAL-1;
+  onEnter(idx);
+}
+document.getElementById('next').onclick=()=>go(idx+1);
+document.getElementById('prev').onclick=()=>go(idx-1);
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown'){go(idx+1)}
+  if(e.key==='ArrowLeft'||e.key==='PageUp'){go(idx-1)}
+});
+// touch swipe
+let tx=0;
+track.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+track.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>55){dx<0?go(idx+1):go(idx-1)}
+});
+
+// count-up util
+function countUp(el,to,dur=900,fmt=v=>Math.round(v).toLocaleString('es')){
+  if(reduce){el.textContent=fmt(to);return}
+  const start=performance.now();
+  function tick(t){
+    const p=Math.min(1,(t-start)/dur);
+    const e=1-Math.pow(1-p,3);
+    el.textContent=fmt(to*e);
+    if(p<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+// animate a group of .bar>span (data-w) and .val/.cv/.rv (data-v)
+function animBars(scope){
+  scope.querySelectorAll('.bar > span[data-w]').forEach(s=>{
+    requestAnimationFrame(()=>s.style.width=s.dataset.w+'%');
+  });
+  scope.querySelectorAll('[data-v]').forEach(v=>countUp(v,+v.dataset.v,1100));
+}
+
+// portada: gotas
+(function(){
+  const c=document.getElementById('drops');
+  for(let i=0;i<14;i++){
+    const d=document.createElement('span');
+    d.className='drop';
+    d.style.left=Math.random()*100+'%';
+    d.style.animationDuration=(5+Math.random()*5)+'s';
+    d.style.animationDelay=(-Math.random()*8)+'s';
+    d.style.opacity=.3+Math.random()*.4;
+    c.appendChild(d);
+  }
+})();
+
+// slide identificación: fuentes + criterios
+let sourcesDone=false;
+function animSources(){
+  if(sourcesDone)return;sourcesDone=true;
+  document.querySelectorAll('#sources .bar > span, .srcgroup .bar > span').forEach(s=>{
+    requestAnimationFrame(()=>s.style.width=s.dataset.w+'%');
+  });
+  document.querySelectorAll('.srcgroup .val').forEach(v=>countUp(v,+v.dataset.v,1100));
+}
+const crits=[...document.querySelectorAll('.crit input')];
+const critCount=document.getElementById('critCount');
+function recalc(){
+  let rem=732;
+  crits.forEach(c=>{if(c.checked)rem-=(+c.dataset.cut)});
+  countUp(critCount,rem,500);
+}
+crits.forEach(c=>c.addEventListener('change',recalc));
+
+// slide diagrama PRISMA 2020 por fases
+let phase=1;
+const MAXPHASE=4;
+const p20=document.getElementById('p20');
+function applyPhase(){
+  p20.querySelectorAll('[data-phase]').forEach(el=>{
+    const ph=+el.dataset.phase;
+    const on=ph<=phase;
+    el.classList.toggle('show',on);
+    el.classList.toggle('cur', ph===phase && (el.classList.contains('prow')||el.classList.contains('p20incl')));
+    el.querySelectorAll('.node').forEach(n=>n.classList.toggle('cur', ph===phase));
+    if(el.classList.contains('pconn')) el.classList.toggle('flow', ph<=phase);
+    // count-up de cifras al revelarse
+    if(on){
+      el.querySelectorAll('.count').forEach(c=>{
+        if(c.dataset.done) return;
+        c.dataset.done='1';
+        countUp(c.querySelector('.cv'),+c.dataset.c,900);
+      });
+    }
+  });
+  document.getElementById('stepinfo').textContent='Fase '+phase+' de '+MAXPHASE;
+  document.getElementById('advance').disabled=phase>=MAXPHASE;
+}
+document.getElementById('advance').onclick=()=>{if(phase<MAXPHASE){phase++;applyPhase()}};
+document.getElementById('reset').onclick=()=>{
+  phase=1;
+  p20.querySelectorAll('.count').forEach(c=>{c.dataset.done='';c.querySelector('.cv').textContent='0'});
+  applyPhase();
+};
+
+// slide donut
+let donutDone=false;
+function animDonut(){
+  if(donutDone)return;donutDone=true;
+  const C=2*Math.PI*50; // ~314
+  const data=[['arcVerde',23],['arcAzul',17],['arcGris',8]];
+  const total=48;let offset=0;
+  data.forEach(([id,val],k)=>{
+    const len=(val/total)*C;
+    const el=document.getElementById(id);
+    const o=offset;
+    setTimeout(()=>{
+      el.style.transition='stroke-dasharray 1s cubic-bezier(.6,0,.2,1)';
+      el.setAttribute('stroke-dashoffset', -o);
+      el.setAttribute('stroke-dasharray', (reduce?len:0)+' 999');
+      requestAnimationFrame(()=>el.setAttribute('stroke-dasharray', len+' 999'));
+    },k*260);
+    offset+=len;
+  });
+  countUp(document.getElementById('totIncl'),48,1000,v=>Math.round(v));
+}
+
+function onEnter(i){
+  const a=slides[i].dataset.anim;
+  if(a==='sources')animSources();
+  if(a==='flow')applyPhase();
+  if(a==='donut')animDonut();
+}
+
+// init
+applyPhase();
+go(0);
+</script>
+</body>
+</html>
