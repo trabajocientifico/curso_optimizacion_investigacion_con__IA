@@ -479,52 +479,141 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- ============ 11 · STACKS RECOMENDADOS ============ -->
-<section class="slide">
-  <div class="spread">
-    <div class="kicker reveal">No necesitas todo</div>
-    <h2 class="reveal">Dos stacks probados.</h2>
-    <p class="lead reveal" style="margin-top:.8rem;max-width:68ch">La mayoría rinde mejor con 3-5 herramientas bien integradas que con 15 ocasionales. Elige el combo según tu momento; podrás escalar después.</p>
-    <div class="reveal stacks">
-      <div class="stack">
-        <div class="stackhead">
-          <div>
-            <h3>Stack <span class="em2">starter</span></h3>
-            <div class="sub">Estudiantes · primer proyecto</div>
-          </div>
-          <div class="stackprice"><div class="num">$0</div><div class="u">USD / mes</div></div>
-        </div>
-        <ul class="stacklist">
-          <li><span class="n">01</span><div><strong>Semantic Scholar</strong><span class="role">descubrimiento</span></div></li>
-          <li><span class="n">02</span><div><strong>Research Rabbit</strong><span class="role">recomendación + sync Zotero</span></div></li>
-          <li><span class="n">03</span><div><strong>NotebookLM</strong><span class="role">diálogo con corpus</span></div></li>
-          <li><span class="n">04</span><div><strong>Zotero</strong><span class="role">gestión de referencias</span></div></li>
-          <li><span class="n">05</span><div><strong>Elicit (free tier)</strong><span class="role">screening estructurado</span></div></li>
-        </ul>
-        <div class="stacknote">Cobertura completa del flujo investigativo sin gasto. Suficiente para una tesis de maestría o un primer paper.</div>
+<!-- ============ 11 · DIVISOR · POTENCIAL DE LA IA EN VIVO ============ -->
+<style>
+.divider-slide{overflow:hidden}
+.divider-bgword{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);
+  font-family:'Fraunces',serif;font-weight:900;font-size:42vw;line-height:.8;
+  color:rgba(255,255,255,.022);z-index:0;pointer-events:none;white-space:nowrap;letter-spacing:-.05em;
+  background:linear-gradient(120deg,var(--accent),var(--accent2),var(--gold));-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;opacity:.06}
+.divider-slide .spread{position:relative;z-index:2}
+.livebadge{display:inline-flex;align-items:center;gap:.55rem;font-family:'Space Mono',monospace;
+  font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);
+  border:1px solid var(--accent);border-radius:999px;padding:.4rem 1rem;margin:0 auto 1.4rem}
+.livebadge .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 0 var(--accent);animation:livepulse 1.8s ease-out infinite}
+@keyframes livepulse{0%{box-shadow:0 0 0 0 rgba(255,107,61,.55)}70%{box-shadow:0 0 0 12px rgba(255,107,61,0)}100%{box-shadow:0 0 0 0 rgba(255,107,61,0)}}
+.big-divider{font-size:clamp(2.1rem,5vw,4.1rem);line-height:1.05;text-align:center;font-weight:900;max-width:20ch;margin:0 auto}
+.triochat{display:flex;gap:1.6rem;justify-content:center;flex-wrap:wrap;margin-top:2.6rem}
+.bigchat{display:flex;flex-direction:column;align-items:center;gap:.65rem;
+  padding:1.7rem 2.1rem;border-radius:22px;background:var(--card);border:1px solid var(--line);
+  backdrop-filter:blur(8px);position:relative;transition:.3s cubic-bezier(.2,.7,.2,1);min-width:158px;
+  animation:chatfloat 5s ease-in-out infinite}
+.bigchat:nth-child(2){animation-delay:.6s}.bigchat:nth-child(3){animation-delay:1.2s}
+@keyframes chatfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.bigchat svg{width:62px;height:62px;filter:drop-shadow(0 8px 20px rgba(0,0,0,.4))}
+.bigchat .ct{font-family:'Sora',sans-serif;font-weight:600;font-size:1.08rem}
+.bigchat .cr{font-family:'Space Mono',monospace;font-size:.64rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.bigchat::after{content:"";position:absolute;inset:-1px;border-radius:22px;opacity:0;transition:.3s;
+  box-shadow:0 0 50px 2px var(--glow);pointer-events:none}
+.bigchat:hover{transform:translateY(-10px) scale(1.03);border-color:var(--glow)}
+.bigchat:hover::after{opacity:.7}
+.bigchat.claude{--glow:#cc785c}.bigchat.gemini{--glow:#7b8cff}.bigchat.gpt{--glow:#10a37f}
+.divider-foot{margin-top:2.6rem;display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+.divider-foot span{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.45rem .95rem;transition:.2s}
+.divider-foot span::before{content:"▸ ";color:var(--accent2)}
+.divider-foot span:hover{color:var(--ink);border-color:var(--accent2)}
+@media(max-width:820px){.bigchat{min-width:42%;padding:1.3rem}.bigchat svg{width:48px;height:48px}}
+</style>
+<section class="slide divider-slide">
+  <span class="divider-bgword" aria-hidden="true">IA</span>
+  <div class="spread" style="justify-content:center;align-items:center;text-align:center">
+    <div class="livebadge reveal"><span class="dot"></span>En vivo · 4 mini-talleres</div>
+    <h2 class="reveal big-divider">Veamos el <span class="em">potencial</span> de la IA desde los <span class="em2">chats conversacionales</span>.</h2>
+    <p class="reveal lead" style="margin:1.1rem auto 0;text-align:center;max-width:58ch">Lo que sigue no son diapositivas para mirar: son cosas que harás tú. Abre un chat, pega un prompt y observa qué tan lejos llega.</p>
+
+    <div class="reveal triochat">
+      <div class="bigchat claude">
+        <svg viewBox="0 0 32 32" aria-label="Claude"><rect width="32" height="32" rx="7" fill="#cc785c"/><g stroke="#fff" stroke-width="2.4" stroke-linecap="round"><line x1="16" y1="7" x2="16" y2="25"/><line x1="7" y1="16" x2="25" y2="16"/><line x1="10" y1="10" x2="22" y2="22"/><line x1="22" y1="10" x2="10" y2="22"/></g></svg>
+        <div class="ct">Claude</div><div class="cr">razonar · escribir · programar</div>
       </div>
-      <div class="stack pro">
-        <div class="stackhead">
-          <div>
-            <h3>Stack <span class="em">professional</span></h3>
-            <div class="sub">Docentes · investigadores activos</div>
-          </div>
-          <div class="stackprice"><div class="num">~$80</div><div class="u">USD / mes</div></div>
-        </div>
-        <ul class="stacklist">
-          <li><span class="n">01</span><div><strong>Elicit Pro</strong><span class="role">revisiones sistemáticas a escala</span></div></li>
-          <li><span class="n">02</span><div><strong>Claude Pro + Projects</strong><span class="role">razonamiento + código + escritura</span></div></li>
-          <li><span class="n">03</span><div><strong>Scite</strong><span class="role">validación de citas</span></div></li>
-          <li><span class="n">04</span><div><strong>Paperpal</strong><span class="role">edición y submission-readiness</span></div></li>
-          <li><span class="n">05</span><div><strong>Zotero + Research Rabbit</strong><span class="role">biblioteca activa</span></div></li>
-        </ul>
-        <div class="stacknote">ROI claro para quien publica varios artículos al año o dirige tesis. Cubre del descubrimiento al envío con auditoría.</div>
+      <div class="bigchat gemini">
+        <svg viewBox="0 0 32 32" aria-label="Gemini"><defs><linearGradient id="gemGradDiv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4285f4"/><stop offset="1" stop-color="#9b72ff"/></linearGradient></defs><rect width="32" height="32" rx="7" fill="#0d1117"/><path d="M16 5 C16 12 20 16 27 16 C20 16 16 20 16 27 C16 20 12 16 5 16 C12 16 16 12 16 5 Z" fill="url(#gemGradDiv)"/></svg>
+        <div class="ct">Gemini</div><div class="cr">buscar · sintetizar · imagen</div>
       </div>
+      <div class="bigchat gpt">
+        <svg viewBox="0 0 32 32" aria-label="ChatGPT"><rect width="32" height="32" rx="7" fill="#10a37f"/><path d="M16 8 L23 12 V20 L16 24 L9 20 V12 Z" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="16" cy="16" r="2.6" fill="#fff"/></svg>
+        <div class="ct">ChatGPT</div><div class="cr">deep research · tablas</div>
+      </div>
+    </div>
+
+    <div class="reveal divider-foot">
+      <span>Construir una app</span>
+      <span>Buscar congresos</span>
+      <span>Estudiar con tablas e imágenes</span>
+      <span>Comparar dos IA</span>
     </div>
   </div>
 </section>
 
-<!-- ============ 12 · MINI-TALLER · CONVERSOR ============ -->
+<!-- ============ 12 · ANATOMÍA DE UN BUEN PROMPT ============ -->
+<style>
+.anatgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem;margin-top:1.3rem}
+.anatcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.95rem .9rem;
+  position:relative;overflow:hidden;transition:.22s;border-top:3px solid var(--c)}
+.anatcard:hover{transform:translateY(-4px);border-color:var(--c)}
+.anatcard .al{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  font-family:'Fraunces',serif;font-weight:900;font-size:1.2rem;color:#0d1117;background:var(--c);margin-bottom:.65rem}
+.anatcard h4{font-family:'Sora',sans-serif;font-weight:700;font-size:.95rem;color:var(--ink)}
+.anatcard p{font-size:.73rem;color:var(--muted);line-height:1.4;margin-top:.3rem;font-weight:300}
+.deconstruct{margin-top:1.3rem;background:#0a0e14;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.deconstruct .dh{display:flex;justify-content:space-between;align-items:center;padding:.55rem .95rem;
+  background:rgba(255,255,255,.03);border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;
+  font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.deconstruct .dh b{color:var(--accent2);font-weight:400}
+.dline{display:flex;gap:.9rem;align-items:baseline;padding:.6rem 1rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.dline:last-child{border-bottom:none}
+.dtag{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--c);min-width:104px;font-weight:700;display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.dtag::before{content:"";width:9px;height:9px;border-radius:2px;background:var(--c);flex-shrink:0}
+.dtext{font-family:'Space Mono',monospace;font-size:.8rem;line-height:1.5;color:#cdd6e3}
+@media(max-width:900px){.anatgrid{grid-template-columns:repeat(2,1fr)}.dtag{min-width:88px}}
+</style>
+<section class="slide">
+  <div class="spread" style="justify-content:center">
+    <div class="kicker reveal">Antes de copiar y pegar</div>
+    <h2 class="reveal" style="font-size:clamp(1.6rem,3.4vw,2.7rem)">Qué contiene un <span class="em">buen prompt</span>.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:66ch">La IA responde tan bien como le preguntes. Un prompt sólido tiene cinco piezas — recuérdalas como <strong style="color:var(--ink)">R·C·T·F·I</strong>. Entre más claras, mejor el resultado.</p>
+
+    <div class="anatgrid reveal">
+      <div class="anatcard" style="--c:var(--accent)">
+        <div class="al">R</div><h4>Rol</h4>
+        <p>Qué papel asume la IA. «Actúa como…»</p>
+      </div>
+      <div class="anatcard" style="--c:var(--accent2)">
+        <div class="al">C</div><h4>Contexto</h4>
+        <p>Tu situación, tema y para qué lo necesitas.</p>
+      </div>
+      <div class="anatcard" style="--c:var(--gold)">
+        <div class="al">T</div><h4>Tarea</h4>
+        <p>La acción concreta que debe ejecutar.</p>
+      </div>
+      <div class="anatcard" style="--c:var(--ok)">
+        <div class="al">F</div><h4>Formato</h4>
+        <p>Cómo quieres la salida: tabla, lista, código…</p>
+      </div>
+      <div class="anatcard" style="--c:var(--danger)">
+        <div class="al">I</div><h4>Iteración</h4>
+        <p>Reglas y límites: «no inventes citas», y refina.</p>
+      </div>
+    </div>
+
+    <div class="deconstruct reveal">
+      <div class="dh"><span>▸ El mismo prompt, pieza por pieza</span><b>ejemplo · gestión del agua</b></div>
+      <div class="dline" style="--c:var(--accent)"><span class="dtag">Rol</span><span class="dtext">Actúa como asesor metodológico en ciencias ambientales.</span></div>
+      <div class="dline" style="--c:var(--accent2)"><span class="dtag">Contexto</span><span class="dtext">Investigo la gestión sostenible del agua en cuencas afectadas por el cambio climático.</span></div>
+      <div class="dline" style="--c:var(--gold)"><span class="dtag">Tarea</span><span class="dtext">Propón 5 posibles preguntas de investigación viables para una tesis.</span></div>
+      <div class="dline" style="--c:var(--ok)"><span class="dtag">Formato</span><span class="dtext">Preséntalas en una tabla con: problema, pregunta, población, datos y dificultad.</span></div>
+      <div class="dline" style="--c:var(--danger)"><span class="dtag">Iteración</span><span class="dtext">No inventes citas. Si algo no encaja, te daré feedback para afinarlo.</span></div>
+    </div>
+
+    <p class="reveal mono" style="margin-top:.9rem;font-size:.72rem;color:var(--muted);letter-spacing:.14em">▸ NO NECESITAS LAS CINCO SIEMPRE, PERO ENTRE MÁS DES, MENOS ADIVINA LA IA · EN LA SESIÓN 2 PROFUNDIZAMOS LA TÉCNICA R·C·T·F·I.</p>
+  </div>
+</section>
+
+<!-- ============ 13 · MINI-TALLER · CONVERSOR ============ -->
 <section class="slide">
   <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Mini-taller · Tu primer aplicativo con IA</div>
