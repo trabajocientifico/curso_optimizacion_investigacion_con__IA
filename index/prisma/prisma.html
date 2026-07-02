@@ -45,7 +45,7 @@
     padding:clamp(20px,5vw,70px);
     overflow-y:auto;
   }
-  .inner{max-width:1080px;width:100%;margin:0 auto}
+  .inner{max-width:1140px;width:100%;margin:0 auto}
 
   .eyebrow{
     font-family:"JetBrains Mono",monospace;
@@ -125,6 +125,15 @@
   .ielist li.exc .mk{color:var(--excluido)}
   .ielist li span:last-child{color:var(--bruma)}
   .protocol{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+
+  /* ---------- Cadena de prompts (entra → sale) ---------- */
+  .chain{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 4px}
+  .chain .lnk{font-family:"JetBrains Mono",monospace;font-size:.72rem;border:1px solid var(--linea);
+    border-radius:999px;padding:7px 14px;color:var(--bruma);background:rgba(255,255,255,.02);
+    display:inline-flex;align-items:center;gap:7px}
+  .chain .lnk.in{border-left:3px solid var(--agua)}
+  .chain .lnk.out{border-left:3px solid var(--verde)}
+  .chain .lnk b{color:var(--espuma);font-weight:500}
 
   /* ---------- Búsqueda ---------- */
   .searchbox{background:var(--tinta);border:1px solid var(--linea);border-radius:var(--r);
@@ -261,6 +270,63 @@
     background:linear-gradient(135deg,var(--agua),var(--ambar));color:var(--abismo);
     font-family:"Fraunces",serif;font-weight:900}
 
+  /* ---------- Taller práctico · prompts IA ---------- */
+  .lab .eyebrow{color:var(--ambar)}
+  .lab .eyebrow::before{background:var(--ambar)}
+  .lab .inner{max-width:1380px}
+  .labtag{display:inline-flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;
+    font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--abismo);font-weight:700;
+    background:linear-gradient(95deg,var(--ambar),#f2c179);padding:6px 13px;border-radius:999px;margin-bottom:16px}
+  code{font-family:"JetBrains Mono",monospace;font-size:.86em;background:rgba(63,191,212,.12);
+    border:1px solid var(--linea);border-radius:6px;padding:1px 6px;color:var(--espuma)}
+  .labgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px;align-items:start}
+  .codecard{background:var(--tinta);border:1px solid var(--linea);border-radius:14px;overflow:hidden;
+    display:flex;flex-direction:column}
+  .codecard.tpl{border-top:3px solid var(--agua)}
+  .codecard.exm{border-top:3px solid var(--verde)}
+  .codehead{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:10px 14px;border-bottom:1px solid var(--linea);background:rgba(255,255,255,.02)}
+  .codehead .lab-l{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.08em;
+    text-transform:uppercase;font-weight:700}
+  .codecard.tpl .lab-l{color:var(--agua)}
+  .codecard.exm .lab-l{color:var(--verde)}
+  .copybtn{font-family:"JetBrains Mono",monospace;font-size:.7rem;border:1px solid var(--linea);
+    background:rgba(255,255,255,.03);color:var(--bruma);border-radius:8px;padding:5px 11px;cursor:pointer;
+    transition:all .2s;display:inline-flex;gap:6px;align-items:center}
+  .copybtn:hover{border-color:var(--agua);color:var(--agua)}
+  .copybtn.done{border-color:var(--verde);color:var(--verde)}
+  .codebody{margin:0;padding:14px 16px;font-family:"JetBrains Mono",monospace;font-size:.76rem;
+    line-height:1.55;color:var(--espuma);white-space:pre-wrap;word-break:break-word;
+    overflow-y:auto;max-height:44vh;background:rgba(0,0,0,.18)}
+  .codebody .ph{color:var(--ambar)}
+  .labvalid{font-size:.9rem;color:var(--bruma);line-height:1.5;margin-top:18px;
+    background:rgba(116,194,138,.07);border:1px solid var(--linea);border-left:3px solid var(--verde);
+    border-radius:12px;padding:12px 16px}
+  .labvalid b{color:var(--espuma)}
+
+  /* ---------- Constructor de prompts (rellenar → copiar) ---------- */
+  .phint{font-size:.86rem;color:var(--bruma);line-height:1.5;margin-top:14px;
+    display:flex;align-items:center;gap:9px}
+  .phint .sw{display:inline-block;width:14px;height:14px;border-radius:3px;flex:none;
+    background:rgba(233,162,59,.45);border:1px solid var(--ambar)}
+  .phint b{color:var(--espuma)}
+  .prompt{display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:24px;margin-top:18px;align-items:start}
+  .pfields{display:flex;flex-direction:column;gap:13px}
+  .pfields.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .pfield label{display:block;font-family:"JetBrains Mono",monospace;font-size:.67rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ambar);margin-bottom:5px}
+  .pfield input,.pfield textarea{width:100%;font-family:"Spline Sans",sans-serif;font-size:.9rem;
+    color:var(--espuma);background:rgba(0,0,0,.22);border:1px solid var(--linea);
+    border-left:3px solid var(--ambar);border-radius:10px;padding:9px 11px;line-height:1.45;resize:vertical}
+  .pfield textarea{min-height:60px}
+  .pfield input:focus,.pfield textarea:focus{outline:none;border-color:var(--ambar);
+    box-shadow:0 0 0 1px var(--ambar)}
+  .ppreview{position:sticky;top:0}
+  .ppreview .lab-l{color:var(--agua)}
+  .ppreview .codebody{max-height:60vh}
+  .phl{background:rgba(233,162,59,.20);color:#ffd98a;border-radius:4px;padding:0 3px;
+    box-shadow:inset 0 -1px 0 rgba(233,162,59,.55)}
+
   /* ---------- Navegación ---------- */
   .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;
     display:flex;align-items:center;justify-content:center;gap:20px;
@@ -283,7 +349,7 @@
   @media (max-width:920px){
     .phases{grid-template-columns:repeat(2,1fr)}
     .why,.searchmeta{grid-template-columns:1fr 1fr}
-    .cols,.synth,.twocol{grid-template-columns:1fr}
+    .cols,.synth,.twocol,.labgrid,.prompt,.pfields.grid{grid-template-columns:1fr}
     .prow{grid-template-columns:1fr}
     .pconn{margin-left:24px}
     .cl27{columns:1}
@@ -300,7 +366,7 @@
 </head>
 <body>
 <div class="keyhint">← → para navegar</div>
-<div class="pageno"><b id="cur">1</b> / <span id="tot">10</span></div>
+<div class="pageno"><b id="cur">1</b> / <span id="tot">12</span></div>
 
 <div class="deck">
   <div class="track" id="track">
@@ -313,15 +379,16 @@
         <h1 class="reveal d2">El método<br><span class="grad">PRISMA</span></h1>
         <p class="tagline reveal d3">Filtrar el océano de la literatura<br>hasta la evidencia.</p>
         <p class="lead reveal d3" style="margin-top:20px">
-          Una demostración interactiva del <b style="color:var(--espuma)">método PRISMA</b> para construir
-          una revisión sistemática sobre <b style="color:var(--espuma)">huella hídrica en cultivos</b>,
-          desde la pregunta de investigación hasta la síntesis. Datos simulados con estructura real.
+          Demostración interactiva del <b style="color:var(--espuma)">método PRISMA</b> aplicada, paso a paso y
+          asistida por IA, a un archivo real de <b style="color:var(--espuma)">389 registros de Web of Science</b>
+          sobre <b style="color:var(--espuma)">huella hídrica en cultivos</b> — de la pregunta a la síntesis.
         </p>
         <div class="meta reveal d4">
-          <span class="chip"><b>1.099</b> registros identificados</span>
+          <span class="chip"><b>389</b> registros identificados</span>
           <span class="chip"><b>27</b> ítems de la lista PRISMA</span>
           <span class="chip"><b>48</b> estudios incluidos</span>
-          <span class="chip">Demo educativa · datos simulados</span>
+          <span class="chip"><b>6</b> prompts listos para copiar</span>
+          <span class="chip">Archivo real · embudo de ejemplo</span>
         </div>
       </div>
     </section>
@@ -353,53 +420,74 @@
       </div>
     </section>
 
-    <!-- 3 · ANTES DE EMPEZAR: PECO + PROTOCOLO -->
-    <section class="slide">
+    <!-- 3 · CÓMO TRABAJAMOS: ARCHIVO + LÓGICA IA -->
+    <section class="slide lab">
       <div class="inner">
-        <div class="eyebrow reveal d1">Antes de buscar nada</div>
-        <h2 class="reveal d1">La pregunta y el protocolo</h2>
-        <p class="lead reveal d2">Una revisión sistemática empieza por una pregunta estructurada y un protocolo
-          <b style="color:var(--espuma)">registrado antes de buscar</b>. La pregunta, desglosada en PECO, fija sin ambigüedad los criterios de elegibilidad.</p>
-        <div class="rqbox reveal d2">
-          <div class="rql">Pregunta de investigación</div>
-          <p class="rq">¿Cuál es la huella hídrica —verde, azul y gris— de los principales cultivos agrícolas
-            y cómo varía entre sistemas productivos y regiones (2010–2025)?</p>
-        </div>
-        <div class="twocol">
-          <div class="reveal d2">
-            <div class="peco">
-              <div class="pe"><div class="k">P</div><div class="t">Población</div><div class="d">Cultivos agrícolas (cereales, frutales, hortalizas).</div></div>
-              <div class="pe"><div class="k">E</div><div class="t">Exposición</div><div class="d">Producción y riego bajo distintos regímenes hídricos.</div></div>
-              <div class="pe"><div class="k">C</div><div class="t">Comparador</div><div class="d">Sistemas, regiones o años con disponibilidad de agua distinta.</div></div>
-              <div class="pe"><div class="k">O</div><div class="t">Resultado</div><div class="d">Huella hídrica cuantificada (verde, azul y/o gris).</div></div>
-            </div>
-            <div class="protocol">
-              <span class="chip"><b>Protocolo</b> PROSPERO CRD42025418802</span>
-              <span class="chip"><b>Registro</b> 02 feb 2025</span>
-            </div>
+        <span class="labtag reveal d1">🔧 Taller práctico con IA</span>
+        <div class="eyebrow reveal d1">La IA propone · el investigador decide</div>
+        <h2 class="reveal d1">Cómo lo haremos: PRISMA asistido por IA</h2>
+        <p class="lead reveal d2">De aquí en adelante, cada fase trae un <b style="color:var(--espuma)">prompt listo para copiar</b>.
+          El docente lo ejecuta en vivo sobre <code>wos_scopus.txt</code> (389 registros de Web of Science) y tú lo replicas
+          con tu propio tema. <b style="color:var(--espuma)">La salida de un prompt es la entrada del siguiente.</b></p>
+        <div class="labgrid">
+          <div class="panel reveal d2">
+            <h4>📄 Cómo está hecho el archivo</h4>
+            <p style="font-size:.86rem;color:var(--bruma);line-height:1.5;margin-bottom:12px">Formato etiquetado de WoS:
+              cada registro empieza en <b style="color:var(--espuma)">PT</b> y termina en <b style="color:var(--espuma)">ER</b>;
+              cada campo lleva una etiqueta de 2 letras.</p>
+            <ul class="ielist">
+              <li class="inc"><span class="mk">TI</span><span><b style="color:var(--espuma)">TI</b> título · <b style="color:var(--espuma)">AB</b> resumen · <b style="color:var(--espuma)">DE/ID</b> palabras clave → <b style="color:var(--verde)">sirven para tamizar</b></span></li>
+              <li class="inc"><span class="mk">PY</span><span><b style="color:var(--espuma)">PY</b> año · <b style="color:var(--espuma)">LA</b> idioma · <b style="color:var(--espuma)">DT</b> tipo · <b style="color:var(--espuma)">UT</b> id único · <b style="color:var(--espuma)">DI</b> DOI</span></li>
+              <li class="exc"><span class="mk">CR</span><span>Referencias citadas → <b style="color:var(--excluido)">ruido: bórralas antes de pegar</b></span></li>
+            </ul>
           </div>
           <div class="panel reveal d3">
-            <h4>Criterios de elegibilidad</h4>
+            <h4>⚖️ Qué hace la IA · qué decides tú</h4>
             <ul class="ielist">
-              <li class="inc"><span class="mk">+</span><span>Estudios empíricos que <b style="color:var(--espuma)">cuantifican</b> la huella hídrica de un cultivo</span></li>
-              <li class="inc"><span class="mk">+</span><span>Artículos o revisiones revisados por pares, 2010–2025</span></li>
-              <li class="inc"><span class="mk">+</span><span>Idioma español o inglés</span></li>
-              <li class="exc"><span class="mk">−</span><span>Trabajos teóricos o de modelado sin datos primarios</span></li>
-              <li class="exc"><span class="mk">−</span><span>Huella hídrica de ganadería, industria o ciudades</span></li>
-              <li class="exc"><span class="mk">−</span><span>Resúmenes de congreso, tesis y literatura gris no revisada</span></li>
+              <li class="inc"><span class="mk">IA</span><span><b style="color:var(--espuma)">Acelera:</b> redacta el PECO, normaliza registros, clasifica y justifica cada decisión.</span></li>
+              <li class="inc"><span class="mk">TÚ</span><span><b style="color:var(--espuma)">Decides:</b> validas una muestra (10–20%), resuelves los dudosos y respondes por el resultado.</span></li>
             </ul>
+            <p style="font-size:.84rem;color:var(--bruma);line-height:1.5;margin-top:14px;border-left:2px solid var(--ambar);padding-left:12px">
+              <b style="color:var(--espuma)">Regla de oro:</b> la IA <i>asiste</i>, no <i>reemplaza</i> al revisor. Reporta que usaste IA y, si puedes, que dos personas revisen. <b style="color:var(--espuma)">Vale para los 6 prompts.</b></p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 4 · ESTRATEGIA DE BÚSQUEDA -->
-    <section class="slide">
+    <!-- 4 · FASE 0 · PREGUNTA Y PROTOCOLO (PECO) + PROMPT 1 -->
+    <section class="slide lab">
       <div class="inner">
-        <div class="eyebrow reveal d1">Fase 01 · Identificación</div>
-        <h2 class="reveal d1">Estrategia de búsqueda reproducible</h2>
-        <p class="lead reveal d2">Para que otro equipo obtenga tus mismos resultados, la búsqueda se documenta entera:
-          ecuación, bases, fecha y límites.</p>
+        <span class="labtag reveal d1">🔧 Prompt 1 · Fase 0</span>
+        <div class="eyebrow reveal d1">Antes de buscar nada</div>
+        <h2 class="reveal d1">La pregunta y el protocolo (PECO)</h2>
+        <p class="lead reveal d2">Una revisión empieza por una pregunta estructurada y un protocolo
+          <b style="color:var(--espuma)">registrado antes de buscar</b>. Desglosada en PECO, fija sin ambigüedad los criterios de elegibilidad.</p>
+        <div class="rqbox reveal d2">
+          <div class="rql">Pregunta de investigación</div>
+          <p class="rq">¿Cuál es la huella hídrica —verde, azul y gris— de los principales cultivos agrícolas
+            y cómo varía entre sistemas productivos y regiones (2010–2025)?</p>
+        </div>
+        <div class="protocol reveal d2">
+          <span class="chip"><b>Protocolo</b> PROSPERO CRD42025418802</span>
+          <span class="chip"><b>Registro</b> 02 feb 2025</span>
+        </div>
+        <div class="chain reveal d3">
+          <span class="lnk out">Sale ▶ <b>pregunta PECO + objetivos</b> → entra al Prompt 2</span>
+        </div>
+        <p class="phint reveal d3"><span class="sw"></span> Edita los recuadros de la izquierda (vienen con el ejemplo). <b>Lo resaltado en ámbar</b> es lo único que cambias; el prompt de la derecha se arma solo — cópialo completo y pégalo en tu IA.</p>
+        <div class="prompt reveal d3" data-prompt="p1"></div>
+        <p class="labvalid reveal d4">✓ <b>Tú validas:</b> que la pregunta refleje tu objetivo real, no el genérico de la IA. Acota toda ambigüedad antes de buscar.</p>
+      </div>
+    </section>
+
+    <!-- 5 · FASE 1 · CRITERIOS + ECUACIÓN DE BÚSQUEDA + PROMPT 2 -->
+    <section class="slide lab">
+      <div class="inner">
+        <span class="labtag reveal d1">🔧 Prompt 2 · Fase 01</span>
+        <div class="eyebrow reveal d1">De la pregunta a la búsqueda reproducible</div>
+        <h2 class="reveal d1">Criterios y ecuación de búsqueda</h2>
+        <p class="lead reveal d2">Con tu pregunta PECO, la IA deriva los criterios de elegibilidad con códigos (E1, E2…)
+          —que reutilizarás al tamizar— y la ecuación booleana lista para Scopus y WoS.</p>
         <div class="searchbox reveal d2">
           <div class="eq">
             (&quot;water footprint&quot; <span class="op">OR</span> &quot;huella hídrica&quot;)
@@ -407,16 +495,23 @@
             <span class="op">AND</span> (green <span class="op">OR</span> blue <span class="op">OR</span> grey <span class="op">OR</span> gray <span class="op">OR</span> verde <span class="op">OR</span> azul <span class="op">OR</span> gris)
           </div>
           <div class="searchmeta">
-            <div class="smeta reveal d3"><div class="l">Bases</div><div class="v">Scopus · WoS Core Collection</div></div>
-            <div class="smeta reveal d3"><div class="l">Fecha de búsqueda</div><div class="v">15 marzo 2025</div></div>
-            <div class="smeta reveal d3"><div class="l">Límites</div><div class="v">2010–2025 · artículo/revisión · ES/EN</div></div>
-            <div class="smeta reveal d3"><div class="l">Gestores</div><div class="v">Zotero (deduplicación) · Rayyan (cribado ciego)</div></div>
+            <div class="smeta"><div class="l">Bases</div><div class="v">Scopus · WoS Core Collection</div></div>
+            <div class="smeta"><div class="l">Fecha de búsqueda</div><div class="v">15 marzo 2025</div></div>
+            <div class="smeta"><div class="l">Límites</div><div class="v">2010–2025 · artículo/revisión · ES/EN</div></div>
+            <div class="smeta"><div class="l">Gestores</div><div class="v">Zotero (deduplicación) · Rayyan (cribado)</div></div>
           </div>
         </div>
+        <div class="chain reveal d3">
+          <span class="lnk in">◀ Entra: <b>pregunta PECO</b></span>
+          <span class="lnk out">Sale ▶ <b>criterios E1–E5 + ecuación + límites</b></span>
+        </div>
+        <p class="phint reveal d3"><span class="sw"></span> Rellena los recuadros (traen el ejemplo). <b>Lo ámbar</b> es lo editable; copia el prompt completo de la derecha.</p>
+        <div class="prompt reveal d3" data-prompt="p2"></div>
+        <p class="labvalid reveal d4">✓ <b>Tú validas:</b> que cada criterio sea observable en el título/resumen y que la ecuación no deje fuera sinónimos clave de tu tema.</p>
       </div>
     </section>
 
-    <!-- 5 · IDENTIFICACIÓN + CRITERIOS INTERACTIVOS -->
+    <!-- 6 · IDENTIFICACIÓN INTERACTIVA (389 → 349) -->
     <section class="slide" data-anim="sources">
       <div class="inner">
         <div class="eyebrow reveal d1">Fase 01 → Fase 02 · del hallazgo al tamizaje</div>
@@ -424,38 +519,74 @@
         <div class="cols">
           <div class="reveal d2">
             <div class="srcgroup">
-              <div class="gh"><span>Registros de bases de datos</span><b>1.099</b></div>
+              <div class="gh"><span>Registros identificados</span><b>389</b></div>
               <div class="sources" id="sources">
-                <div class="source"><span class="name">Scopus</span><div class="bar"><span data-w="100"></span></div><span class="val" data-v="612">0</span></div>
-                <div class="source"><span class="name">Web of Science</span><div class="bar"><span data-w="80"></span></div><span class="val" data-v="487">0</span></div>
+                <div class="source"><span class="name">Web of Science</span><div class="bar"><span data-w="100"></span></div><span class="val" data-v="389">0</span></div>
               </div>
             </div>
             <p class="prenote">
-              Antes del tamizaje se retiran <b style="color:var(--excluido)">286 duplicados</b> y
-              <b style="color:var(--excluido)">81 registros</b> marcados por filtros automáticos
-              (fuera de 2010–2025 o tipo de documento no elegible). Quedan
-              <b style="color:var(--agua)">732 registros</b> para tamizar.</p>
+              Es una exportación única de WoS, así que <b style="color:var(--espuma)">no hay duplicados internos</b>
+              (al sumar Scopus aparecerían). Filtros automáticos retiran <b style="color:var(--excluido)">35 registros</b>
+              fuera de 2010–2025 (1 de 2009 · 34 de 2026) y <b style="color:var(--excluido)">5</b> en idioma no elegible
+              (4 portugués · 1 chino). Quedan <b style="color:var(--agua)">349 registros</b> para tamizar.</p>
           </div>
 
           <div class="filterbox reveal d3">
             <h4>Tamizaje por título y resumen</h4>
-            <p class="hint">Estos criterios se aplican a los <b>732 registros</b> tamizados. Actívalos o desactívalos y observa cuántos pasan a evaluación de texto completo. (Demostración aditiva simplificada.)</p>
-            <label class="crit"><input type="checkbox" data-cut="268" checked><span class="lbl">El tema central no es huella hídrica</span><span class="minus">−268</span></label>
-            <label class="crit"><input type="checkbox" data-cut="124" checked><span class="lbl">No trata de cultivos agrícolas</span><span class="minus">−124</span></label>
-            <label class="crit"><input type="checkbox" data-cut="76" checked><span class="lbl">Estudio teórico / sin datos primarios</span><span class="minus">−76</span></label>
-            <label class="crit"><input type="checkbox" data-cut="48" checked><span class="lbl">Resumen de congreso / literatura gris</span><span class="minus">−48</span></label>
+            <p class="hint">Estos criterios se aplican a los <b>349 registros</b> tamizados. Actívalos o desactívalos y observa cuántos pasan a texto completo. (Demostración aditiva simplificada.)</p>
+            <label class="crit"><input type="checkbox" data-cut="92" checked><span class="lbl">El tema central no es huella hídrica</span><span class="minus">−92</span></label>
+            <label class="crit"><input type="checkbox" data-cut="48" checked><span class="lbl">No trata de cultivos agrícolas</span><span class="minus">−48</span></label>
+            <label class="crit"><input type="checkbox" data-cut="28" checked><span class="lbl">Estudio teórico / sin datos primarios</span><span class="minus">−28</span></label>
+            <label class="crit"><input type="checkbox" data-cut="12" checked><span class="lbl">Resumen de congreso / literatura gris</span><span class="minus">−12</span></label>
             <div class="counter">
               <span class="cap">Informes que pasan a texto completo</span>
-              <span class="big" id="critCount">216</span>
+              <span class="big" id="critCount">169</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 6 · DIAGRAMA DE FLUJO PRISMA 2020 -->
-    <section class="slide" data-anim="flow">
+    <!-- 7 · FASE 2 · TAMIZAJE (EL CORAZÓN) · PROMPT 3 -->
+    <section class="slide lab">
       <div class="inner">
+        <span class="labtag reveal d1">🔧 Prompt 3 · Fase 02 · el corazón</span>
+        <div class="eyebrow reveal d1">Tamizaje por título y resumen</div>
+        <h2 class="reveal d1">Normaliza y clasifica: incluir · excluir · dudoso</h2>
+        <p class="lead reveal d2">El núcleo del ejercicio, en un solo paso: la IA extrae los campos útiles de cada
+          registro y, con tus criterios, lo clasifica y justifica. Procesa por lotes de 25–50.</p>
+        <div class="chain reveal d2">
+          <span class="lnk in">◀ Entra: <b>criterios E1–E5 + lote de wos_scopus.txt</b></span>
+          <span class="lnk out">Sale ▶ <b>tabla de decisiones + lista de DUDOSOS</b></span>
+        </div>
+        <p class="phint reveal d2"><span class="sw"></span> Pega tus criterios y un lote de registros en los recuadros. <b>Lo ámbar</b> es lo editable; copia el prompt completo.</p>
+        <div class="prompt reveal d2" data-prompt="p3"></div>
+        <p class="labvalid reveal d3">✓ <b>Tú validas:</b> una <b>muestra del 10–20%</b> de las decisiones antes de confiar en el conteo. Si discrepa mucho, ajusta criterios y vuelve a tamizar.</p>
+      </div>
+    </section>
+
+    <!-- 8 · FASE 3 · ELEGIBILIDAD · PROMPT 4 -->
+    <section class="slide lab">
+      <div class="inner">
+        <span class="labtag reveal d1">🔧 Prompt 4 · Fase 03</span>
+        <div class="eyebrow reveal d1">Elegibilidad a texto completo</div>
+        <h2 class="reveal d1">Resuelve los dudosos y registra exclusiones</h2>
+        <p class="lead reveal d2">Los DUDOSO pasan a texto completo. La IA dice qué falta y qué buscar; tú lees el artículo
+          y decides la exclusión final con su motivo. En elegibilidad, <b style="color:var(--espuma)">cada exclusión lleva su razón</b>.</p>
+        <div class="chain reveal d2">
+          <span class="lnk in">◀ Entra: <b>lista de DUDOSOS</b></span>
+          <span class="lnk out">Sale ▶ <b>exclusiones con motivo + incluidos definitivos</b></span>
+        </div>
+        <p class="phint reveal d2"><span class="sw"></span> Pega los DUDOSO en el recuadro. <b>Lo ámbar</b> es lo editable; copia el prompt completo.</p>
+        <div class="prompt reveal d2" data-prompt="p4"></div>
+        <p class="labvalid reveal d3">✓ <b>Tú validas:</b> tú lees el texto completo de los candidatos; la IA solo orienta. La decisión de excluir —y su motivo— es tuya.</p>
+      </div>
+    </section>
+
+    <!-- 9 · DIAGRAMA DE FLUJO PRISMA 2020 + PROMPT 5 -->
+    <section class="slide lab" data-anim="flow">
+      <div class="inner">
+        <span class="labtag reveal d1">🔧 Prompt 5 · Fase 04 · armar el diagrama</span>
         <div class="eyebrow reveal d1">El corazón del método</div>
         <h2 class="reveal d1">Diagrama de flujo PRISMA 2020</h2>
         <div class="flowwrap reveal d2">
@@ -473,14 +604,14 @@
                 <div class="node">
                   <div class="ph">Identificación · bases de datos</div>
                   <div class="title">Registros identificados</div>
-                  <div class="count" data-c="1099"><span class="cv">0</span> <small>registros</small></div>
-                  <div class="sub">Scopus 612 · WoS 487</div>
+                  <div class="count" data-c="389"><span class="cv">0</span> <small>registros</small></div>
+                  <div class="sub">Web of Science · exportación única</div>
                 </div>
                 <div class="excl">
-                  <div class="ehead"><span>Eliminados antes del tamizaje</span><b>−367</b></div>
+                  <div class="ehead"><span>Eliminados antes del tamizaje</span><b>−40</b></div>
                   <ul>
-                    <li><span>Duplicados</span><span>286</span></li>
-                    <li><span>Marcados por automatización</span><span>81</span></li>
+                    <li><span>Fuera de 2010–2025</span><span>35</span></li>
+                    <li><span>Idioma no elegible</span><span>5</span></li>
                   </ul>
                 </div>
               </div>
@@ -490,16 +621,16 @@
                 <div class="node">
                   <div class="ph">Tamizaje</div>
                   <div class="title">Registros tamizados</div>
-                  <div class="count" data-c="732"><span class="cv">0</span> <small>registros</small></div>
+                  <div class="count" data-c="349"><span class="cv">0</span> <small>registros</small></div>
                   <div class="sub">Cribado de título y resumen</div>
                 </div>
                 <div class="excl">
-                  <div class="ehead"><span>Excluidos en tamizaje</span><b>−516</b></div>
+                  <div class="ehead"><span>Excluidos en tamizaje</span><b>−180</b></div>
                   <ul>
-                    <li><span>Tema no es huella hídrica</span><span>268</span></li>
-                    <li><span>No son cultivos</span><span>124</span></li>
-                    <li><span>Teórico / sin datos</span><span>76</span></li>
-                    <li><span>Resumen de congreso</span><span>48</span></li>
+                    <li><span>Tema no es huella hídrica</span><span>92</span></li>
+                    <li><span>No son cultivos</span><span>48</span></li>
+                    <li><span>Teórico / sin datos</span><span>28</span></li>
+                    <li><span>Resumen de congreso</span><span>12</span></li>
                   </ul>
                 </div>
               </div>
@@ -509,13 +640,13 @@
                 <div class="node">
                   <div class="ph">Recuperación</div>
                   <div class="title">Informes buscados para recuperación</div>
-                  <div class="count" data-c="216"><span class="cv">0</span> <small>informes</small></div>
+                  <div class="count" data-c="169"><span class="cv">0</span> <small>informes</small></div>
                   <div class="sub">Solicitud de texto completo</div>
                 </div>
                 <div class="excl">
-                  <div class="ehead"><span>No recuperados</span><b>−16</b></div>
+                  <div class="ehead"><span>No recuperados</span><b>−9</b></div>
                   <ul>
-                    <li><span>Texto completo no disponible</span><span>16</span></li>
+                    <li><span>Texto completo no disponible</span><span>9</span></li>
                   </ul>
                 </div>
               </div>
@@ -525,17 +656,17 @@
                 <div class="node">
                   <div class="ph">Elegibilidad</div>
                   <div class="title">Informes evaluados a texto completo</div>
-                  <div class="count" data-c="200"><span class="cv">0</span> <small>informes</small></div>
+                  <div class="count" data-c="160"><span class="cv">0</span> <small>informes</small></div>
                   <div class="sub">Lectura completa frente a los criterios</div>
                 </div>
                 <div class="excl">
-                  <div class="ehead"><span>Excluidos con razón</span><b>−152</b></div>
+                  <div class="ehead"><span>Excluidos con razón</span><b>−112</b></div>
                   <ul>
-                    <li><span>No cuantifica huella hídrica</span><span>60</span></li>
-                    <li><span>Sin datos cuantitativos extraíbles</span><span>34</span></li>
-                    <li><span>Componente de huella no especificado</span><span>24</span></li>
-                    <li><span>Población/cultivo no agrícola</span><span>20</span></li>
-                    <li><span>No revisado por pares</span><span>14</span></li>
+                    <li><span>No cuantifica huella hídrica</span><span>44</span></li>
+                    <li><span>Sin datos cuantitativos extraíbles</span><span>26</span></li>
+                    <li><span>Componente de huella no especificado</span><span>18</span></li>
+                    <li><span>Población/cultivo no agrícola</span><span>14</span></li>
+                    <li><span>No revisado por pares</span><span>10</span></li>
                   </ul>
                 </div>
               </div>
@@ -552,18 +683,26 @@
             </div>
           </div>
         </div>
+        <div class="chain reveal d2" style="margin-top:18px">
+          <span class="lnk in">◀ Entra: <b>todos tus conteos por fase</b></span>
+          <span class="lnk out">Sale ▶ <b>cajas del diagrama + párrafo de Resultados</b></span>
+        </div>
+        <p class="phint reveal d2"><span class="sw"></span> Escribe tus conteos en los recuadros (traen el ejemplo). Copia el prompt completo para que la IA verifique las restas y redacte las cajas.</p>
+        <div class="prompt reveal d2" data-prompt="p5"></div>
+        <p class="labvalid reveal d3">✓ <b>Tú validas:</b> que las restas cuadren fase a fase. Los números del diagrama no se inventan: salen de tu tamizaje real.</p>
       </div>
     </section>
 
-    <!-- 7 · SÍNTESIS -->
-    <section class="slide" data-anim="donut">
+    <!-- 10 · FASE 4 · SÍNTESIS + PROMPT 6 -->
+    <section class="slide lab" data-anim="donut">
       <div class="inner">
-        <div class="eyebrow reveal d1">Fase 04 · Síntesis</div>
-        <h2 class="reveal d1">Lo que revelan los 48 estudios</h2>
-        <p class="lead reveal d2">Clasificamos cada estudio incluido según el componente de huella hídrica que cuantifica.
-          Así de tangible se vuelve la evidencia tras el filtrado.</p>
+        <span class="labtag reveal d1">🔧 Prompt 6 · Fase 04 · síntesis</span>
+        <div class="eyebrow reveal d1">Lo que revelan los 48 estudios</div>
+        <h2 class="reveal d1">Extrae y sintetiza los estudios incluidos</h2>
+        <p class="lead reveal d2">Cierra el ciclo: clasifica cada estudio incluido según el componente de huella que cuantifica
+          y tabula los datos para tu síntesis o meta-análisis, sin inferir lo que no esté explícito.</p>
         <div class="synth">
-          <div class="donut reveal d3">
+          <div class="donut reveal d2">
             <svg viewBox="0 0 120 120" width="100%" height="100%">
               <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="16"/>
               <circle id="arcVerde" cx="60" cy="60" r="50" fill="none" stroke="var(--verde)" stroke-width="16" stroke-linecap="round" stroke-dasharray="0 999"/>
@@ -582,10 +721,17 @@
             <p class="lead" style="font-size:.86rem;margin-top:6px">De los 48, <b style="color:var(--ambar)">31</b> aportan datos suficientes para el meta-análisis.</p>
           </div>
         </div>
+        <div class="chain reveal d3" style="margin-top:20px">
+          <span class="lnk in">◀ Entra: <b>estudios incluidos</b></span>
+          <span class="lnk out">Sale ▶ <b>tabla de datos para la síntesis</b></span>
+        </div>
+        <p class="phint reveal d3"><span class="sw"></span> Ajusta las variables a extraer y pega tus incluidos. <b>Lo ámbar</b> es lo editable; copia el prompt completo.</p>
+        <div class="prompt reveal d3" data-prompt="p6"></div>
+        <p class="labvalid reveal d4">✓ <b>Tú validas:</b> la exactitud de cada dato extraído contra el artículo original. La síntesis solo es tan buena como la extracción.</p>
       </div>
     </section>
 
-    <!-- 8 · CHECKLIST 27 ÍTEMS -->
+    <!-- 11 · CHECKLIST 27 ÍTEMS -->
     <section class="slide">
       <div class="inner">
         <div class="eyebrow reveal d1">La otra mitad de PRISMA</div>
@@ -653,7 +799,7 @@
       </div>
     </section>
 
-    <!-- 9 · CIERRE -->
+    <!-- 12 · CIERRE -->
     <section class="slide">
       <div class="inner">
         <div class="eyebrow reveal d1">Para llevar</div>
@@ -773,7 +919,7 @@ function animSources(){
 const crits=[...document.querySelectorAll('.crit input')];
 const critCount=document.getElementById('critCount');
 function recalc(){
-  let rem=732;
+  let rem=349;
   crits.forEach(c=>{if(c.checked)rem-=(+c.dataset.cut)});
   countUp(critCount,rem,500);
 }
@@ -838,6 +984,190 @@ function onEnter(i){
   if(a==='flow')applyPhase();
   if(a==='donut')animDonut();
 }
+
+// Taller · copiar prompts al portapapeles
+function copyFallback(txt,cb){
+  const ta=document.createElement('textarea');
+  ta.value=txt;ta.style.position='fixed';ta.style.top='-9999px';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy')}catch(e){}
+  document.body.removeChild(ta);cb();
+}
+function copyText(txt,btn){
+  const done=()=>{
+    btn.classList.add('done');
+    const t=btn.querySelector('.ct');const old=t.textContent;t.textContent='¡Copiado!';
+    setTimeout(()=>{btn.classList.remove('done');t.textContent=old},1600);
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done).catch(()=>copyFallback(txt,done));
+  }else{copyFallback(txt,done)}
+}
+
+// ---------- Constructor de prompts: recuadros editables → prompt completo ----------
+// Cada campo trae por defecto el ejemplo de huella hídrica, pero es editable.
+const FIELDS = {
+  p1:{ f:[
+    {k:'tema',label:'Tema (en una frase)',v:'huella hídrica de cultivos agrícolas'},
+    {k:'p',label:'P · Población / contexto',v:'cultivos agrícolas (cereales, frutales, hortalizas)',area:1},
+    {k:'e',label:'E · Exposición / intervención',v:'producción y riego bajo distintos regímenes hídricos y clima',area:1},
+    {k:'c',label:'C · Comparador (si aplica)',v:'distintos sistemas, regiones, años o escenarios de agua',area:1},
+    {k:'o',label:'O · Resultado a medir',v:'huella hídrica cuantificada (verde, azul y/o gris), en m³/t',area:1}
+  ], tpl:
+`Actúa como metodólogo experto en revisiones sistemáticas (PRISMA 2020).
+Tema: «{tema}».
+Borrador PECO:
+- P (población / contexto): {p}
+- E (exposición / intervención): {e}
+- C (comparador, si aplica): {c}
+- O (resultado a medir): {o}
+
+1. Redacta UNA pregunta principal en formato PECO, clara y específica.
+2. Deriva 2–3 objetivos.
+3. Marca las ambigüedades que deba acotar antes de buscar.
+Devuélvelo breve, listo para un protocolo.` },
+
+  p2:{ f:[
+    {k:'pregunta',label:'Pregunta PECO (sale del Prompt 1)',v:'¿Cuál es la huella hídrica —verde, azul y gris— de los principales cultivos y cómo varía entre sistemas, regiones y escenarios climáticos (2010–2025)?',area:1},
+    {k:'idiomas',label:'Idiomas de los sinónimos',v:'español e inglés'},
+    {k:'anios',label:'Ventana temporal',v:'2010–2025'},
+    {k:'tipos',label:'Tipo de documento',v:'artículo o revisión'}
+  ], tpl:
+`A partir de esta pregunta PECO: «{pregunta}».
+
+1. Redacta los CRITERIOS DE ELEGIBILIDAD en dos listas:
+   Inclusión (3–5) y Exclusión (3–5). Cada criterio debe ser
+   observable en título/resumen o metadatos (año, idioma, tipo).
+2. A cada criterio de exclusión, asígnale un CÓDIGO corto (E1, E2…)
+   que reutilizaré al tamizar.
+3. Propón una ecuación booleana (AND/OR, comodín *) con sinónimos
+   en {idiomas}, lista para Scopus y Web of Science.
+4. Sugiere los límites: ventana temporal {anios}, tipo de documento
+   {tipos} e idioma.` },
+
+  p3:{ f:[
+    {k:'inclusion',label:'Criterios de inclusión',v:'estudios empíricos que cuantifican la huella hídrica; revisados por pares; 2010–2025; español o inglés',area:1},
+    {k:'exclusion',label:'Criterios de exclusión (con código)',v:'E1 no cuantifica HH (solo la menciona); E2 no son cultivos agrícolas; E3 teórico/modelado sin datos primarios; E4 congreso/tesis/literatura gris; E5 fuera de ventana o idioma no elegible',area:1},
+    {k:'registros',label:'Registros a tamizar (lote de 25–50)',v:'«PEGA AQUÍ UN LOTE DE 25–50 REGISTROS de wos_scopus.txt»',area:1}
+  ], tpl:
+`Te pego registros de Web of Science en formato etiquetado (cada campo
+= 2 letras; el registro termina en "ER"). Tamízalos para una revisión
+sistemática (PRISMA 2020).
+
+CRITERIOS DE INCLUSIÓN: {inclusion}
+CRITERIOS DE EXCLUSIÓN (con código): {exclusion}
+
+Para cada registro, usando SOLO título (TI), palabras clave (DE/ID) y
+resumen (AB):
+- Decide INCLUIR / EXCLUIR / DUDOSO:
+  · INCLUIR: cumple inclusión y ninguna exclusión.
+  · EXCLUIR: cumple ≥1 exclusión (indica el código).
+  · DUDOSO: el resumen no alcanza para decidir.
+- Sé conservador: ante duda real, DUDOSO.
+
+Reglas: ignora CR, C1, FU, RI, OI; no inventes nada (si falta, "—");
+conserva el id UT tal cual.
+
+SALIDA (tabla / CSV):
+UT | titulo_corto | anio | decision | codigo | justificacion (≤20 palabras)
+Cierra con el conteo: nº INCLUIR · nº EXCLUIR (por código) · nº DUDOSO.
+
+REGISTROS:
+{registros}` },
+
+  p4:{ f:[
+    {k:'codigos',label:'Códigos de exclusión',v:'E1, E2, E3, E4, E5'},
+    {k:'dudosos',label:'Registros marcados DUDOSO',v:'«pega aquí los registros marcados DUDOSO»',area:1}
+  ], tpl:
+`Estos registros quedaron como DUDOSO en el tamizaje. Para cada uno:
+1. Di qué información FALTA en el resumen para decidir.
+2. Indica qué buscar en el texto completo para confirmar
+   inclusión / exclusión.
+3. Si al leer el texto completo se excluye, asigna el código
+   de exclusión ({codigos}) con su motivo.
+
+REGISTROS DUDOSOS:
+{dudosos}` },
+
+  p5:{ grid:1, f:[
+    {k:'identificados',label:'Identificados',v:'389'},
+    {k:'duplicados',label:'Duplicados',v:'0'},
+    {k:'automatizacion',label:'Automatización',v:'40'},
+    {k:'tamizados',label:'Tamizados',v:'349'},
+    {k:'excl_tam',label:'Excluidos en tamizaje',v:'180'},
+    {k:'buscados',label:'Buscados (recuperación)',v:'169'},
+    {k:'no_recup',label:'No recuperados',v:'9'},
+    {k:'evaluados',label:'Evaluados a texto completo',v:'160'},
+    {k:'excl_eleg',label:'Excluidos con razón',v:'112'},
+    {k:'incluidos',label:'Incluidos',v:'48'}
+  ], tpl:
+`Con mis conteos, arma el diagrama de flujo PRISMA 2020:
+- Identificados en bases: {identificados}
+- Duplicados eliminados: {duplicados}
+- Marcados por automatización (idioma/tipo/año): {automatizacion}
+- Tamizados: {tamizados} → excluidos en tamizaje: {excl_tam} (desglosa por motivo)
+- Buscados para recuperación: {buscados} → no recuperados: {no_recup}
+- Evaluados a texto completo: {evaluados} → excluidos con razón: {excl_eleg} (por código)
+- Estudios incluidos: {incluidos}
+
+1. Verifica que las restas cuadran fase a fase.
+2. Devuelve el texto de cada caja del diagrama PRISMA 2020.
+3. Redacta el párrafo de "selección de estudios" para Resultados.` },
+
+  p6:{ f:[
+    {k:'variables',label:'Variables a extraer',v:'cultivo · componente (verde/azul/gris) · valor de huella (m³/t) · método (CROPWAT, AquaCrop…) · región · ¿aporta datos al meta-análisis? (sí/no)',area:1},
+    {k:'estudios',label:'Estudios incluidos',v:'«pega los registros incluidos (o sus textos completos)»',area:1}
+  ], tpl:
+`Para cada estudio INCLUIDO, extrae estos campos en una tabla:
+- UT · autores · año · país/región
+- {variables}
+
+No infieras datos que no estén explícitos; marca "no reportado"
+cuando falte.
+
+ESTUDIOS:
+{estudios}` }
+};
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function promptText(cfg,state){return cfg.tpl.replace(/\{(\w+)\}/g,(m,k)=>state[k]!=null?state[k]:'')}
+function promptHTML(cfg,state){
+  let out='',last=0,m;const re=/\{(\w+)\}/g;
+  while((m=re.exec(cfg.tpl))){
+    out+=esc(cfg.tpl.slice(last,m.index));
+    out+='<mark class="phl">'+esc(state[m[1]]!=null?state[m[1]]:'')+'</mark>';
+    last=m.index+m[0].length;
+  }
+  out+=esc(cfg.tpl.slice(last));
+  return out;
+}
+function buildPrompt(mount){
+  const cfg=FIELDS[mount.dataset.prompt];
+  if(!cfg)return;
+  const state={};cfg.f.forEach(x=>state[x.k]=x.v);
+  const fields=document.createElement('div');
+  fields.className='pfields'+(cfg.grid?' grid':'');
+  const pre=document.createElement('pre');pre.className='codebody';
+  cfg.f.forEach(x=>{
+    const w=document.createElement('div');w.className='pfield';
+    const l=document.createElement('label');l.textContent=x.label;w.appendChild(l);
+    const inp=x.area?document.createElement('textarea'):document.createElement('input');
+    inp.value=x.v;
+    inp.addEventListener('input',()=>{state[x.k]=inp.value;pre.innerHTML=promptHTML(cfg,state)});
+    w.appendChild(inp);fields.appendChild(w);
+  });
+  const card=document.createElement('div');card.className='codecard tpl ppreview';
+  const head=document.createElement('div');head.className='codehead';
+  const lbl=document.createElement('span');lbl.className='lab-l';lbl.textContent='🟦 Prompt listo — cópialo completo';
+  const btn=document.createElement('button');btn.className='copybtn';
+  btn.innerHTML='<span>⧉</span><span class="ct">Copiar prompt</span>';
+  btn.addEventListener('click',()=>copyText(promptText(cfg,state),btn));
+  head.appendChild(lbl);head.appendChild(btn);
+  card.appendChild(head);card.appendChild(pre);
+  pre.innerHTML=promptHTML(cfg,state);
+  mount.appendChild(fields);mount.appendChild(card);
+}
+document.querySelectorAll('.prompt[data-prompt]').forEach(buildPrompt);
 
 // init
 applyPhase();

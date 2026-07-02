@@ -250,7 +250,7 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
       <div class="card">
         <span class="num">02:20 — 03:00</span>
         <h3>El punto de partida</h3>
-        <p>Cada participante define su tema tentativo de investigación. Cierre y enlace con la Sesión 2 (ética y prompting).</p>
+        <p>Cada participante define su tema tentativo de investigación. Cierre y enlace con la Sesión 2 (integridad y ética).</p>
       </div>
     </div>
   </div>
@@ -770,78 +770,62 @@ Reglas estrictas:
   </div>
 </section>
 
-<!-- ============ 15 · TALLER BREAKOUT ============ -->
+<!-- ============ 16 · TALLER BREAKOUT · TU LÍNEA DE INVESTIGACIÓN ============ -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">Taller · Breakout rooms · 30 min</div>
-    <h2 class="reveal">Compara dos IA<br>con tu propio tema.</h2>
-    <div class="cols c2 reveal" style="margin-top:1.6rem">
+    <h2 class="reveal">De un interés difuso<br>a tu <span class="em">línea de investigación</span>.</h2>
+    <p class="lead reveal" style="margin-top:.9rem;max-width:74ch">Usa la IA como copiloto para pasar de «algo que me interesa» a una línea concreta y viable. Al salir de la sala cada quien traerá <mark>una línea candidata</mark> — la semilla del tema que definirás al cerrar la sesión.</p>
+
+    <div class="cols c2 reveal" style="margin-top:1.4rem">
       <div class="card" style="border-left:3px solid var(--accent)">
-        <h3>Consigna</h3>
-        <p style="margin-top:.7rem;font-size:.92rem">1. Toma un tema que te interese investigar.<br><br>2. Usa este prompt mínimo en <strong style="color:var(--ink)">dos</strong> herramientas distintas:</p>
-        <div class="promptbig" style="margin-top:.6rem">
+        <h3>Tres pasos</h3>
+        <p style="margin-top:.7rem;font-size:.92rem">
+          <strong style="color:var(--ink)">1 · Suelta tu interés.</strong> Escribe en una frase algo que te gustaría investigar, aunque suene vago.<br><br>
+          <strong style="color:var(--ink)">2 · Pide 5 líneas.</strong> Usa el prompt mínimo para que la IA te devuelva 5 líneas posibles en una tabla.<br><br>
+          <strong style="color:var(--ink)">3 · Elige y reta una.</strong> Escoge la que más te atraiga y pídele a la IA que la critique: ¿es viable?, ¿qué datos necesitas?, ¿ya está muy estudiada?
+        </p>
+        <div class="promptbig" style="margin-top:.8rem">
           <div class="ph">
-            <span>▸ Prompt mínimo</span>
+            <span>▸ Prompt mínimo · reemplaza [campo] y [tema]</span>
             <button class="copybtn" id="copyMini1Btn" type="button">📋 Copiar</button>
           </div>
-          <div class="pc" id="copyMini1Src" style="font-size:.76rem;padding:.7rem .85rem">Actúa como asesor de investigación en [campo]. Estoy explorando [tema]. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. No inventes citas.</div>
+          <div class="pc" id="copyMini1Src" style="font-size:.76rem;padding:.7rem .85rem">Actúa como asesor de investigación en [campo]. Estoy explorando [tema]. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. Preséntalo en una tabla. No inventes citas.</div>
         </div>
-        <p style="margin-top:.7rem;font-size:.92rem">3. Verifica una afirmación de cada una en Google Scholar, si aparece alguna referencia.</p>
       </div>
       <div class="card" style="border-left:3px solid var(--gold)">
         <h3 style="color:var(--gold)">Ejemplo · gestión del agua</h3>
-        <p style="margin-top:.7rem;font-size:.92rem">Cómo se ve el mismo prompt con un tema real:</p>
+        <p style="margin-top:.7rem;font-size:.9rem">El mismo prompt con un tema real. Solo cambian <strong style="color:var(--ink)">[campo]</strong> y <strong style="color:var(--ink)">[tema]</strong>; la estructura no se toca.</p>
         <div class="promptbig" style="margin-top:.6rem;border-left-color:var(--gold)">
           <div class="ph">
-            <span>▸ Prompt · ejemplo</span>
+            <span>▸ Paso 2 · pedir las 5 líneas</span>
             <button class="copybtn" id="copyMini2Btn" type="button">📋 Copiar</button>
           </div>
-          <div class="pc" id="copyMini2Src" style="font-size:.76rem;padding:.7rem .85rem">Actúa como asesor de investigación en ciencias o gestión ambiental. Estoy explorando la gestión sostenible del agua en la agricultura a nivel de cuencas en el contexto de cambio climático. Dame 5 líneas posibles con: problema, pregunta de investigación, población, datos y dificultad. Genera esta información en estructura de tabla. No inventes citas</div>
+          <div class="pc" id="copyMini2Src" style="font-size:.74rem;padding:.7rem .85rem">Actúa como asesor de investigación en ciencias o gestión ambiental. Estoy explorando la gestión sostenible del agua en la agricultura a nivel de cuencas en el contexto de cambio climático. Dame 5 líneas posibles con: problema, pregunta de investigación, población, datos y dificultad. Preséntalo en una tabla. No inventes citas.</div>
         </div>
-        <p style="margin-top:.7rem;font-size:.82rem;color:var(--muted)">► Solo cambian <strong style="color:var(--ink)">[campo]</strong> y <strong style="color:var(--ink)">[tema]</strong>. La estructura del prompt no se toca.</p>
+        <div class="promptbig" style="margin-top:.6rem;border-left-color:var(--accent2)">
+          <div class="ph">
+            <span>▸ Paso 3 · reta la línea elegida</span>
+            <button class="copybtn" id="copyMini3Btn" type="button">📋 Copiar</button>
+          </div>
+          <div class="pc" id="copyMini3Src" style="font-size:.72rem;padding:.7rem .85rem">De la tabla anterior elijo la línea N.º [x]. Critícala como revisor exigente: ¿es viable para un equipo pequeño en un semestre?, ¿qué datos concretos necesitaría y dónde conseguirlos?, ¿ya está demasiado estudiada? Sugiéreme cómo acotarla mejor. No inventes citas.</div>
+        </div>
       </div>
     </div>
 
-    <div class="cols c2 reveal" style="margin-top:1rem">
-      <div class="card" style="border-left:3px solid var(--accent2)">
-        <h3>Prompt · comparar las dos respuestas</h3>
-        <p style="margin-top:.6rem;font-size:.82rem;color:var(--muted);line-height:1.5">Pega las dos respuestas que te dieron las herramientas de IA dentro de este prompt y úsalo en una tercera ventana de IA para contrastarlas:</p>
-        <div class="promptbig" style="margin-top:.6rem;border-left-color:var(--accent2)">
-          <div class="ph">
-            <span>▸ Prompt · comparar IAs</span>
-            <button class="copybtn" id="copyMini3Btn" type="button">📋 Copiar</button>
-          </div>
-          <div class="pc" id="copyMini3Src" style="font-size:.74rem;padding:.7rem .85rem">Actúa como revisor crítico de investigación. Te voy a compartir dos respuestas distintas que recibí de dos herramientas de IA sobre el mismo tema. Compáralas y responde de forma breve y estructurada:
-
-▹ ¿En qué coincidieron las dos IA?
-▹ ¿En qué se contradijeron?
-▹ ¿Encontraron alguna alucinación o afirmación sin respaldo verificable?
-
-Justifica cada punto citando fragmentos textuales de cada respuesta. No inventes citas.
-
-[RESPUESTA IA 1]
-(pega aquí la respuesta de la primera herramienta)
-
-[RESPUESTA IA 2]
-(pega aquí la respuesta de la segunda herramienta)</div>
-        </div>
-      </div>
-      <div class="card" style="border-left:3px solid var(--accent2)">
-        <h3>Entregable de la sala</h3>
-        <p style="margin-top:.7rem;font-size:.92rem">Un hallazgo en <strong style="color:var(--ink)">3 frases</strong>:<br><br>▹ ¿En qué coincidieron las dos IA?<br>▹ ¿En qué se contradijeron?<br>▹ ¿Encontraron alguna alucinación?</p>
-        <p style="margin-top:.8rem;color:var(--accent2);font-size:.74rem" class="mono">RELATOR POR SALA · 1 MIN EN PLENARIA</p>
-        <p style="margin-top:.6rem;color:var(--muted);font-size:.78rem">► En la Sesión 2 aprenderemos a redactar prompts más sofisticados con la técnica R-C-T-F-I.</p>
-      </div>
+    <div class="reveal" style="margin-top:1rem;display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap;justify-content:space-between">
+      <p style="font-size:.9rem;color:var(--muted);max-width:58ch">▸ <strong style="color:var(--ink)">Entregable de la sala:</strong> tu línea candidata en una frase + la duda principal que la IA te ayudó a ver. <span class="mono" style="color:var(--accent2);font-size:.72rem">RELATOR POR SALA · 1 MIN EN PLENARIA</span></p>
+      <p style="font-size:.76rem;color:var(--muted);max-width:34ch">► ¿Te sobra tiempo? Corre el paso 2 en <strong style="color:var(--ink)">dos IA distintas</strong> y verifica en Scholar cualquier afirmación que suene demasiado precisa.</p>
     </div>
   </div>
 </section>
 
-<!-- ============ 15 · DEFINE TU TEMA + CIERRE ============ -->
+<!-- ============ 17 · DEFINE TU TEMA + CIERRE ============ -->
 <section class="slide">
   <div class="spread">
     <div class="kicker reveal">El punto de partida · cierre</div>
-    <h2 class="reveal">Antes de irte: <span class="em2">define tu tema</span>.</h2>
-    <p class="lead reveal" style="margin-top:.9rem">Este tema te acompañará en las 10 sesiones siguientes y será la base de los dos productos de tu equipo. Complétalo en una frase:</p>
+    <h2 class="reveal">Tu línea, ahora en <span class="em2">una frase</span>.</h2>
+    <p class="lead reveal" style="margin-top:.9rem">Toma la línea candidata que elegiste en el taller y compáctala en una sola oración. Este tema te acompañará en las 10 sesiones siguientes y será la base de los dos productos de tu equipo. Usa la plantilla:</p>
 
     <div class="cols c2 reveal" style="margin-top:1.2rem;gap:1.4rem">
       <div>
@@ -870,14 +854,14 @@ porque el cambio climático reduce la disponibilidad de agua y no hay datos loca
       </div>
     </div>
 
-    <p class="lead reveal" style="margin-top:1.2rem">Pégalo en el documento compartido. En la <span class="emg">Sesión 2</span> aprenderemos a interrogar este tema con ética y prompting riguroso.</p>
+    <p class="lead reveal" style="margin-top:1.2rem">Pégalo en el documento compartido. En la <span class="emg">Sesión 2</span> abordaremos la integridad y la ética de investigar con IA.</p>
     <div class="reveal meta-row" style="margin-top:1.2rem">
-      <div><span class="mono">TAREA</span><p>Define tu tema</p></div>
-      <div><span class="mono">PRUEBA</span><p>Conversor + comparar 2 IA</p></div>
-      <div><span class="mono">SIGUE</span><p>Sesión 2 · Ética y prompting</p></div>
+      <div><span class="mono">TAREA</span><p>Registra tu tema</p></div>
+      <div><span class="mono">DE HOY</span><p>Tu línea de investigación</p></div>
+      <div><span class="mono">SIGUE</span><p>Sesión 2 · Integridad y ética</p></div>
     </div>
     <div class="reveal" style="margin-top:1.6rem;display:flex;justify-content:flex-end">
-      <a href="Sesion2_Presentacion_Interactiva.html" style="display:inline-flex;align-items:center;gap:.6rem;padding:.85rem 1.4rem;background:var(--accent);color:#1a0d08;border-radius:10px;font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:.2s" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">Ir a Sesión 2 · Ética y prompting →</a>
+      <a href="Sesion2_Presentacion_Interactiva.html" style="display:inline-flex;align-items:center;gap:.6rem;padding:.85rem 1.4rem;background:var(--accent);color:#1a0d08;border-radius:10px;font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:.2s" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">Ir a Sesión 2 · Integridad y ética →</a>
     </div>
   </div>
 </section>
@@ -889,7 +873,7 @@ porque el cambio climático reduce la disponibilidad de agua y no hay datos loca
   <div class="nav">
     <button id="themeToggle" aria-label="cambiar tema" title="Cambiar tema (T)"><span id="themeIcon">☾</span></button>
     <button id="prev" aria-label="anterior">‹</button>
-    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 14</span>
+    <span id="counter" style="display:grid;place-items:center;min-width:64px">01 / 17</span>
     <button id="next" aria-label="siguiente">›</button>
   </div>
 </div>
