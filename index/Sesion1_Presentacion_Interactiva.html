@@ -1070,8 +1070,7 @@ wireCopy('copyMini5Btn','copyMini5Src');
     return '<div class="pgpane"><div class="pghead"><span>Tus datos</span><span style="color:var(--c)">rellena ↓</span></div><div class="pgbody">'+fh+'</div></div>'+
       '<div class="pgpane out"><div class="pghead"><span>Prompt generado</span><span class="st" data-st="'+idx+'">sin completar</span></div>'+
       '<div class="pgout" data-out="'+idx+'"></div>'+
-      '<div class="pgfoot"><button class="pgbtn ghost" type="button" data-tpl="'+idx+'">Plantilla</button>'+
-      '<button class="pgbtn" type="button" data-copy="'+idx+'">📋 Copiar prompt</button></div>';
+      '<div class="pgfoot"><button class="pgbtn" type="button" data-copy="'+idx+'">📋 Copiar prompt</button></div>';
   }
   roots.forEach(root=>{
     const ids=(root.dataset.gen||'').split('|').map(s=>s.trim()).filter(Boolean);
@@ -1137,7 +1136,6 @@ wireCopy('copyMini5Btn','copyMini5Src');
       });
     });
     w.root.querySelector('[data-copy="'+w.idx+'"]').addEventListener('click',()=>copy(fill(w.cfg,val(w)),w.root.querySelector('[data-copy="'+w.idx+'"]'),'Copiado'));
-    w.root.querySelector('[data-tpl="'+w.idx+'"]').addEventListener('click',()=>copy(w.cfg.template,w.root.querySelector('[data-tpl="'+w.idx+'"]'),'Plantilla'));
   });
   const store=load();
   widgets.forEach(w=>{
