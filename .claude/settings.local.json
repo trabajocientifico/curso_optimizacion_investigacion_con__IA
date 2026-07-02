@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(awk 'NR>=120 && /volver|index.html|back|Mapa|home/I {print NR\": \"$0}' \"I:\\\\Mi unidad\\\\GITHUB\\\\trabajocientifico\\\\curso_optimizacion_investigacion_con__IA\\\\index\\\\Sesion6_Presentacion_Interactiva.html\")",
-      "WebSearch"
+      "WebSearch",
+      "Bash(node -e ' *)"
     ]
   }
 }

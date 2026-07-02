@@ -194,6 +194,45 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 .copybtn:hover{filter:brightness(1.1)}
 .copybtn.ok{background:var(--ok);color:#0d1117}
 @media(max-width:820px){.wsteps,.chatpick{grid-template-columns:1fr}}
+
+/* ---- generador de prompt embebido (estructura tipo generador_promts.html) ---- */
+.promptgen{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:1rem;margin-top:1.1rem;height:min(52vh,520px)}
+.pgpane{background:var(--card);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.pgpane.out{background:var(--code-bg);border-left:4px solid var(--c,var(--accent))}
+.pghead{padding:.55rem .9rem;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;font-size:.62rem;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.pgbody{flex:1;overflow-y:auto;padding:.8rem .9rem;display:flex;flex-direction:column;gap:.6rem}
+.pgbody::-webkit-scrollbar,.pgout::-webkit-scrollbar{width:6px}
+.pgbody::-webkit-scrollbar-thumb,.pgout::-webkit-scrollbar-thumb{background:rgba(127,127,127,.3);border-radius:4px}
+.pgfield{display:flex;flex-direction:column;gap:.25rem}
+.pgfield label{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--c,var(--accent));font-weight:700}
+.pgfield .pgshared{color:var(--accent2);border:1px solid var(--line);border-radius:4px;padding:0 .3em;margin-left:.3em;font-size:.9em}
+.pgfield textarea{background:var(--code-bg);border:1px solid var(--line);border-radius:7px;padding:.45rem .6rem;color:var(--code-ink);
+  font-family:'Space Mono',monospace;font-size:.78rem;line-height:1.45;resize:vertical;min-height:2rem;width:100%;transition:border-color .2s}
+.pgfield textarea:focus{outline:none;border-color:var(--c,var(--accent))}
+.pgfield textarea::placeholder{color:rgba(127,127,127,.55);font-style:italic}
+.pgout{flex:1;overflow-y:auto;padding:.85rem 1rem;font-family:'Space Mono',monospace;font-size:.76rem;line-height:1.6;
+  color:var(--code-ink);white-space:pre-wrap;word-break:break-word}
+.pgout .e{color:var(--gold);background:rgba(232,176,75,.12);padding:0 .2em;border-radius:3px;border:1px dashed rgba(232,176,75,.3)}
+.pgout .f{color:var(--accent2);background:rgba(61,214,196,.08);padding:0 .12em;border-radius:3px}
+.pgfoot{padding:.5rem .9rem;border-top:1px solid var(--line);display:flex;gap:.5rem;justify-content:flex-end;align-items:center}
+.pgfoot .st{margin-right:auto;font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.pgbtn{background:var(--c,var(--accent));color:#0a0e14;border:1px solid var(--c,var(--accent));font-family:'Space Mono',monospace;
+  font-size:.64rem;letter-spacing:.1em;padding:.42rem .8rem;border-radius:7px;cursor:pointer;text-transform:uppercase;font-weight:700;transition:.2s;line-height:1}
+.pgbtn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.pgbtn.ghost{background:transparent;color:var(--muted);border-color:var(--line)}
+.pgbtn.ghost:hover{color:var(--ink);border-color:var(--c,var(--accent));filter:none}
+.pgbtn.ok{background:var(--ok);border-color:var(--ok);color:#0d1117}
+.promptgen.pgtabs{display:flex;flex-direction:column;gap:.7rem;height:min(52vh,520px)}
+.pgtabbar{display:flex;gap:.5rem;flex-wrap:wrap}
+.pgtab{font-family:'Space Mono',monospace;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+  padding:.45rem .85rem;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;transition:.2s}
+.pgtab:hover{color:var(--ink);border-color:var(--c,var(--accent))}
+.pgtab.on{background:var(--c,var(--accent));color:#0a0e14;border-color:var(--c,var(--accent))}
+.pgpanel{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:1rem}
+.pgpanel[hidden]{display:none}
+@media(max-width:820px){.promptgen{grid-template-columns:1fr;height:auto;max-height:66vh}
+  .promptgen.pgtabs{height:auto}.pgpanel{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -772,51 +811,12 @@ Reglas estrictas:
 
 <!-- ============ 16 · TALLER BREAKOUT · TU LÍNEA DE INVESTIGACIÓN ============ -->
 <section class="slide">
-  <div class="spread">
+  <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Taller · Breakout rooms · 30 min</div>
-    <h2 class="reveal">De un interés difuso<br>a tu <span class="em">línea de investigación</span>.</h2>
-    <p class="lead reveal" style="margin-top:.9rem;max-width:74ch">Usa la IA como copiloto para pasar de «algo que me interesa» a una línea concreta y viable. Al salir de la sala cada quien traerá <mark>una línea candidata</mark> — la semilla del tema que definirás al cerrar la sesión.</p>
-
-    <div class="cols c2 reveal" style="margin-top:1.4rem">
-      <div class="card" style="border-left:3px solid var(--accent)">
-        <h3>Tres pasos</h3>
-        <p style="margin-top:.7rem;font-size:.92rem">
-          <strong style="color:var(--ink)">1 · Suelta tu interés.</strong> Escribe en una frase algo que te gustaría investigar, aunque suene vago.<br><br>
-          <strong style="color:var(--ink)">2 · Pide 5 líneas.</strong> Usa el prompt mínimo para que la IA te devuelva 5 líneas posibles en una tabla.<br><br>
-          <strong style="color:var(--ink)">3 · Elige y reta una.</strong> Escoge la que más te atraiga y pídele a la IA que la critique: ¿es viable?, ¿qué datos necesitas?, ¿ya está muy estudiada?
-        </p>
-        <div class="promptbig" style="margin-top:.8rem">
-          <div class="ph">
-            <span>▸ Prompt mínimo · reemplaza [campo] y [tema]</span>
-            <button class="copybtn" id="copyMini1Btn" type="button">📋 Copiar</button>
-          </div>
-          <div class="pc" id="copyMini1Src" style="font-size:.76rem;padding:.7rem .85rem">Actúa como asesor de investigación en [campo]. Estoy explorando [tema]. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. Preséntalo en una tabla. No inventes citas.</div>
-        </div>
-      </div>
-      <div class="card" style="border-left:3px solid var(--gold)">
-        <h3 style="color:var(--gold)">Ejemplo · gestión del agua</h3>
-        <p style="margin-top:.7rem;font-size:.9rem">El mismo prompt con un tema real. Solo cambian <strong style="color:var(--ink)">[campo]</strong> y <strong style="color:var(--ink)">[tema]</strong>; la estructura no se toca.</p>
-        <div class="promptbig" style="margin-top:.6rem;border-left-color:var(--gold)">
-          <div class="ph">
-            <span>▸ Paso 2 · pedir las 5 líneas</span>
-            <button class="copybtn" id="copyMini2Btn" type="button">📋 Copiar</button>
-          </div>
-          <div class="pc" id="copyMini2Src" style="font-size:.74rem;padding:.7rem .85rem">Actúa como asesor de investigación en ciencias o gestión ambiental. Estoy explorando la gestión sostenible del agua en la agricultura a nivel de cuencas en el contexto de cambio climático. Dame 5 líneas posibles con: problema, pregunta de investigación, población, datos y dificultad. Preséntalo en una tabla. No inventes citas.</div>
-        </div>
-        <div class="promptbig" style="margin-top:.6rem;border-left-color:var(--accent2)">
-          <div class="ph">
-            <span>▸ Paso 3 · reta la línea elegida</span>
-            <button class="copybtn" id="copyMini3Btn" type="button">📋 Copiar</button>
-          </div>
-          <div class="pc" id="copyMini3Src" style="font-size:.72rem;padding:.7rem .85rem">De la tabla anterior elijo la línea N.º [x]. Critícala como revisor exigente: ¿es viable para un equipo pequeño en un semestre?, ¿qué datos concretos necesitaría y dónde conseguirlos?, ¿ya está demasiado estudiada? Sugiéreme cómo acotarla mejor. No inventes citas.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="reveal" style="margin-top:1rem;display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap;justify-content:space-between">
-      <p style="font-size:.9rem;color:var(--muted);max-width:58ch">▸ <strong style="color:var(--ink)">Entregable de la sala:</strong> tu línea candidata en una frase + la duda principal que la IA te ayudó a ver. <span class="mono" style="color:var(--accent2);font-size:.72rem">RELATOR POR SALA · 1 MIN EN PLENARIA</span></p>
-      <p style="font-size:.76rem;color:var(--muted);max-width:34ch">► ¿Te sobra tiempo? Corre el paso 2 en <strong style="color:var(--ink)">dos IA distintas</strong> y verifica en Scholar cualquier afirmación que suene demasiado precisa.</p>
-    </div>
+    <h2 class="reveal" style="font-size:clamp(1.5rem,3vw,2.4rem)">De un interés difuso a tu <span class="em">línea de investigación</span>.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.9rem;margin-top:.4rem;max-width:84ch"><strong style="color:var(--ink)">1 · Suelta tu interés</strong> (una frase). <strong style="color:var(--ink)">2 · Pide 5 líneas</strong> con el prompt de abajo. <strong style="color:var(--ink)">3 · Elige y reta una.</strong> Rellena tus datos y copia el prompt; los ejemplos usan <span class="emg">gestión del agua</span> — cámbialos por lo tuyo.</p>
+    <div class="promptgen reveal" data-gen="linea|reta" data-tabs="Paso 2 · Pedir 5 líneas|Paso 3 · Retar la línea"></div>
+    <p class="reveal" style="margin-top:.8rem;font-size:.82rem;color:var(--muted);max-width:82ch">▸ <strong style="color:var(--ink)">Entregable de la sala:</strong> tu línea candidata en una frase + la duda principal que la IA te ayudó a ver. <span class="mono" style="color:var(--accent2);font-size:.72rem">RELATOR · 1 MIN EN PLENARIA</span> · ¿Te sobra tiempo? Corre el Paso 2 en <strong style="color:var(--ink)">dos IA distintas</strong> y verifica en Scholar.</p>
   </div>
 </section>
 
@@ -1037,6 +1037,118 @@ wireCopy('copyMini2Btn','copyMini2Src');
 wireCopy('copyMini3Btn','copyMini3Src');
 wireCopy('copyMini4Btn','copyMini4Src');
 wireCopy('copyMini5Btn','copyMini5Src');
+
+/* ---- generador de prompt embebido (estructura tipo generador_promts.html) ---- */
+(function(){
+  const PG = {
+    linea:{ color:'#ff6b3d',
+      fields:[
+        {key:'campo',label:'Campo / disciplina',ph:'ej. ciencias o gestión ambiental',rows:1},
+        {key:'tema',label:'Tema que exploras',ph:'ej. gestión sostenible del agua en cuencas y cambio climático',rows:2}
+      ],
+      template:`Actúa como asesor de investigación en [campo]. Estoy explorando [tema]. Dame 5 líneas posibles con: problema, pregunta inicial, población, datos y dificultad. Preséntalo en una tabla. No inventes citas.`
+    },
+    reta:{ color:'#3dd6c4',
+      fields:[
+        {key:'linea',label:'Línea elegida (n.º o resumen)',ph:'ej. la línea N.º 3 sobre riego intermitente',rows:2}
+      ],
+      template:`De la tabla anterior elijo la línea [linea]. Critícala como revisor exigente: ¿es viable para un equipo pequeño en un semestre?, ¿qué datos concretos necesitaría y dónde conseguirlos?, ¿ya está demasiado estudiada? Sugiéreme cómo acotarla mejor. No inventes citas.`
+    }
+  };
+  const roots=[...document.querySelectorAll('.promptgen[data-gen]')];
+  if(!roots.length)return;
+  const SHARED=new Set(['campo','tema','contexto','problema','pregunta','general']);
+  const STORE='s1prompts_v1';
+  const load=()=>{try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch(e){return{}}};
+  const save=d=>{try{localStorage.setItem(STORE,JSON.stringify(d))}catch(e){}};
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const widgets=[];
+  function paneHTML(cfg,idx){
+    const fh=cfg.fields.map(f=>
+      '<div class="pgfield"><label>'+f.label+(SHARED.has(f.key)?' <span class="pgshared" title="se sincroniza entre prompts">↔</span>':'')+'</label>'+
+      '<textarea data-key="'+f.key+'" rows="'+(f.rows||2)+'" placeholder="'+(f.ph||'').replace(/"/g,'&quot;')+'"></textarea></div>').join('');
+    return '<div class="pgpane"><div class="pghead"><span>Tus datos</span><span style="color:var(--c)">rellena ↓</span></div><div class="pgbody">'+fh+'</div></div>'+
+      '<div class="pgpane out"><div class="pghead"><span>Prompt generado</span><span class="st" data-st="'+idx+'">sin completar</span></div>'+
+      '<div class="pgout" data-out="'+idx+'"></div>'+
+      '<div class="pgfoot"><button class="pgbtn ghost" type="button" data-tpl="'+idx+'">Plantilla</button>'+
+      '<button class="pgbtn" type="button" data-copy="'+idx+'">📋 Copiar prompt</button></div>';
+  }
+  roots.forEach(root=>{
+    const ids=(root.dataset.gen||'').split('|').map(s=>s.trim()).filter(Boolean);
+    const labels=(root.dataset.tabs||'').split('|').map(s=>s.trim());
+    if(ids.length>1){
+      root.classList.add('pgtabs');
+      const bar=document.createElement('div');bar.className='pgtabbar';
+      const panels=[];
+      ids.forEach((id,k)=>{
+        const cfg=PG[id];if(!cfg)return;
+        const idx=widgets.length;
+        const panel=document.createElement('div');panel.className='pgpanel';panel.style.setProperty('--c',cfg.color);
+        if(k>0)panel.hidden=true;
+        panel.innerHTML=paneHTML(cfg,idx);
+        const tab=document.createElement('button');tab.type='button';tab.className='pgtab'+(k===0?' on':'');
+        tab.style.setProperty('--c',cfg.color);
+        tab.innerHTML=(labels[k]||('Paso '+(k+1)));
+        tab.addEventListener('click',()=>{
+          bar.querySelectorAll('.pgtab').forEach(t=>t.classList.remove('on'));
+          tab.classList.add('on');
+          panels.forEach((p,j)=>{p.hidden=(j!==k);});
+        });
+        bar.appendChild(tab);panels.push(panel);
+        widgets.push({cfg,root:panel,idx});
+      });
+      root.appendChild(bar);panels.forEach(p=>root.appendChild(p));
+    } else {
+      const cfg=PG[ids[0]];if(!cfg)return;
+      const idx=widgets.length;
+      root.style.setProperty('--c',cfg.color);
+      root.innerHTML=paneHTML(cfg,idx);
+      widgets.push({cfg,root,idx});
+    }
+  });
+  if(!widgets.length)return;
+  const val=w=>{const v={};w.cfg.fields.forEach(f=>{const ta=w.root.querySelector('textarea[data-key="'+f.key+'"]');v[f.key]=ta?ta.value:'';});return v;};
+  const fill=(cfg,v)=>{let o=cfg.template;cfg.fields.forEach(f=>{const x=(v[f.key]||'').trim();o=o.split('['+f.key+']').join(x||('['+f.key+']'));});return o;};
+  function preview(w){
+    const v=val(w);let html=esc(w.cfg.template);let filled=0;
+    w.cfg.fields.forEach(f=>{const x=(v[f.key]||'').trim();const tk='['+f.key+']';
+      if(x){filled++;html=html.split(tk).join('<span class="f">'+esc(x)+'</span>');}
+      else html=html.split(tk).join('<span class="e">'+tk+'</span>');});
+    const out=w.root.querySelector('[data-out="'+w.idx+'"]');if(out)out.innerHTML=html;
+    const st=w.root.querySelector('[data-st="'+w.idx+'"]');
+    if(st){const t=w.cfg.fields.length;st.textContent=filled===0?'sin completar':(filled<t?filled+'/'+t+' campos':'✓ listo');}
+  }
+  function setShared(key,value){
+    widgets.forEach(w=>{const ta=w.root.querySelector('textarea[data-key="'+key+'"]');if(ta&&ta.value!==value)ta.value=value;});
+    widgets.forEach(w=>{if(w.cfg.fields.some(f=>f.key===key))preview(w);});
+  }
+  function copy(text,btn,label){
+    const reset=label==='Copiado'?'📋 Copiar prompt':'Plantilla';
+    const done=()=>{btn.textContent='✓ '+label;btn.classList.add('ok');setTimeout(()=>{btn.textContent=reset;btn.classList.remove('ok');},1600);};
+    const fb=()=>{const t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();try{document.execCommand('copy');done();}catch(_){}t.remove();};
+    try{ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done).catch(fb);} else fb(); }catch(e){fb();}
+  }
+  widgets.forEach(w=>{
+    w.root.querySelectorAll('textarea[data-key]').forEach(ta=>{
+      ta.addEventListener('input',()=>{
+        const key=ta.dataset.key;const store=load();
+        if(SHARED.has(key)){store[key]=ta.value;save(store);setShared(key,ta.value);}
+        else{store['_w'+w.idx+'_'+key]=ta.value;save(store);preview(w);}
+      });
+    });
+    w.root.querySelector('[data-copy="'+w.idx+'"]').addEventListener('click',()=>copy(fill(w.cfg,val(w)),w.root.querySelector('[data-copy="'+w.idx+'"]'),'Copiado'));
+    w.root.querySelector('[data-tpl="'+w.idx+'"]').addEventListener('click',()=>copy(w.cfg.template,w.root.querySelector('[data-tpl="'+w.idx+'"]'),'Plantilla'));
+  });
+  const store=load();
+  widgets.forEach(w=>{
+    w.cfg.fields.forEach(f=>{
+      const ta=w.root.querySelector('textarea[data-key="'+f.key+'"]');if(!ta)return;
+      if(SHARED.has(f.key)){if(store[f.key]!=null)ta.value=store[f.key];}
+      else{const k='_w'+w.idx+'_'+f.key;if(store[k]!=null)ta.value=store[k];}
+    });
+  });
+  widgets.forEach(preview);
+})();
 </script>
 </body>
 </html>

@@ -154,6 +154,46 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 .meter{height:12px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden;margin-top:1rem}
 .meter > div{height:100%;width:0;background:linear-gradient(90deg,var(--danger),var(--gold),var(--ok));transition:.4s}
 
+/* ---- generador de prompt embebido (estructura tipo generador_promts.html) ---- */
+.promptgen{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:1rem;margin-top:1.1rem;height:min(52vh,520px)}
+.pgpane{background:var(--card);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.pgpane.out{background:var(--code-bg);border-left:4px solid var(--c,var(--accent))}
+.pghead{padding:.55rem .9rem;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;font-size:.62rem;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.pgbody{flex:1;overflow-y:auto;padding:.8rem .9rem;display:flex;flex-direction:column;gap:.6rem}
+.pgbody::-webkit-scrollbar,.pgout::-webkit-scrollbar{width:6px}
+.pgbody::-webkit-scrollbar-thumb,.pgout::-webkit-scrollbar-thumb{background:rgba(127,127,127,.3);border-radius:4px}
+.pgfield{display:flex;flex-direction:column;gap:.25rem}
+.pgfield label{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--c,var(--accent));font-weight:700}
+.pgfield .pgshared{color:var(--accent2);border:1px solid var(--line);border-radius:4px;padding:0 .3em;margin-left:.3em;font-size:.9em}
+.pgfield textarea{background:var(--code-bg);border:1px solid var(--line);border-radius:7px;padding:.45rem .6rem;color:var(--code-ink);
+  font-family:'Space Mono',monospace;font-size:.78rem;line-height:1.45;resize:vertical;min-height:2rem;width:100%;transition:border-color .2s}
+.pgfield textarea:focus{outline:none;border-color:var(--c,var(--accent))}
+.pgfield textarea::placeholder{color:rgba(127,127,127,.55);font-style:italic}
+.pgout{flex:1;overflow-y:auto;padding:.85rem 1rem;font-family:'Space Mono',monospace;font-size:.76rem;line-height:1.6;
+  color:var(--code-ink);white-space:pre-wrap;word-break:break-word}
+.pgout .e{color:var(--gold);background:rgba(232,176,75,.12);padding:0 .2em;border-radius:3px;border:1px dashed rgba(232,176,75,.3)}
+.pgout .f{color:var(--accent2);background:rgba(61,214,196,.08);padding:0 .12em;border-radius:3px}
+.pgfoot{padding:.5rem .9rem;border-top:1px solid var(--line);display:flex;gap:.5rem;justify-content:flex-end;align-items:center}
+.pgfoot .st{margin-right:auto;font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.pgbtn{background:var(--c,var(--accent));color:#0a0e14;border:1px solid var(--c,var(--accent));font-family:'Space Mono',monospace;
+  font-size:.64rem;letter-spacing:.1em;padding:.42rem .8rem;border-radius:7px;cursor:pointer;text-transform:uppercase;font-weight:700;transition:.2s;line-height:1}
+.pgbtn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.pgbtn.ghost{background:transparent;color:var(--muted);border-color:var(--line)}
+.pgbtn.ghost:hover{color:var(--ink);border-color:var(--c,var(--accent));filter:none}
+.pgbtn.ok{background:var(--ok);border-color:var(--ok);color:#0d1117}
+/* variante con pestañas (dos momentos de prompt en la misma slide) */
+.promptgen.pgtabs{display:flex;flex-direction:column;gap:.7rem;height:min(54vh,540px)}
+.pgtabbar{display:flex;gap:.5rem;flex-wrap:wrap}
+.pgtab{font-family:'Space Mono',monospace;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+  padding:.45rem .85rem;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;transition:.2s}
+.pgtab:hover{color:var(--ink);border-color:var(--c,var(--accent))}
+.pgtab.on{background:var(--c,var(--accent));color:#0a0e14;border-color:var(--c,var(--accent))}
+.pgpanel{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:1rem}
+.pgpanel[hidden]{display:none}
+@media(max-width:820px){.promptgen{grid-template-columns:1fr;height:auto;max-height:66vh}
+  .promptgen.pgtabs{height:auto}.pgpanel{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -225,75 +265,31 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 
 <!-- 4 · PROMPT 1 · 10 PROBLEMAS POSIBLES -->
 <section class="slide">
-  <div class="spread">
+  <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Bloque 1 · Prompt 1 / 5</div>
-    <h2 class="reveal">De un tema,<br><span class="em">10 problemas</span> posibles.</h2>
-    <p class="lead reveal" style="margin-top:1rem">No te enamores del primer problema que veas. Pide varios ángulos y elige el más fértil para ti.</p>
-    <div class="reveal promptbox" style="margin-top:1.4rem">
-      <span style="color:var(--accent2)">// generación de problemas candidatos</span><br>
-      Actúa como director de tesis exigente en <span class="ph">[campo / disciplina]</span>.<br>
-      Mi tema inicial es <span class="ph">[tema]</span>, en el contexto de <span class="ph">[región / población]</span>.<br>
-      Genera <strong style="color:#fff">10 problemas de investigación distintos</strong> a partir de ese tema. Cada uno con:<br>
-      &nbsp;&nbsp;· una tensión o vacío concreto,<br>
-      &nbsp;&nbsp;· un contexto delimitado (lugar, población, periodo),<br>
-      &nbsp;&nbsp;· una pista de por qué importa.<br>
-      Numéralos del 1 al 10, sin repetir el ángulo. No inventes citas; señala qué<br>
-      tendría que verificar yo en literatura real.
-    </div>
-    <p class="lead reveal" style="margin-top:1.2rem">Marca el que más te <mark>incomoda o intriga</mark> — suele ser el que importa. Ese pasa al siguiente prompt.</p>
+    <h2 class="reveal" style="font-size:clamp(1.5rem,3vw,2.4rem)">De un tema, <span class="em">10 problemas</span> posibles.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.9rem;margin-top:.4rem;max-width:72ch">Rellena tus datos a la izquierda y copia el prompt ya armado. No te enamores del primero: pide varios ángulos y marca el que más te <mark>incomoda o intriga</mark> — ese pasa al siguiente prompt.</p>
+    <div class="promptgen reveal" data-gen="problemas"></div>
   </div>
 </section>
 
 <!-- 5 · PROMPT 2 · ÁRBOL DEL PROBLEMA -->
 <section class="slide">
-  <div class="spread">
+  <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Bloque 1 · Prompt 2 / 5</div>
-    <h2 class="reveal">¿Por qué pasa<br>y qué <span class="em2">provoca</span>?</h2>
-    <p class="lead reveal" style="margin-top:1rem">Antes de la pregunta, el árbol del problema: causas debajo, efectos arriba, problema en el tronco.</p>
-    <div class="cols c2 reveal" style="margin-top:1.4rem">
-      <div class="card" style="border-left:3px solid var(--accent)">
-        <h3>Árbol del problema</h3>
-        <p style="margin-top:.8rem"><span class="mono" style="color:var(--danger);font-size:.74rem;letter-spacing:.12em">EFECTOS ↑</span><br>Consecuencias visibles que ya están dañando algo o a alguien.</p>
-        <p style="margin-top:.8rem"><span class="mono" style="color:var(--accent);font-size:.74rem;letter-spacing:.12em">PROBLEMA ●</span><br>El que elegiste en el Prompt 1.</p>
-        <p style="margin-top:.8rem"><span class="mono" style="color:var(--ok);font-size:.74rem;letter-spacing:.12em">CAUSAS ↓</span><br>Raíces estructurales y causas intermedias que lo generan.</p>
-      </div>
-      <div class="promptbox">
-        <span style="color:var(--accent2)">// causas y efectos del problema</span><br>
-        Mi problema es:<br>
-        «<span class="ph">[problema elegido del Prompt 1]</span>».<br><br>
-        Devuelve una tabla con tres columnas:<br>
-        &nbsp;&nbsp;1. Causas raíz (3-5)<br>
-        &nbsp;&nbsp;2. Causas intermedias (3-5)<br>
-        &nbsp;&nbsp;3. Efectos observables (3-5)<br><br>
-        Sin citas inventadas. Marca cuáles son hipótesis y cuáles<br>
-        son hechos documentables que yo debería verificar en<br>
-        literatura.
-      </div>
-    </div>
-    <p class="lead reveal" style="margin-top:1.2rem">Este árbol es el <span class="em">esqueleto</span> de tu justificación y la fuente de tus objetivos específicos.</p>
+    <h2 class="reveal" style="font-size:clamp(1.5rem,3vw,2.4rem)">¿Por qué pasa y qué <span class="em2">provoca</span>?</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.9rem;margin-top:.5rem;max-width:78ch">Antes de la pregunta, el <strong style="color:var(--ink)">árbol del problema</strong>: causas (raíz e intermedias) abajo, efectos arriba y el problema en el tronco. Es el esqueleto de tu justificación y la fuente de tus objetivos específicos.</p>
+    <div class="promptgen reveal" data-gen="arbol"></div>
   </div>
 </section>
 
 <!-- 6 · PROMPT 3 · 3 OPCIONES DE PREGUNTA -->
 <section class="slide">
-  <div class="spread">
+  <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Bloque 2 · Prompt 3 / 5</div>
-    <h2 class="reveal">3 preguntas posibles<br>desde tu <span class="em2">árbol</span>.</h2>
-    <p class="lead reveal" style="margin-top:1rem">Con problema + causas + efectos sobre la mesa, pide preguntas concretas con ángulos distintos. Tú decides cuál es la tuya.</p>
-    <div class="reveal promptbox" style="margin-top:1.4rem">
-      <span style="color:var(--accent2)">// preguntas de investigación candidatas</span><br>
-      A partir de:<br>
-      &nbsp;&nbsp;· Problema: «<span class="ph">[problema]</span>»<br>
-      &nbsp;&nbsp;· Causas clave: <span class="ph">[del árbol]</span><br>
-      &nbsp;&nbsp;· Efectos clave: <span class="ph">[del árbol]</span><br><br>
-      Propón <strong style="color:#fff">3 preguntas de investigación distintas</strong>, cada una con un ángulo:<br>
-      &nbsp;&nbsp;1. Centrada en magnitud / descripción del problema,<br>
-      &nbsp;&nbsp;2. Centrada en relación causa → efecto,<br>
-      &nbsp;&nbsp;3. Centrada en una intervención o solución posible.<br><br>
-      Cada pregunta con variables claras, contexto y desenlace medible.<br>
-      Señala cuál es más viable y por qué. Sin citas inventadas.
-    </div>
-    <p class="lead reveal" style="margin-top:1.2rem">Elige una. En la siguiente diapositiva verás cómo se <span class="em">afina capa por capa</span>.</p>
+    <h2 class="reveal" style="font-size:clamp(1.5rem,3vw,2.4rem)">3 preguntas posibles desde tu <span class="em2">árbol</span>.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.9rem;margin-top:.5rem;max-width:76ch">Con problema + causas + efectos sobre la mesa, pide preguntas concretas con ángulos distintos. Elige una: en la siguiente diapositiva verás cómo se <span class="em">afina capa por capa</span>.</p>
+    <div class="promptgen reveal" data-gen="preguntas"></div>
   </div>
 </section>
 
@@ -326,25 +322,11 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 
 <!-- 9 · PROMPT 4 · 4 ALTERNATIVAS DE OBJETIVO -->
 <section class="slide">
-  <div class="spread">
+  <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Bloque 3 · Prompt 4 / 5</div>
-    <h2 class="reveal">4 caminos para tu<br><span class="emg">objetivo general</span>.</h2>
-    <p class="lead reveal" style="margin-top:1rem">Ya tienes problema, causas, efectos y pregunta. Ahora la IA propone varios objetivos y tú escoges el ángulo que mejor te sirve.</p>
-    <div class="reveal promptbox" style="margin-top:1.4rem">
-      <span style="color:var(--accent2)">// alternativas de objetivo general</span><br>
-      Tengo esta tríada:<br>
-      &nbsp;&nbsp;· Problema: «<span class="ph">[problema]</span>»<br>
-      &nbsp;&nbsp;· Causas y efectos clave: <span class="ph">[del árbol]</span><br>
-      &nbsp;&nbsp;· Pregunta de investigación: «<span class="ph">[pregunta]</span>»<br><br>
-      Propón <strong style="color:#fff">4 alternativas de objetivo general</strong>, cada una con un ángulo distinto:<br>
-      &nbsp;&nbsp;1. Descriptivo (caracterizar / cuantificar)<br>
-      &nbsp;&nbsp;2. Comparativo (comparar / contrastar)<br>
-      &nbsp;&nbsp;3. Explicativo (determinar relación / efecto)<br>
-      &nbsp;&nbsp;4. Aplicado (evaluar intervención / proponer solución)<br><br>
-      Cada uno con verbo medible, alcance realista y método implicado.<br>
-      Señala cuál es la más viable para una tesis y por qué.
-    </div>
-    <p class="lead reveal" style="margin-top:1.2rem">Elige uno. En las siguientes diapositivas verificas el verbo y derivas los específicos.</p>
+    <h2 class="reveal" style="font-size:clamp(1.5rem,3vw,2.4rem)">4 caminos para tu <span class="emg">objetivo general</span>.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.9rem;margin-top:.5rem;max-width:76ch">Ya tienes problema, causas, efectos y pregunta. La IA propone varios objetivos y tú escoges el ángulo que mejor te sirve. Elige uno: luego verificas el verbo y derivas los específicos.</p>
+    <div class="promptgen reveal" data-gen="general"></div>
   </div>
 </section>
 
@@ -364,49 +346,21 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
 
 <!-- 11 · PROMPT 5 · 3 PAQUETES DE ESPECÍFICOS -->
 <section class="slide">
-  <div class="spread">
+  <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Bloque 3 · Prompt 5 / 5</div>
-    <h2 class="reveal">3 paquetes de<br><span class="em2">específicos</span> posibles.</h2>
-    <p class="lead reveal" style="margin-top:1rem">Ya tienes objetivo general y pregunta. Ahora pide tres rutas distintas para llegar al general. Cada paquete = 3 específicos secuenciales (9 en total).</p>
-    <div class="reveal promptbox" style="margin-top:1.4rem">
-      <span style="color:var(--accent2)">// paquetes de objetivos específicos</span><br>
-      Tengo:<br>
-      &nbsp;&nbsp;· Pregunta de investigación: «<span class="ph">[pregunta]</span>»<br>
-      &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
-      Propón <strong style="color:#fff">3 paquetes alternativos de objetivos específicos</strong> (3 por paquete = 9 en total).<br>
-      Cada paquete debe representar una RUTA distinta para alcanzar el general:<br>
-      &nbsp;&nbsp;Paquete A — ruta descriptiva / diagnóstica<br>
-      &nbsp;&nbsp;Paquete B — ruta analítica / explicativa<br>
-      &nbsp;&nbsp;Paquete C — ruta aplicada / propositiva<br><br>
-      Reglas: cada específico con verbo medible, secuencia lógica (de lo simple a lo<br>
-      complejo), sin sobrar ni faltar respecto del general. Indica qué método implica<br>
-      cada paquete y cuál es el más viable para una tesis.
-    </div>
-    <p class="lead reveal" style="margin-top:1.2rem">Elige <strong style="color:var(--ink)">un paquete completo</strong> (no mezcles). En la siguiente diapositiva verificas su jerarquía y coherencia.</p>
+    <h2 class="reveal" style="font-size:clamp(1.5rem,3vw,2.4rem)">3 paquetes de <span class="em2">específicos</span> posibles.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.9rem;margin-top:.5rem;max-width:78ch">Ya tienes objetivo general y pregunta. Pide tres rutas distintas para llegar al general (cada paquete = 3 específicos, 9 en total). Elige <strong style="color:var(--ink)">un paquete completo</strong>, no mezcles: en la siguiente diapositiva verificas su jerarquía y coherencia.</p>
+    <div class="promptgen reveal" data-gen="especificos"></div>
   </div>
 </section>
 
 <!-- 12 · ESTRUCTURA DE OBJETIVOS -->
 <section class="slide">
-  <div class="spread">
-    <div class="kicker reveal">La jerarquía</div>
-    <h2 class="reveal">Un general,<br>varios específicos.</h2>
-    <div class="cols c2 reveal" style="margin-top:2rem">
-      <div class="card" style="border-left:3px solid var(--accent)">
-        <h3 class="emg">Objetivo general</h3>
-        <p style="margin-top:.8rem;color:var(--ink)">Responde a la pregunta central. Uno solo, amplio pero medible. Suele empezar con un verbo de alto nivel: <em>evaluar, determinar, analizar.</em></p>
-      </div>
-      <div class="card" style="border-left:3px solid var(--accent2)">
-        <h3 class="em2">Objetivos específicos</h3>
-        <p style="margin-top:.8rem;color:var(--ink)">Los pasos para lograr el general. 3 a 5, secuenciales, cada uno con su verbo. Juntos deben «sumar» al general, sin sobrar ni faltar.</p>
-      </div>
-    </div>
-    <div class="reveal promptbox" style="margin-top:1.6rem;border-left-color:var(--gold)">
-      <span style="color:var(--accent2)">// prompt de coherencia</span><br>
-      Evalúa estos objetivos: <span class="ph">[lista]</span> frente a esta pregunta: «<span class="ph">[pregunta]</span>».<br>
-      Revisa verbos medibles, correspondencia, alcance, redundancias y método posible.<br>
-      Devuelve tabla: objetivo original · problema detectado · versión mejorada · justificación.
-    </div>
+  <div class="spread" style="justify-content:flex-start">
+    <div class="kicker reveal">La jerarquía · coherencia</div>
+    <h2 class="reveal" style="font-size:clamp(1.5rem,3vw,2.4rem)">Un general, varios <span class="em2">específicos</span>.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.9rem;margin-top:.5rem;max-width:82ch"><strong style="color:var(--ink)">Objetivo general:</strong> uno solo, amplio pero medible (<em>evaluar, determinar, analizar</em>). <strong style="color:var(--ink)">Específicos:</strong> 3 a 5 pasos secuenciales que juntos «suman» al general, sin sobrar ni faltar. Verifica su coherencia:</p>
+    <div class="promptgen reveal" data-gen="coherencia"></div>
   </div>
 </section>
 
@@ -463,102 +417,23 @@ mark{background:linear-gradient(transparent 55%,rgba(255,107,61,.35) 0);color:in
   </div>
 </section>
 
-<!-- 16 · PROMPT BONUS · NOTEBOOKLM · 2 PROMPTS -->
+<!-- 16 · PROMPT BONUS · NOTEBOOKLM · PLANTEAMIENTO · 2 MOMENTOS -->
 <section class="slide">
-  <div class="spread">
+  <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Trabajo autónomo · 2 prompts NotebookLM</div>
-    <h2 class="reveal">Tu planteamiento,<br>con <span class="emg">NotebookLM</span>.</h2>
-    <p class="lead reveal" style="margin-top:.8rem">Dos pasos. Primero la búsqueda profunda para encontrar fuentes; luego, con esas fuentes cargadas, redactas el planteamiento.</p>
-
-    <div class="cols c2 reveal" style="margin-top:1.2rem;gap:1.4rem">
-      <div>
-        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent);margin-bottom:.5rem">PASO 1 · BÚSQUEDA PROFUNDA EN LA WEB</p>
-        <div class="promptbox" style="font-size:.82rem;line-height:1.55">
-          <span style="color:var(--accent2)">// fuentes con datos y estadísticas</span><br>
-          Actúa como investigador rastreador de fuentes. Realiza una <strong style="color:#fff">búsqueda profunda en la web</strong> para mi investigación:<br>
-          &nbsp;&nbsp;· Problema: «<span class="ph">[problema]</span>»<br>
-          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
-          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
-          Encuéntrame fuentes que cumplan TODAS estas condiciones:<br>
-          &nbsp;&nbsp;1. Estén disponibles como <strong style="color:#fff">PDF accesible</strong> en internet.<br>
-          &nbsp;&nbsp;2. Sean artículos científicos revisados por pares o informes de organizaciones reconocidas (OMS, FAO, BID, CEPAL, ministerios, universidades).<br>
-          &nbsp;&nbsp;3. Contengan <strong style="color:#fff">métricas, datos o estadísticas</strong> sobre magnitud del problema, causas o efectos.<br>
-          &nbsp;&nbsp;4. Publicadas preferentemente en los últimos 10 años.
-        </div>
-      </div>
-
-      <div>
-        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent2);margin-bottom:.5rem">PASO 2 · REDACTAR PLANTEAMIENTO (CON FUENTES CARGADAS)</p>
-        <div class="promptbox" style="border-left-color:var(--accent2);font-size:.82rem;line-height:1.55">
-          <span style="color:var(--accent2)">// planteamiento · APA 7 · 1500-2000 palabras</span><br>
-          Actúa como redactor académico riguroso. Usando <strong style="color:#fff">únicamente las fuentes que subí</strong>, redacta el planteamiento del problema con esta información:<br>
-          &nbsp;&nbsp;· Problema central: «<span class="ph">[problema]</span>»<br>
-          &nbsp;&nbsp;· Causas (raíz e intermedias): <span class="ph">[del árbol]</span><br>
-          &nbsp;&nbsp;· Efectos clave: <span class="ph">[del árbol]</span><br>
-          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
-          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
-          Reglas:<br>
-          &nbsp;&nbsp;1. Estructura: contexto → magnitud → causas → efectos → vacío → relevancia.<br>
-          &nbsp;&nbsp;2. Apóyate solo en mis fuentes.<br>
-          &nbsp;&nbsp;3. Incluye <strong style="color:#fff">métricas, datos y estadísticas</strong> que den magnitud al problema.<br>
-          &nbsp;&nbsp;4. Cita en el texto en APA 7 (Autor, año).<br>
-          &nbsp;&nbsp;5. Extensión: 1500 a 2000 palabras.<br>
-          &nbsp;&nbsp;6. Al final, sección «<strong style="color:#fff">Referencias</strong>» en APA 7, ordenadas alfabéticamente, con DOI o enlace al PDF.<br>
-          &nbsp;&nbsp;7. Lo que no esté en las fuentes, márcalo como <strong style="color:#fff">[VERIFICAR]</strong>; no inventes citas.
-        </div>
-      </div>
-    </div>
-
-    <p class="lead reveal" style="margin-top:1rem">Verifica que cada cita tenga su PDF real. Lo que quede como <span class="em">[VERIFICAR]</span> es tu próxima búsqueda.</p>
+    <h2 class="reveal" style="font-size:clamp(1.5rem,3vw,2.4rem)">Tu planteamiento, con <span class="emg">NotebookLM</span>.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.9rem;margin-top:.5rem;max-width:82ch">Dos momentos: <strong style="color:var(--ink)">Paso 1</strong> — búsqueda profunda para encontrar fuentes; <strong style="color:var(--ink)">Paso 2</strong> — con esas fuentes cargadas en NotebookLM, redactas el planteamiento. Verifica que cada cita tenga su PDF real; lo que quede como <span class="em">[VERIFICAR]</span> es tu próxima búsqueda.</p>
+    <div class="promptgen reveal" data-gen="plant_fuentes|plant_redaccion" data-tabs="Paso 1 · Buscar fuentes|Paso 2 · Redactar planteamiento"></div>
   </div>
 </section>
 
-<!-- 17 · PROMPT BONUS · NOTEBOOKLM · JUSTIFICACIÓN · 2 PROMPTS -->
+<!-- 17 · PROMPT BONUS · NOTEBOOKLM · JUSTIFICACIÓN · 2 MOMENTOS -->
 <section class="slide">
-  <div class="spread">
+  <div class="spread" style="justify-content:flex-start">
     <div class="kicker reveal">Trabajo autónomo · 2 prompts NotebookLM</div>
-    <h2 class="reveal">Tu justificación,<br>con <span class="emg">NotebookLM</span>.</h2>
-    <p class="lead reveal" style="margin-top:.8rem">Mismo flujo de dos pasos. Primero rastreas fuentes que sustenten el «por qué importa»; luego, con esas fuentes cargadas, redactas la justificación.</p>
-
-    <div class="cols c2 reveal" style="margin-top:1.2rem;gap:1.4rem">
-      <div>
-        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent);margin-bottom:.5rem">PASO 1 · BÚSQUEDA PROFUNDA PARA JUSTIFICAR</p>
-        <div class="promptbox" style="font-size:.82rem;line-height:1.55">
-          <span style="color:var(--accent2)">// fuentes sobre relevancia, impacto y vacío</span><br>
-          Actúa como investigador rastreador de fuentes. Realiza una <strong style="color:#fff">búsqueda profunda en la web</strong> para justificar mi investigación:<br>
-          &nbsp;&nbsp;· Problema: «<span class="ph">[problema]</span>»<br>
-          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
-          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br><br>
-          Encuéntrame fuentes que cumplan TODAS estas condiciones:<br>
-          &nbsp;&nbsp;1. Estén disponibles como <strong style="color:#fff">PDF accesible</strong> en internet.<br>
-          &nbsp;&nbsp;2. Sean artículos científicos revisados por pares, políticas públicas o informes de organizaciones reconocidas (OMS, FAO, BID, CEPAL, ministerios, universidades).<br>
-          &nbsp;&nbsp;3. Aporten evidencia sobre <strong style="color:#fff">vacío de conocimiento, relevancia social, beneficio práctico, novedad o pertinencia disciplinar / regional</strong>.<br>
-          &nbsp;&nbsp;4. Publicadas preferentemente en los últimos 10 años.
-        </div>
-      </div>
-
-      <div>
-        <p class="mono" style="font-size:.7rem;letter-spacing:.16em;color:var(--accent2);margin-bottom:.5rem">PASO 2 · REDACTAR JUSTIFICACIÓN (CON FUENTES CARGADAS)</p>
-        <div class="promptbox" style="border-left-color:var(--accent2);font-size:.82rem;line-height:1.55">
-          <span style="color:var(--accent2)">// justificación · APA 7 · 800-1200 palabras</span><br>
-          Actúa como redactor académico riguroso. Usando <strong style="color:#fff">únicamente las fuentes que subí</strong>, redacta la justificación del estudio con esta información:<br>
-          &nbsp;&nbsp;· Problema central: «<span class="ph">[problema]</span>»<br>
-          &nbsp;&nbsp;· Pregunta: «<span class="ph">[pregunta]</span>»<br>
-          &nbsp;&nbsp;· Objetivo general: «<span class="ph">[objetivo general]</span>»<br>
-          &nbsp;&nbsp;· Beneficiarios: <span class="ph">[grupos / sectores impactados]</span><br><br>
-          Reglas:<br>
-          &nbsp;&nbsp;1. Estructura: vacío de conocimiento → relevancia teórica → relevancia práctica / social → novedad → viabilidad → pertinencia disciplinar / regional.<br>
-          &nbsp;&nbsp;2. Apóyate solo en mis fuentes.<br>
-          &nbsp;&nbsp;3. Incluye <strong style="color:#fff">datos, métricas o evidencia</strong> que respalden cada argumento.<br>
-          &nbsp;&nbsp;4. Cita en el texto en APA 7 (Autor, año).<br>
-          &nbsp;&nbsp;5. Extensión: 800 a 1200 palabras.<br>
-          &nbsp;&nbsp;6. Al final, sección «<strong style="color:#fff">Referencias</strong>» en APA 7, ordenadas alfabéticamente, con DOI o enlace al PDF.<br>
-          &nbsp;&nbsp;7. Lo que no esté en las fuentes, márcalo como <strong style="color:#fff">[VERIFICAR]</strong>; no inventes citas.
-        </div>
-      </div>
-    </div>
-
-    <p class="lead reveal" style="margin-top:1rem">Tu justificación debe convencer al jurado de que el estudio <span class="em">vale la pena</span>. Cada afirmación, respaldada por una fuente real.</p>
+    <h2 class="reveal" style="font-size:clamp(1.5rem,3vw,2.4rem)">Tu justificación, con <span class="emg">NotebookLM</span>.</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.9rem;margin-top:.5rem;max-width:82ch">Mismo flujo de dos momentos: <strong style="color:var(--ink)">Paso 1</strong> — rastreas fuentes que sustenten el «por qué importa»; <strong style="color:var(--ink)">Paso 2</strong> — con esas fuentes cargadas, redactas la justificación. Debe convencer al jurado de que el estudio <span class="em">vale la pena</span>: cada afirmación, respaldada por una fuente real.</p>
+    <div class="promptgen reveal" data-gen="just_fuentes|just_redaccion" data-tabs="Paso 1 · Buscar fuentes|Paso 2 · Redactar justificación"></div>
   </div>
 </section>
 
@@ -751,6 +626,280 @@ buildDots();go(initSlide());
     fb.textContent=msg[n];
     fb.style.color = n>=4?'var(--ok)':(n>=2?'var(--gold)':'var(--muted)');
   }
+})();
+
+/* ---- COMP 4: generador de prompt embebido (estructura tipo generador_promts.html) ---- */
+(function(){
+  const PG = {
+    problemas:{ color:'#e8b04b',
+      fields:[
+        {key:'campo',label:'Campo / disciplina',ph:'ej. ingeniería ambiental',rows:1},
+        {key:'tema',label:'Tema inicial',ph:'ej. gestión de residuos sólidos',rows:2},
+        {key:'contexto',label:'Región / población',ph:'ej. Bogotá, hogares estrato 2',rows:1}
+      ],
+      template:`Actúa como director de tesis exigente en [campo].
+Mi tema inicial es [tema], en el contexto de [contexto].
+Genera 10 problemas de investigación distintos a partir de ese tema. Cada uno con:
+  · una tensión o vacío concreto,
+  · un contexto delimitado (lugar, población, periodo),
+  · una pista de por qué importa.
+Numéralos del 1 al 10, sin repetir el ángulo. No inventes citas; señala qué tendría que verificar yo en literatura real.`
+    },
+    arbol:{ color:'#3dd6c4',
+      fields:[{key:'problema',label:'Problema elegido',ph:'pega el problema seleccionado del prompt anterior',rows:4}],
+      template:`Mi problema es:
+«[problema]».
+
+Devuelve una tabla con tres columnas:
+  1. Causas raíz (3-5)
+  2. Causas intermedias (3-5)
+  3. Efectos observables (3-5)
+
+Sin citas inventadas. Marca cuáles son hipótesis y cuáles son hechos documentables que yo debería verificar en literatura.`
+    },
+    preguntas:{ color:'#e8b04b',
+      fields:[
+        {key:'problema',label:'Problema',ph:'pega el problema',rows:3},
+        {key:'causas',label:'Causas clave (del árbol)',ph:'lista de causas clave del árbol',rows:3},
+        {key:'efectos',label:'Efectos clave (del árbol)',ph:'lista de efectos clave del árbol',rows:3}
+      ],
+      template:`A partir de:
+  · Problema: «[problema]»
+  · Causas clave: [causas]
+  · Efectos clave: [efectos]
+
+Propón 3 preguntas de investigación distintas, cada una con un ángulo:
+  1. Centrada en magnitud / descripción del problema,
+  2. Centrada en relación causa → efecto,
+  3. Centrada en una intervención o solución posible.
+
+Cada pregunta con variables claras, contexto y desenlace medible.
+Señala cuál es más viable y por qué. Sin citas inventadas.`
+    },
+    general:{ color:'#8a7dff',
+      fields:[
+        {key:'problema',label:'Problema',ph:'pega el problema',rows:3},
+        {key:'causasEfectos',label:'Causas y efectos clave',ph:'resumen del árbol',rows:3},
+        {key:'pregunta',label:'Pregunta de investigación',ph:'pega la pregunta elegida',rows:2}
+      ],
+      template:`Tengo esta tríada:
+  · Problema: «[problema]»
+  · Causas y efectos clave: [causasEfectos]
+  · Pregunta de investigación: «[pregunta]»
+
+Propón 4 alternativas de objetivo general, cada una con un ángulo distinto:
+  1. Descriptivo (caracterizar / cuantificar)
+  2. Comparativo (comparar / contrastar)
+  3. Explicativo (determinar relación / efecto)
+  4. Aplicado (evaluar intervención / proponer solución)
+
+Cada uno con verbo medible, alcance realista y método implicado.
+Señala cuál es la más viable para una tesis y por qué.`
+    },
+    especificos:{ color:'#3dd6c4',
+      fields:[
+        {key:'pregunta',label:'Pregunta de investigación',ph:'pega la pregunta',rows:2},
+        {key:'general',label:'Objetivo general',ph:'pega el objetivo general elegido',rows:2}
+      ],
+      template:`Tengo:
+  · Pregunta de investigación: «[pregunta]»
+  · Objetivo general: «[general]»
+
+Propón 3 paquetes alternativos de objetivos específicos (3 por paquete = 9 en total).
+Cada paquete debe representar una RUTA distinta para alcanzar el general:
+  Paquete A — ruta descriptiva / diagnóstica
+  Paquete B — ruta analítica / explicativa
+  Paquete C — ruta aplicada / propositiva
+
+Reglas: cada específico con verbo medible, secuencia lógica (de lo simple a lo complejo), sin sobrar ni faltar respecto del general. Indica qué método implica cada paquete y cuál es el más viable para una tesis.`
+    },
+    coherencia:{ color:'#ff6b3d',
+      fields:[
+        {key:'lista',label:'Objetivos a evaluar',ph:'pega tu objetivo general + los específicos',rows:5},
+        {key:'pregunta',label:'Pregunta de investigación',ph:'pega la pregunta',rows:2}
+      ],
+      template:`Evalúa estos objetivos: [lista]
+frente a esta pregunta: «[pregunta]».
+
+Revisa verbos medibles, correspondencia, alcance, redundancias y método posible.
+Devuelve una tabla: objetivo original · problema detectado · versión mejorada · justificación.`
+    },
+    plant_fuentes:{ color:'#e8b04b',
+      fields:[
+        {key:'problema',label:'Problema',ph:'pega el problema',rows:3},
+        {key:'pregunta',label:'Pregunta',ph:'pega la pregunta',rows:2},
+        {key:'general',label:'Objetivo general',ph:'pega el objetivo general',rows:2}
+      ],
+      template:`Actúa como investigador rastreador de fuentes. Realiza una búsqueda profunda en la web para mi investigación:
+· Problema: «[problema]»
+· Pregunta: «[pregunta]»
+· Objetivo general: «[general]»
+
+Encuéntrame fuentes que cumplan TODAS estas condiciones:
+1. Estén disponibles como PDF accesible en internet.
+2. Sean artículos científicos revisados por pares o informes de organizaciones reconocidas (OMS, FAO, BID, CEPAL, ministerios, universidades).
+3. Contengan métricas, datos o estadísticas sobre magnitud del problema, causas o efectos.
+4. Publicadas preferentemente en los últimos 10 años.`
+    },
+    plant_redaccion:{ color:'#3dd6c4',
+      fields:[
+        {key:'problema',label:'Problema central',ph:'pega el problema',rows:3},
+        {key:'causas',label:'Causas (raíz e intermedias)',ph:'lista de causas del árbol',rows:3},
+        {key:'efectos',label:'Efectos clave',ph:'lista de efectos del árbol',rows:3},
+        {key:'pregunta',label:'Pregunta',ph:'pega la pregunta',rows:2},
+        {key:'general',label:'Objetivo general',ph:'pega el objetivo general',rows:2}
+      ],
+      template:`Actúa como redactor académico riguroso. Usando únicamente las fuentes que subí, redacta el planteamiento del problema con esta información:
+· Problema central: «[problema]»
+· Causas (raíz e intermedias): [causas]
+· Efectos clave: [efectos]
+· Pregunta: «[pregunta]»
+· Objetivo general: «[general]»
+
+Reglas:
+1. Estructura: contexto → magnitud → causas → efectos → vacío → relevancia.
+2. Apóyate solo en mis fuentes.
+3. Incluye métricas, datos y estadísticas que den magnitud al problema.
+4. Cita en el texto en APA 7 (Autor, año).
+5. Extensión: 1500 a 2000 palabras.
+6. Al final, sección «Referencias» en APA 7, ordenadas alfabéticamente, con DOI o enlace al PDF.
+7. Lo que no esté en las fuentes, márcalo como [VERIFICAR]; no inventes citas.`
+    },
+    just_fuentes:{ color:'#e8b04b',
+      fields:[
+        {key:'problema',label:'Problema',ph:'pega el problema',rows:3},
+        {key:'pregunta',label:'Pregunta',ph:'pega la pregunta',rows:2},
+        {key:'general',label:'Objetivo general',ph:'pega el objetivo general',rows:2}
+      ],
+      template:`Actúa como investigador rastreador de fuentes. Realiza una búsqueda profunda en la web para justificar mi investigación:
+  · Problema: «[problema]»
+  · Pregunta: «[pregunta]»
+  · Objetivo general: «[general]»
+
+Encuéntrame fuentes que cumplan TODAS estas condiciones:
+  1. Estén disponibles como PDF accesible en internet.
+  2. Sean artículos científicos revisados por pares, políticas públicas o informes de organizaciones reconocidas (OMS, FAO, BID, CEPAL, ministerios, universidades).
+  3. Aporten evidencia sobre vacío de conocimiento, relevancia social, beneficio práctico, novedad o pertinencia disciplinar / regional.
+  4. Publicadas preferentemente en los últimos 10 años.`
+    },
+    just_redaccion:{ color:'#3dd6c4',
+      fields:[
+        {key:'problema',label:'Problema central',ph:'pega el problema',rows:3},
+        {key:'pregunta',label:'Pregunta',ph:'pega la pregunta',rows:2},
+        {key:'general',label:'Objetivo general',ph:'pega el objetivo general',rows:2},
+        {key:'beneficiarios',label:'Beneficiarios',ph:'grupos / sectores impactados',rows:2}
+      ],
+      template:`Actúa como redactor académico riguroso. Usando únicamente las fuentes que subí, redacta la justificación del estudio con esta información:
+  · Problema central: «[problema]»
+  · Pregunta: «[pregunta]»
+  · Objetivo general: «[general]»
+  · Beneficiarios: [beneficiarios]
+
+Reglas:
+  1. Estructura: vacío de conocimiento → relevancia teórica → relevancia práctica / social → novedad → viabilidad → pertinencia disciplinar / regional.
+  2. Apóyate solo en mis fuentes.
+  3. Incluye datos, métricas o evidencia que respalden cada argumento.
+  4. Cita en el texto en APA 7 (Autor, año).
+  5. Extensión: 800 a 1200 palabras.
+  6. Al final, sección «Referencias» en APA 7, ordenadas alfabéticamente, con DOI o enlace al PDF.
+  7. Lo que no esté en las fuentes, márcalo como [VERIFICAR]; no inventes citas.`
+    }
+  };
+  const roots=[...document.querySelectorAll('.promptgen[data-gen]')];
+  if(!roots.length)return;
+  const SHARED=new Set(['campo','tema','contexto','problema','pregunta','general','causas','efectos','causasEfectos','beneficiarios','esp1','esp2','esp3','duracion']);
+  const STORE='s3prompts_v1';
+  const load=()=>{try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch(e){return{}}};
+  const save=d=>{try{localStorage.setItem(STORE,JSON.stringify(d))}catch(e){}};
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const widgets=[];
+  function paneHTML(cfg,idx){
+    const fh=cfg.fields.map(f=>
+      '<div class="pgfield"><label>'+f.label+(SHARED.has(f.key)?' <span class="pgshared" title="se sincroniza entre prompts">↔</span>':'')+'</label>'+
+      '<textarea data-key="'+f.key+'" rows="'+(f.rows||2)+'" placeholder="'+(f.ph||'').replace(/"/g,'&quot;')+'"></textarea></div>').join('');
+    return '<div class="pgpane"><div class="pghead"><span>Tus datos</span><span style="color:var(--c)">rellena ↓</span></div><div class="pgbody">'+fh+'</div></div>'+
+      '<div class="pgpane out"><div class="pghead"><span>Prompt generado</span><span class="st" data-st="'+idx+'">sin completar</span></div>'+
+      '<div class="pgout" data-out="'+idx+'"></div>'+
+      '<div class="pgfoot"><button class="pgbtn ghost" type="button" data-tpl="'+idx+'">Plantilla</button>'+
+      '<button class="pgbtn" type="button" data-copy="'+idx+'">📋 Copiar prompt</button></div>';
+  }
+  roots.forEach(root=>{
+    const ids=(root.dataset.gen||'').split('|').map(s=>s.trim()).filter(Boolean);
+    const labels=(root.dataset.tabs||'').split('|').map(s=>s.trim());
+    if(ids.length>1){
+      root.classList.add('pgtabs');
+      const bar=document.createElement('div');bar.className='pgtabbar';
+      const panels=[];
+      ids.forEach((id,k)=>{
+        const cfg=PG[id];if(!cfg)return;
+        const idx=widgets.length;
+        const panel=document.createElement('div');panel.className='pgpanel';panel.style.setProperty('--c',cfg.color);
+        if(k>0)panel.hidden=true;
+        panel.innerHTML=paneHTML(cfg,idx);
+        const tab=document.createElement('button');tab.type='button';tab.className='pgtab'+(k===0?' on':'');
+        tab.style.setProperty('--c',cfg.color);
+        tab.innerHTML=(labels[k]||('Paso '+(k+1)));
+        tab.addEventListener('click',()=>{
+          bar.querySelectorAll('.pgtab').forEach(t=>t.classList.remove('on'));
+          tab.classList.add('on');
+          panels.forEach((p,j)=>{p.hidden=(j!==k);});
+        });
+        bar.appendChild(tab);panels.push(panel);
+        widgets.push({cfg,root:panel,idx});
+      });
+      root.appendChild(bar);panels.forEach(p=>root.appendChild(p));
+    } else {
+      const cfg=PG[ids[0]];if(!cfg)return;
+      const idx=widgets.length;
+      root.style.setProperty('--c',cfg.color);
+      root.innerHTML=paneHTML(cfg,idx);
+      widgets.push({cfg,root,idx});
+    }
+  });
+  if(!widgets.length)return;
+  const val=w=>{const v={};w.cfg.fields.forEach(f=>{const ta=w.root.querySelector('textarea[data-key="'+f.key+'"]');v[f.key]=ta?ta.value:'';});return v;};
+  const fill=(cfg,v)=>{let o=cfg.template;cfg.fields.forEach(f=>{const x=(v[f.key]||'').trim();o=o.split('['+f.key+']').join(x||('['+f.key+']'));});return o;};
+  function preview(w){
+    const v=val(w);let html=esc(w.cfg.template);let filled=0;
+    w.cfg.fields.forEach(f=>{const x=(v[f.key]||'').trim();const tk='['+f.key+']';
+      if(x){filled++;html=html.split(tk).join('<span class="f">'+esc(x)+'</span>');}
+      else html=html.split(tk).join('<span class="e">'+tk+'</span>');});
+    const out=w.root.querySelector('[data-out="'+w.idx+'"]');if(out)out.innerHTML=html;
+    const st=w.root.querySelector('[data-st="'+w.idx+'"]');
+    if(st){const t=w.cfg.fields.length;st.textContent=filled===0?'sin completar':(filled<t?filled+'/'+t+' campos':'✓ listo');}
+  }
+  function setShared(key,value){
+    widgets.forEach(w=>{const ta=w.root.querySelector('textarea[data-key="'+key+'"]');if(ta&&ta.value!==value)ta.value=value;});
+    widgets.forEach(w=>{if(w.cfg.fields.some(f=>f.key===key))preview(w);});
+  }
+  function copy(text,btn,label){
+    const done=()=>{btn.textContent='✓ '+label;btn.classList.add('ok');setTimeout(()=>{btn.textContent=label==='Copiado'?'📋 Copiar prompt':'Plantilla';btn.classList.remove('ok');},1600);};
+    try{
+      if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done).catch(()=>fb());}
+      else fb();
+    }catch(e){fb();}
+    function fb(){const t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();try{document.execCommand('copy');done();}catch(_){}t.remove();}
+  }
+  widgets.forEach(w=>{
+    w.root.querySelectorAll('textarea[data-key]').forEach(ta=>{
+      ta.addEventListener('input',()=>{
+        const key=ta.dataset.key;const store=load();
+        if(SHARED.has(key)){store[key]=ta.value;save(store);setShared(key,ta.value);}
+        else{store['_w'+w.idx+'_'+key]=ta.value;save(store);preview(w);}
+      });
+    });
+    w.root.querySelector('[data-copy="'+w.idx+'"]').addEventListener('click',()=>copy(fill(w.cfg,val(w)),w.root.querySelector('[data-copy="'+w.idx+'"]'),'Copiado'));
+    w.root.querySelector('[data-tpl="'+w.idx+'"]').addEventListener('click',()=>copy(w.cfg.template,w.root.querySelector('[data-tpl="'+w.idx+'"]'),'Plantilla'));
+  });
+  const store=load();
+  widgets.forEach(w=>{
+    w.cfg.fields.forEach(f=>{
+      const ta=w.root.querySelector('textarea[data-key="'+f.key+'"]');if(!ta)return;
+      if(SHARED.has(f.key)){if(store[f.key]!=null)ta.value=store[f.key];}
+      else{const k='_w'+w.idx+'_'+f.key;if(store[k]!=null)ta.value=store[k];}
+    });
+  });
+  widgets.forEach(preview);
 })();
 </script>
 </body>
