@@ -187,6 +187,8 @@ h2{font-family:'Fraunces',serif;font-weight:600;line-height:1.04;
 </style>
 </head>
 <body>
+<a href="../index.html" class="back-home" title="Volver al mapa del curso"><span aria-hidden="true">&#x21A9;</span> Inicio</a>
+<style>.back-home{position:fixed;top:14px;left:14px;z-index:40;display:inline-flex;align-items:center;gap:.4rem;background:var(--card);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;padding:.45rem .8rem;border-radius:999px;backdrop-filter:blur(6px);transition:.2s}.back-home:hover{background:var(--accent);border-color:var(--accent);color:#1a0d08}.back-home span{font-size:1rem;line-height:1}</style>
 <div class="bg-mesh"></div>
 <div class="bg-grid"></div>
 <div class="bg-grain"></div>
@@ -203,8 +205,8 @@ h2{font-family:'Fraunces',serif;font-weight:600;line-height:1.04;
     <h1 class="reveal"><span class="em">Genera</span> tus prompts con un par de clics.</h1>
     <p class="lead reveal" style="margin-top:1.4rem">Una colección de prompts plantilla. Escribe la información de tu investigación en los campos de la izquierda y obtén el prompt completo, listo para copiar, a la derecha. Las variables compartidas (problema, pregunta, objetivo general) se sincronizan entre prompts automáticamente.</p>
     <div class="meta-row reveal">
-      <div><span class="mono">PROMPTS</span><p>15</p></div>
-      <div><span class="mono">MÓDULOS</span><p>12</p></div>
+      <div><span class="mono">PROMPTS</span><p>17</p></div>
+      <div><span class="mono">MÓDULOS</span><p>13</p></div>
       <div><span class="mono">USO</span><p>Rellena · ajusta · copia</p></div>
     </div>
     <p class="reveal" style="margin-top:1.8rem;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase">→ Avanza con flechas · T tema · I índice · R limpiar todo</p>
@@ -710,13 +712,89 @@ Reglas:
 2. Los indicadores deben ser verificables (cifras, porcentajes, número de personas/eventos/publicaciones).
 3. Diferencia entre RESULTADOS (lo que produces) e IMPACTOS (lo que cambia gracias a tus resultados).
 4. No exageres alcances; un anteproyecto creíble reconoce los límites de su impacto.`
+  },
+
+  /* MÓDULO 13 · Revisión de literatura */
+  {
+    moduleId:'revision', moduleLabel:'Revisión de literatura', moduleNum:'13',
+    promptNum:'01', promptTotal:'02',
+    title:'Ecuación de búsqueda · Web of Science',
+    color:'#3fbfd4',
+    fields:[
+      {key:'tema', label:'Tema de la revisión', placeholder:'ej. IA generativa en la escritura académica', rows:2},
+      {key:'pregunta', label:'Pregunta de investigación', placeholder:'pega la pregunta que guía la revisión', rows:2},
+      {key:'conceptos', label:'Conceptos clave', placeholder:'2 a 4 conceptos centrales, separados por comas', rows:2},
+      {key:'periodo', label:'Periodo', placeholder:'ej. 2015-2025', rows:1},
+      {key:'idiomas', label:'Idiomas', placeholder:'ej. inglés y español', rows:1},
+      {key:'exclusiones', label:'Exclusiones', placeholder:'ej. estudios en educación básica, actas de congreso', rows:2}
+    ],
+    template:`// ecuación de búsqueda · Web of Science
+
+Actúa como bibliotecólogo experto en revisiones sistemáticas de literatura y en la sintaxis de búsqueda avanzada de Web of Science (Colección principal).
+
+Mi revisión de literatura:
+· Tema: «[tema]»
+· Pregunta de investigación: «[pregunta]»
+· Conceptos clave: [conceptos]
+· Periodo: [periodo]
+· Idiomas: [idiomas]
+· Exclusiones: [exclusiones]
+
+Construye la ecuación de búsqueda paso a paso:
+1. Descompón la pregunta en bloques conceptuales (2 a 4 bloques).
+2. Para cada bloque, lista los términos de búsqueda EN INGLÉS: sinónimos, variantes de escritura, siglas y términos del tesauro cuando existan.
+3. Combina: OR dentro de cada bloque, AND entre bloques y NOT solo para las exclusiones indicadas. Usa comillas para frases exactas, * para truncamiento y NEAR/n cuando aporte precisión.
+4. Entrega la ecuación final en sintaxis de búsqueda avanzada de WOS con etiquetas de campo (TS= para tema; TI= si conviene una variante restringida), lista para copiar y pegar en una sola línea.
+5. Añade los refinamientos como filtros aparte: PY=[periodo], idioma y tipo de documento según mis criterios.
+6. Entrega DOS versiones: una amplia (sensibilidad) y una estrecha (precisión), y explica brevemente qué gano y qué pierdo con cada una.
+7. Justifica cada decisión (por qué cada término y operador) y advierte términos ambiguos que puedan traer ruido.
+
+No inventes términos de tesauro ni campos que no existan en WOS; si dudas de un término, márcalo como [VERIFICAR].`
+  },
+  {
+    moduleId:'revision', moduleLabel:'Revisión de literatura', moduleNum:'13',
+    promptNum:'02', promptTotal:'02',
+    title:'Ecuación de búsqueda · Scopus',
+    color:'#3fbfd4',
+    fields:[
+      {key:'tema', label:'Tema de la revisión', placeholder:'ej. IA generativa en la escritura académica', rows:2},
+      {key:'pregunta', label:'Pregunta de investigación', placeholder:'pega la pregunta que guía la revisión', rows:2},
+      {key:'conceptos', label:'Conceptos clave', placeholder:'2 a 4 conceptos centrales, separados por comas', rows:2},
+      {key:'periodo', label:'Periodo', placeholder:'ej. 2015-2025', rows:1},
+      {key:'idiomas', label:'Idiomas', placeholder:'ej. inglés y español', rows:1},
+      {key:'exclusiones', label:'Exclusiones', placeholder:'ej. estudios en educación básica, actas de congreso', rows:2}
+    ],
+    template:`// ecuación de búsqueda · Scopus
+
+Actúa como bibliotecólogo experto en revisiones sistemáticas de literatura y en la sintaxis de búsqueda avanzada de Scopus.
+
+Mi revisión de literatura:
+· Tema: «[tema]»
+· Pregunta de investigación: «[pregunta]»
+· Conceptos clave: [conceptos]
+· Periodo: [periodo]
+· Idiomas: [idiomas]
+· Exclusiones: [exclusiones]
+
+Construye la ecuación de búsqueda paso a paso:
+1. Descompón la pregunta en bloques conceptuales (2 a 4 bloques).
+2. Para cada bloque, lista los términos de búsqueda EN INGLÉS: sinónimos, variantes de escritura, siglas y palabras clave indexadas cuando existan.
+3. Combina: OR dentro de cada bloque, AND entre bloques y AND NOT solo para las exclusiones indicadas. Usa comillas para frases exactas, * para truncamiento y W/n o PRE/n cuando aporte precisión.
+4. Entrega la ecuación final en sintaxis de búsqueda avanzada de Scopus con el campo TITLE-ABS-KEY( ) — y TITLE( ) si conviene una variante restringida —, lista para copiar y pegar en una sola línea.
+5. Añade los refinamientos dentro de la misma ecuación: PUBYEAR según [periodo], LIMIT-TO(LANGUAGE, ...) y LIMIT-TO(DOCTYPE, ...) según mis criterios.
+6. Entrega DOS versiones: una amplia (sensibilidad) y una estrecha (precisión), y explica brevemente qué gano y qué pierdo con cada una.
+7. Justifica cada decisión (por qué cada término y operador) y advierte términos ambiguos que puedan traer ruido.
+8. Al final, indica en una tabla las equivalencias entre esta ecuación y la de Web of Science (TS=, NEAR/n) para que pueda reportar ambas búsquedas en mi sección de método.
+
+No inventes campos ni operadores que no existan en Scopus; si dudas de un término, márcalo como [VERIFICAR].`
   }
 ];
 
 /* claves que se sincronizan entre prompts */
 const SHARED_KEYS = new Set([
   'campo','tema','contexto','problema','pregunta','general','causas','efectos',
-  'causasEfectos','beneficiarios','esp1','esp2','esp3','duracion'
+  'causasEfectos','beneficiarios','esp1','esp2','esp3','duracion',
+  'conceptos','periodo','idiomas','exclusiones'
 ]);
 
 /* ============================================================
