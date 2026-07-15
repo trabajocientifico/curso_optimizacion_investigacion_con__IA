@@ -3,7 +3,10 @@
     "allow": [
       "Bash(awk 'NR>=120 && /volver|index.html|back|Mapa|home/I {print NR\": \"$0}' \"I:\\\\Mi unidad\\\\GITHUB\\\\trabajocientifico\\\\curso_optimizacion_investigacion_con__IA\\\\index\\\\Sesion6_Presentacion_Interactiva.html\")",
       "WebSearch",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(grep -oiE '#[0-9a-f]{6}|#[0-9a-f]{3}\\\\b|rgba?\\\\\\([0-9]+,[0-9]+,[0-9]+' index/googleColab-gemini-datos.html)",
+      "Bash(python \"C:\\\\Users\\\\MIGUEL~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\I--Mi-unidad-GITHUB-trabajocientifico-curso-optimizacion-investigacion-con--IA\\\\0c436e07-e1c8-4f8c-ab94-2f1f4430173c\\\\scratchpad\\\\retheme.py\")",
+      "Bash(python -c ' *)"
     ]
   }
 }
