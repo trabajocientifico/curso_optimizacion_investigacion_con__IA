@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entorno desde cero · R, RStudio, Python y agentes de IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B1220;
+  --panel:#131C2E;
+  --panel-2:#0E1626;
+  --line:#22304A;
+  --paper:#E8EEF7;
+  --muted:#7F92AE;
+  --r:#276DC3;
+  --rstudio:#75AADB;
+  --py:#FFD43B;
+  --node:#5FA04E;
+  --buff:#C084FC;
+  --accent:var(--r);
+  --ok:#4ADE80;
+  --err:#FB7185;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--body);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(60% 50% at 12% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+    linear-gradient(transparent 95%, rgba(255,255,255,.025) 95%) 0 0/100% 28px;
+  transition:background 700ms ease;
+}
+
+/* ---------- shell ---------- */
+.deck{position:relative;z-index:1;height:100%;display:grid;grid-template-columns:230px 1fr}
+
+/* ---------- rail ---------- */
+.rail{
+  border-right:1px solid var(--line);
+  padding:26px 20px;
+  display:flex;flex-direction:column;gap:22px;
+  background:linear-gradient(180deg,var(--panel-2),transparent);
+}
+.brand{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:-.01em;line-height:1.15}
+.brand span{display:block;font-family:var(--mono);font-size:9.5px;font-weight:500;color:var(--muted);letter-spacing:.22em;margin-top:6px}
+.rail-label{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--muted)}
+.hud{display:flex;flex-direction:column;gap:2px}
+.hud-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 8px;border-radius:6px;
+  font-size:13px;color:var(--muted);
+  border:1px solid transparent;
+  cursor:pointer;background:none;font-family:var(--body);text-align:left;width:100%;
+  transition:color .2s,background .2s;
+}
+.hud-item:hover{color:var(--paper);background:rgba(255,255,255,.03)}
+.hud-item .dot{
+  width:9px;height:9px;border-radius:50%;flex:none;
+  border:1.5px solid var(--muted);
+  transition:all .35s cubic-bezier(.2,.8,.2,1);
+}
+.hud-item[data-done="1"]{color:var(--paper)}
+.hud-item[data-done="1"] .dot{background:var(--ok);border-color:var(--ok);box-shadow:0 0 0 4px rgba(74,222,128,.16)}
+.hud-item.is-current{border-color:var(--line);background:rgba(255,255,255,.04);color:var(--paper)}
+.hud-item .v{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--ok);opacity:0;transition:opacity .3s}
+.hud-item[data-done="1"] .v{opacity:1}
+.rail-foot{margin-top:auto;font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.7}
+.rail-foot kbd{
+  font-family:var(--mono);font-size:9.5px;border:1px solid var(--line);
+  border-radius:4px;padding:1px 5px;color:var(--paper);background:var(--panel);
+}
+
+/* ---------- stage ---------- */
+.stage{position:relative;overflow:hidden}
+.slide{
+  position:absolute;inset:0;
+  padding:clamp(28px,4.4vw,64px);
+  display:flex;flex-direction:column;justify-content:center;
+  gap:20px;
+  opacity:0;transform:translateY(14px);
+  pointer-events:none;
+  transition:opacity .45s ease,transform .5s cubic-bezier(.2,.8,.2,1);
+  overflow-y:auto;
+}
+.slide.is-active{opacity:1;transform:none;pointer-events:auto}
+.eyebrow{
+  font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--accent);
+  display:flex;align-items:center;gap:10px;
+}
+.eyebrow::after{content:"";height:1px;flex:1;max-width:120px;background:linear-gradient(90deg,var(--accent),transparent)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,5.4vw,68px);line-height:.98;letter-spacing:-.03em}
+h2{font-family:var(--display);font-weight:800;font-size:clamp(28px,3.6vw,46px);line-height:1;letter-spacing:-.025em}
+.lede{font-size:clamp(14px,1.15vw,17px);color:var(--muted);max-width:56ch;line-height:1.6}
+.cols{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(20px,3vw,44px);align-items:start}
+
+/* ---------- steps ---------- */
+ol.steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:2px}
+ol.steps li{
+  counter-increment:s;
+  display:grid;grid-template-columns:26px 1fr;gap:14px;
+  padding:10px 0;border-bottom:1px solid rgba(34,48,74,.55);
+  font-size:14.5px;line-height:1.5;
+}
+ol.steps li::before{
+  content:counter(s,decimal-leading-zero);
+  font-family:var(--mono);font-size:11px;color:var(--accent);padding-top:3px;
+}
+ol.steps li b{font-weight:600;color:#fff}
+ol.steps code{
+  font-family:var(--mono);font-size:12.5px;background:var(--panel);
+  border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--paper);
+}
+.note{
+  border-left:2px solid var(--accent);
+  background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 9%,transparent),transparent);
+  padding:11px 14px;font-size:13.5px;line-height:1.55;color:var(--paper);border-radius:0 6px 6px 0;
+}
+.note b{color:var(--accent)}
+
+/* ---------- terminal (signature) ---------- */
+.term{
+  background:var(--panel-2);border:1px solid var(--line);border-radius:9px;
+  overflow:hidden;box-shadow:0 24px 60px -28px rgba(0,0,0,.9);
+  display:flex;flex-direction:column;
+}
+.term-bar{
+  display:flex;align-items:center;gap:7px;padding:9px 12px;
+  border-bottom:1px solid var(--line);background:rgba(255,255,255,.02);
+}
+.term-bar i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
+.term-bar .name{
+  margin-left:6px;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em;
+}
+.term-body{
+  font-family:var(--mono);font-size:13px;line-height:1.75;
+  padding:16px;min-height:190px;white-space:pre-wrap;word-break:break-word;
+}
+.term-body .prompt{color:var(--accent)}
+.term-body .out{color:var(--muted)}
+.term-body .ok{color:var(--ok)}
+.term-body .bad{color:var(--err)}
+.cursor{display:inline-block;width:8px;height:15px;background:var(--paper);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.term-foot{
+  display:flex;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid var(--line);
+  background:rgba(255,255,255,.015);flex-wrap:wrap;
+}
+.btn{
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  background:var(--accent);color:#06101F;border:0;border-radius:5px;
+  padding:8px 13px;cursor:pointer;font-weight:600;
+  transition:transform .15s,filter .2s;
+}
+.btn:hover{filter:brightness(1.12)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.btn.ghost:hover{color:var(--paper);border-color:var(--muted)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.term-hint{font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:auto}
+
+/* ---------- path trap ---------- */
+.trap{border:1px solid var(--line);border-radius:9px;padding:16px;background:var(--panel-2)}
+.trap-head{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--muted);margin-bottom:12px}
+.check{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;font-size:14px}
+.check input{position:absolute;opacity:0;pointer-events:none}
+.box{
+  width:20px;height:20px;border-radius:4px;border:1.5px solid var(--muted);flex:none;
+  display:grid;place-items:center;transition:all .25s;
+}
+.box svg{width:12px;height:12px;stroke:#06101F;stroke-width:3;fill:none;stroke-dasharray:20;stroke-dashoffset:20;transition:stroke-dashoffset .25s .05s}
+.check input:checked + .box{background:var(--py);border-color:var(--py)}
+.check input:checked + .box svg{stroke-dashoffset:0}
+.check input:focus-visible + .box{outline:2px solid var(--paper);outline-offset:3px}
+.trap-out{
+  margin-top:14px;font-family:var(--mono);font-size:12px;line-height:1.7;
+  padding:12px;border-radius:6px;border:1px solid var(--line);background:var(--ink);
+}
+
+/* ---------- map ---------- */
+.map{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.map-row{
+  display:grid;grid-template-columns:34px 1fr auto;gap:16px;align-items:center;
+  border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+  background:var(--panel-2);
+  opacity:0;transform:translateX(-10px);
+  animation:slideIn .5s cubic-bezier(.2,.8,.2,1) forwards;
+}
+.map-row .n{font-family:var(--mono);font-size:11px;color:var(--c)}
+.map-row .t{font-family:var(--display);font-weight:600;font-size:17px}
+.map-row .t em{font-style:normal;display:block;font-family:var(--body);font-weight:400;font-size:12.5px;color:var(--muted);margin-top:3px}
+.map-row .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--c);border:1px solid var(--c);border-radius:99px;padding:3px 9px}
+@keyframes slideIn{to{opacity:1;transform:none}}
+
+/* ---------- final ---------- */
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--panel-2)}
+.card h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--err);font-weight:500;margin-bottom:8px}
+.card p{font-size:13.5px;line-height:1.55;color:var(--muted)}
+.card p b{color:var(--paper);font-weight:600}
+
+/* ---------- nav ---------- */
+.nav{position:absolute;right:clamp(28px,4.4vw,64px);bottom:22px;display:flex;align-items:center;gap:10px;z-index:5}
+.nav button{
+  width:36px;height:36px;border-radius:7px;border:1px solid var(--line);
+  background:var(--panel);color:var(--paper);cursor:pointer;font-size:14px;
+  transition:border-color .2s,background .2s;
+}
+.nav button:hover{border-color:var(--accent);background:var(--panel-2)}
+.counter{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em}
+.bar{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--line);z-index:5}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .5s cubic-bezier(.2,.8,.2,1),background .6s}
+
+:focus-visible{outline:2px solid var(--paper);outline-offset:2px}
+
+@media (max-width:900px){
+  .deck{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .rail{flex-direction:row;align-items:center;gap:14px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:12px 14px}
+  .rail-label,.rail-foot,.brand span{display:none}
+  .hud{flex-direction:row;gap:4px}
+  .hud-item{padding:6px 9px;font-size:11.5px;white-space:nowrap;width:auto}
+  .hud-item .v{display:none}
+  .cols{grid-template-columns:1fr}
+  .slide{justify-content:flex-start;padding-top:24px;padding-bottom:80px}
+  .grid2{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  .map-row{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- RAIL -->
+  <aside class="rail">
+    <div class="brand">Entorno desde cero<span>TRABAJO CIENTÍFICO</span></div>
+    <div class="rail-label">ESTADO DEL EQUIPO</div>
+    <div class="hud" id="hud">
+      <button class="hud-item" data-go="2" data-tool="r"><span class="dot"></span>R<span class="v">listo</span></button>
+      <button class="hud-item" data-go="3" data-tool="rstudio"><span class="dot"></span>RStudio<span class="v">listo</span></button>
+      <button class="hud-item" data-go="4" data-tool="python"><span class="dot"></span>Python<span class="v">listo</span></button>
+      <button class="hud-item" data-go="5" data-tool="node"><span class="dot"></span>Node.js<span class="v">listo</span></button>
+      <button class="hud-item" data-go="6" data-tool="freebuff"><span class="dot"></span>FreeBuff<span class="v">listo</span></button>
+    </div>
+    <div class="rail-foot">
+      <kbd>←</kbd> <kbd>→</kbd> navegar<br>
+      <kbd>V</kbd> verificar paso
+    </div>
+  </aside>
+
+  <!-- STAGE -->
+  <main class="stage" id="stage">
+
+    <!-- 0 · PORTADA -->
+    <section class="slide is-active" data-accent="--r">
+      <div class="eyebrow">SESIÓN PRÁCTICA · COMPUTADOR NUEVO</div>
+      <h1>Cinco instalaciones<br>y una terminal<br>que responde.</h1>
+      <p class="lede">R, RStudio, Python, Node.js y FreeBuff. Al final de la sesión cada uno escribe un comando y el computador contesta con un número de versión. Ese número es la única prueba de que quedó bien instalado.</p>
+      <div class="term" style="max-width:560px;margin-top:8px" data-term>
+        <div class="term-bar"><i></i><i></i><i></i><span class="name">terminal — bienvenida</span></div>
+        <div class="term-body" data-out></div>
+        <div class="term-foot">
+          <button class="btn" data-run data-cmd="whoami" data-lines='[["out","investigador"],["prompt-line","echo \"listo para instalar\""],["ok","listo para instalar"]]'>Empezar</button>
+          <span class="term-hint">La terminal es donde se comprueba todo</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1 · MAPA -->
+    <section class="slide" data-accent="--rstudio">
+      <div class="eyebrow">EL ORDEN IMPORTA</div>
+      <h2>Cada instalación<br>depende de la anterior</h2>
+      <p class="lede">No es una lista de tareas: es una cadena. Si se saltan un eslabón, el siguiente falla y parece que "el programa está dañado".</p>
+      <div class="map">
+        <div class="map-row" style="--c:var(--r);animation-delay:.05s"><span class="n">01</span><span class="t">R<em>El motor de cálculo. Va primero, siempre.</em></span><span class="tag">BASE</span></div>
+        <div class="map-row" style="--c:var(--rstudio);animation-delay:.15s"><span class="n">02</span><span class="t">RStudio<em>La interfaz. Busca un R ya instalado; si no lo halla, no abre.</em></span><span class="tag">NECESITA 01</span></div>
+        <div class="map-row" style="--c:var(--py);animation-delay:.25s"><span class="n">03</span><span class="t">Python<em>Independiente de R. Su trampa está en una casilla del instalador.</em></span><span class="tag">BASE</span></div>
+        <div class="map-row" style="--c:var(--node);animation-delay:.35s"><span class="n">04</span><span class="t">Node.js<em>Trae npm, el gestor con el que se instalan los agentes CLI.</em></span><span class="tag">BASE</span></div>
+        <div class="map-row" style="--c:var(--buff);animation-delay:.45s"><span class="n">05</span><span class="t">FreeBuff<em>Se instala con npm, no con pip. No es un paquete de Python.</em></span><span class="tag">NECESITA 04</span></div>
+      </div>
+      <div class="note" style="--accent:var(--py)"><b>Aclaración de entrada:</b> FreeBuff es un agente de terminal que se distribuye por npm. Python lo instalamos porque lo van a necesitar para análisis de datos, no porque FreeBuff lo pida.</div>
+    </section>
+
+    <!-- 2 · R -->
+    <section class="slide" data-accent="--r">
+      <div class="eyebrow">01 · EL MOTOR</div>
+      <h2>Instalar R</h2>
+      <div class="cols">
+        <div>
+          <ol class="steps">
+            <li>Abre el navegador y entra a <b>cran.r-project.org</b></li>
+            <li>Clic en <b>Download R for Windows</b> (o <b>for macOS</b> según el equipo)</li>
+            <li>Clic en <b>base</b> → <b>Download R 4.x.x for Windows</b></li>
+            <li>Ejecuta el archivo <code>.exe</code> descargado</li>
+            <li>Acepta todo por defecto: Siguiente → Siguiente → Instalar</li>
+          </ol>
+          <div class="note" style="margin-top:16px"><b>Por qué no hay que tocar nada:</b> las opciones por defecto dejan R en la ruta que RStudio busca automáticamente. Cambiar la carpeta es el origen del error "R no encontrado".</div>
+        </div>
+        <div class="term" data-term>
+          <div class="term-bar"><i></i><i></i><i></i><span class="name">consola de R — verificación</span></div>
+          <div class="term-body" data-out></div>
+          <div class="term-foot">
+            <button class="btn" data-run data-tool="r" data-prompt="&gt;" data-cmd="R.version.string"
+              data-lines='[["ok","[1] \"R version 4.4.2 (2024-10-31 ucrt)\""],["out","Si sale este texto, R quedó instalado."]]'>Verificar</button>
+            <span class="term-hint">Se escribe en la consola de R, no en Windows</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · RSTUDIO -->
+    <section class="slide" data-accent="--rstudio">
+      <div class="eyebrow">02 · LA INTERFAZ</div>
+      <h2>Instalar RStudio</h2>
+      <div class="cols">
+        <div>
+          <ol class="steps">
+            <li>Entra a <b>posit.co/download/rstudio-desktop</b></li>
+            <li>Descarga <b>RStudio Desktop</b>, la versión gratuita</li>
+            <li>Ejecuta el instalador con las opciones por defecto</li>
+            <li>Abre RStudio: detecta R solo, sin configurar nada</li>
+            <li>Escribe <code>version</code> en la consola y presiona Enter</li>
+          </ol>
+          <div class="note" style="margin-top:16px"><b>R y RStudio no son lo mismo.</b> R es el motor; RStudio es el tablero. Desinstalar R deja RStudio inservible, aunque el ícono siga ahí.</div>
+        </div>
+        <div class="term" data-term>
+          <div class="term-bar"><i></i><i></i><i></i><span class="name">RStudio — panel Console</span></div>
+          <div class="term-body" data-out></div>
+          <div class="term-foot">
+            <button class="btn" data-run data-tool="rstudio" data-prompt="&gt;" data-cmd="version$major; version$minor"
+              data-lines='[["ok","[1] \"4\""],["ok","[1] \"4.2\""],["out","RStudio está hablando con R. Listo."]]'>Verificar</button>
+            <span class="term-hint">Panel inferior izquierdo</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · PYTHON -->
+    <section class="slide" data-accent="--py">
+      <div class="eyebrow">03 · LA TRAMPA DE LA CASILLA</div>
+      <h2>Instalar Python</h2>
+      <div class="cols">
+        <div>
+          <ol class="steps">
+            <li>Entra a <b>python.org/downloads</b> y descarga la versión estable</li>
+            <li>Ejecuta el instalador y <b>NO des clic todavía</b></li>
+            <li>Marca <b>Add Python to PATH</b> abajo del todo</li>
+            <li>Ahora sí: <b>Install Now</b></li>
+            <li>Cierra la terminal y ábrela de nuevo</li>
+          </ol>
+          <div class="trap" style="margin-top:18px">
+            <div class="trap-head">PRUÉBALO: ESTA ES LA CASILLA</div>
+            <label class="check">
+              <input type="checkbox" id="pathBox">
+              <span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"></polyline></svg></span>
+              <span>Add Python 3.13 to PATH</span>
+            </label>
+            <div class="trap-out" id="trapOut"></div>
+          </div>
+        </div>
+        <div class="term" data-term>
+          <div class="term-bar"><i></i><i></i><i></i><span class="name">PowerShell — verificación</span></div>
+          <div class="term-body" data-out></div>
+          <div class="term-foot">
+            <button class="btn" data-run data-tool="python" data-cmd="python --version"
+              data-lines='[["ok","Python 3.13.1"],["prompt-line","pip --version"],["ok","pip 24.3.1 from C:\\Python313\\lib\\site-packages\\pip"]]'>Verificar</button>
+            <span class="term-hint">Ambos comandos deben dar versión</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · NODE -->
+    <section class="slide" data-accent="--node">
+      <div class="eyebrow">04 · EL GESTOR DE PAQUETES</div>
+      <h2>Instalar Node.js</h2>
+      <div class="cols">
+        <div>
+          <ol class="steps">
+            <li>Entra a <b>nodejs.org</b></li>
+            <li>Descarga la versión <b>LTS</b>, no la "Current"</li>
+            <li>Instala con las opciones por defecto</li>
+            <li><b>Cierra y vuelve a abrir la terminal</b></li>
+            <li>Comprueba con <code>node --version</code> y <code>npm --version</code></li>
+          </ol>
+          <div class="note" style="margin-top:16px"><b>LTS significa soporte a largo plazo:</b> es la versión estable. La "Current" trae novedades y también fallas que no queremos en clase.</div>
+          <div class="note" style="margin-top:10px;--accent:var(--err)"><b>Si dice "no se reconoce":</b> no reiniciaste la terminal. La terminal lee las rutas solo al abrirse.</div>
+        </div>
+        <div class="term" data-term>
+          <div class="term-bar"><i></i><i></i><i></i><span class="name">PowerShell — verificación</span></div>
+          <div class="term-body" data-out></div>
+          <div class="term-foot">
+            <button class="btn" data-run data-tool="node" data-cmd="node --version"
+              data-lines='[["ok","v22.14.0"],["prompt-line","npm --version"],["ok","10.9.2"],["out","npm viene incluido con Node. No se instala aparte."]]'>Verificar</button>
+            <span class="term-hint">npm llega junto con Node</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · FREEBUFF -->
+    <section class="slide" data-accent="--buff">
+      <div class="eyebrow">05 · EL AGENTE</div>
+      <h2>Instalar y abrir FreeBuff</h2>
+      <div class="cols">
+        <div>
+          <ol class="steps">
+            <li>En la terminal: <code>npm install -g freebuff</code></li>
+            <li>El <code>-g</code> lo deja disponible desde cualquier carpeta</li>
+            <li>Entra a tu proyecto: <code>cd C:\Users\TuUsuario\Documents\mi_proyecto</code></li>
+            <li>Escribe <code>freebuff</code> y Enter</li>
+            <li>Indexa la carpeta y abre un chat dentro de la terminal</li>
+          </ol>
+          <div class="note" style="margin-top:16px"><b>Sin API key, sin tarjeta, sin archivo de configuración.</b> Es gratuito porque muestra anuncios de texto entre respuestas del agente. Los modelos se cambian con <code>/model</code>.</div>
+          <div class="note" style="margin-top:10px;--accent:var(--err)"><b>El error clásico:</b> intentar <code>pip install freebuff</code>. No existe en PyPI: se instala con npm.</div>
+        </div>
+        <div class="term" data-term>
+          <div class="term-bar"><i></i><i></i><i></i><span class="name">PowerShell — instalación</span></div>
+          <div class="term-body" data-out></div>
+          <div class="term-foot">
+            <button class="btn" data-run data-tool="freebuff" data-cmd="npm install -g freebuff"
+              data-lines='[["out","added 214 packages in 12s"],["prompt-line","freebuff"],["ok","FreeBuff · indexando proyecto... 2.1s"],["ok","Modelo: DeepSeek V4 · escribe /model para cambiar"],["out","› ¿Qué quieres construir hoy?"]]'>Instalar y abrir</button>
+            <span class="term-hint">Se corre dentro de la carpeta del proyecto</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · CIERRE -->
+    <section class="slide" data-accent="--ok">
+      <div class="eyebrow">CIERRE · DIAGNÓSTICO</div>
+      <h2>Cuando algo falla,<br>casi siempre es esto</h2>
+      <div class="grid2" style="margin-top:6px">
+        <div class="card"><h3>"NO SE RECONOCE EL COMANDO"</h3><p><b>Causa:</b> no marcaron Add to PATH, o no reiniciaron la terminal. <b>Arreglo:</b> cerrar la terminal y abrirla otra vez. Si persiste, reinstalar Python marcando la casilla.</p></div>
+        <div class="card"><h3>RSTUDIO NO ABRE</h3><p><b>Causa:</b> instalaron RStudio antes que R, o cambiaron la carpeta de R. <b>Arreglo:</b> instalar R desde CRAN con las opciones por defecto y volver a abrir RStudio.</p></div>
+        <div class="card"><h3>NPM NO EXISTE</h3><p><b>Causa:</b> creen que instalaron Node pero cerraron el instalador antes de terminar. <b>Arreglo:</b> reinstalar la versión LTS y reabrir la terminal.</p></div>
+        <div class="card"><h3>FREEBUFF NO ARRANCA</h3><p><b>Causa:</b> lo corren fuera de una carpeta de proyecto, o lo buscaron con pip. <b>Arreglo:</b> <code>cd</code> hasta el proyecto y correr <code>freebuff</code>.</p></div>
+      </div>
+      <div class="term" style="max-width:620px;margin-top:6px" data-term>
+        <div class="term-bar"><i></i><i></i><i></i><span class="name">terminal — chequeo final</span></div>
+        <div class="term-body" data-out></div>
+        <div class="term-foot">
+          <button class="btn" data-run data-cmd="R --version; python --version; node --version; freebuff --version"
+            data-lines='[["ok","R version 4.4.2"],["ok","Python 3.13.1"],["ok","v22.14.0"],["ok","freebuff 1.4.0"],["out","Entorno completo. Empieza la clase de verdad."]]'>Correr chequeo completo</button>
+          <span class="term-hint">Los cuatro números = todo listo</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="nav">
+      <span class="counter" id="counter">01 / 08</span>
+      <button id="prev" aria-label="Anterior">←</button>
+      <button id="next" aria-label="Siguiente">→</button>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+  </main>
+</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+const hudItems = [...document.querySelectorAll('.hud-item')];
+const counter = document.getElementById('counter');
+const barFill = document.getElementById('barFill');
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let i = 0;
+
+function pad(n){return String(n).padStart(2,'0')}
+
+function goTo(n){
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, k) => s.classList.toggle('is-active', k === i));
+  const accent = slides[i].dataset.accent || '--r';
+  document.documentElement.style.setProperty('--accent', `var(${accent})`);
+  counter.textContent = `${pad(i+1)} / ${pad(slides.length)}`;
+  barFill.style.width = ((i+1)/slides.length*100) + '%';
+  hudItems.forEach(h => h.classList.toggle('is-current', +h.dataset.go === i));
+  // reinicia animación del mapa
+  slides[i].querySelectorAll('.map-row').forEach(r => {
+    r.style.animation = 'none'; void r.offsetWidth; r.style.animation = '';
+  });
+}
+
+document.getElementById('next').onclick = () => goTo(i+1);
+document.getElementById('prev').onclick = () => goTo(i-1);
+hudItems.forEach(h => h.addEventListener('click', () => goTo(+h.dataset.go)));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); goTo(i+1); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goTo(i-1); }
+  if (e.key.toLowerCase() === 'v') {
+    const btn = slides[i].querySelector('[data-run]');
+    if (btn && !btn.disabled) btn.click();
+  }
+});
+
+/* ---------- terminal ---------- */
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+async function typeCmd(out, prompt, cmd){
+  const line = document.createElement('div');
+  line.innerHTML = `<span class="prompt">${prompt} </span><span class="txt"></span><span class="cursor"></span>`;
+  out.appendChild(line);
+  const txt = line.querySelector('.txt');
+  if (reduce){ txt.textContent = cmd; }
+  else {
+    for (const ch of cmd){ txt.textContent += ch; await wait(28); }
+  }
+  await wait(reduce ? 10 : 260);
+  line.querySelector('.cursor').remove();
+}
+
+async function printLine(out, cls, text){
+  const d = document.createElement('div');
+  d.className = cls;
+  d.innerHTML = esc(text);
+  d.style.opacity = 0;
+  out.appendChild(d);
+  await wait(reduce ? 5 : 90);
+  d.style.transition = 'opacity .2s';
+  d.style.opacity = 1;
+  out.scrollTop = out.scrollHeight;
+}
+
+document.querySelectorAll('[data-run]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const term = btn.closest('[data-term]');
+    const out = term.querySelector('[data-out]');
+    const prompt = btn.dataset.prompt || 'PS C:\\Users\\investigador&gt;';
+    out.innerHTML = '';
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = 'corriendo...';
+
+    await typeCmd(out, prompt, btn.dataset.cmd);
+    const lines = JSON.parse(btn.dataset.lines);
+    for (const [cls, text] of lines){
+      if (cls === 'prompt-line'){ await typeCmd(out, prompt, text); }
+      else { await printLine(out, cls, text); }
+    }
+    const c = document.createElement('span');
+    c.className = 'cursor';
+    out.appendChild(c);
+    out.scrollTop = out.scrollHeight;
+
+    if (btn.dataset.tool){
+      const hud = document.querySelector(`.hud-item[data-tool="${btn.dataset.tool}"]`);
+      if (hud) hud.dataset.done = '1';
+    }
+    btn.disabled = false;
+    btn.textContent = original;
+  });
+});
+
+/* ---------- trampa del PATH ---------- */
+const pathBox = document.getElementById('pathBox');
+const trapOut = document.getElementById('trapOut');
+function renderTrap(){
+  if (pathBox.checked){
+    trapOut.innerHTML = '<span style="color:var(--muted)">PS&gt; python --version</span><br><span style="color:var(--ok)">Python 3.13.1</span><br><span style="color:var(--muted)">Windows sabe dónde está Python.</span>';
+  } else {
+    trapOut.innerHTML = '<span style="color:var(--muted)">PS&gt; python --version</span><br><span style="color:var(--err)">python : El término \'python\' no se reconoce como<br>nombre de un cmdlet, función o programa ejecutable.</span><br><span style="color:var(--muted)">Python sí está instalado. Windows no sabe dónde buscarlo.</span>';
+  }
+}
+pathBox.addEventListener('change', renderTrap);
+renderTrap();
+
+goTo(0);
+</script>
+</body>
+</html>
