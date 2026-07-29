@@ -23,7 +23,8 @@ python -m http.server 8000   # luego abrir http://localhost:8000/
 ## Architecture
 
 - **`index.html`** — portada del sitio: deck interactivo de ~6 slides (navegación por flechas/dots, tema oscuro/claro con `data-theme`). Contiene **dos arreglos JS duplicados con la estructura del curso**: el roadmap de módulos (`mods`) y el índice de sesiones (`modules`, que genera los enlaces a `index/SesionN_Presentacion_Interactiva.html`). Si se agrega/renombra una sesión hay que actualizar **ambos** arreglos además de crear el archivo de la sesión.
-- **`index/`** — presentaciones HTML por sesión (`Sesion0..10_Presentacion_Interactiva.html`) más recursos de apoyo (perfil del docente, catálogo de 24 herramientas IA, PRISMA, jerarquía bibliométrica, generador de prompts, etc.). Cada archivo es un deck **autocontenido**: CSS y JS inline, sin dependencias locales; solo Google Fonts por CDN.
+- **`index/`** — presentaciones HTML por sesión (`Sesion1..10_Presentacion_Interactiva.html`) más recursos de apoyo (perfil del docente, catálogo de 24 herramientas IA, PRISMA, jerarquía bibliométrica, generador de prompts, etc.). Cada archivo es un deck **autocontenido**: CSS y JS inline, sin dependencias locales; solo Google Fonts por CDN.
+- **`index/sesion-instalacion/`** y `index/clase-instalacion-ia.html` — materiales de la sesión de instalación/puesta a punto del entorno (`masterclass.html`, `entorno-desde-cero.html`). Son decks autocontenidos **fuera de la secuencia numerada**: no están enlazados desde los arreglos `mods`/`modules` de `index.html`, así que editarlos no requiere tocar la portada.
 - **Carpetas de materiales (binarios, no código):** `paper/` (PPTX de escritura científica), `documentos/` (plantilla de anteproyecto), `promt/` (prompts del curso), `datos/`, `revistas/`, `desarrollo/`, `CURSO-INVESTIGACION-IA-2026-1/` (notebooks de Colab y exportes WOS/Scopus usados en clase).
 
 ## Conventions
